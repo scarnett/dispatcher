@@ -6,6 +6,13 @@ firebase use --add
 # dispatcher-dev-14ebe -> dispatcher-dev
 ```
 
+# Admin SDK Config
+Add the firebase admin sdk config to the following location:
+
+```bash
+/firebase/functions/keys/dispatcher-firebase-adminsdk.json
+```
+
 # Tests
 ```bash
 npm test
