@@ -1,0 +1,75 @@
+# Setup
+```bash
+npm install -g firebase-tools
+firebase login
+firebase use --add
+# dispatcher-dev-14ebe -> dispatcher-dev
+```
+
+# Tests
+```bash
+npm test
+```
+
+# Deploy firebase functions
+
+```bash
+firebase deploy --only functions --project dispatcher-dev
+```
+
+# Deploy firestore rules
+
+```bash
+firebase deploy --only firestore:rules --project dispatcher-dev
+```
+
+# Environment configuration
+```bash
+firebase functions:config:set twilio.accountsid="..."
+firebase functions:config:set twilio.authtoken="..."
+firebase functions:config:set twilio.outbound.phonenumber="..."
+```
+
+# View current environment configuration
+```bash
+firebase functions:config:get
+```
+
+# Structure
+```
+functions/
+  db/
+    name/
+      onWrite.f.ts
+
+    name2/
+      onCreate.f.ts
+
+    name3/
+      onUpdate.f.ts
+
+    name4/
+      onCreate.f.ts
+      onUpdate.f.ts
+      onDelete.f.ts
+
+  http/
+    endpointName.f.ts
+
+  schedule/
+    jobName.f.ts
+
+  index.ts
+```
+
+# Notes
+When you deploy these functions a lib/ folder will be generated that contains the transpiled javascript files that get deployed to firebase.
+It is highly recommended to delete this folder if it exists prior to deploying the functions. This will ensure that a clean build is being deployed.
+
+# Database
+
+## device
+This observes devices being created in the system.
+
+## sms
+This observes sms messages being created in the system.

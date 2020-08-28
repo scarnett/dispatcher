@@ -1,0 +1,14 @@
+version: '3'
+services:
+  flutter:
+    container_name: dispatcher
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - '$PWD:/home/developer/workspace'
+      - '/dev/bus/usb:/dev/bus/usb'
+    privileged: true
+    stdin_open: true
+    tty: true
+    command: flutter run -t lib/main_dev.dart --flavor development

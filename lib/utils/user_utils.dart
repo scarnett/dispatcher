@@ -1,0 +1,46 @@
+import 'package:dispatcher/device/device_model.dart';
+import 'package:dispatcher/extensions/string_extensions.dart';
+import 'package:dispatcher/utils/text_utils.dart';
+
+String getFormattedName(
+  DeviceUser user, {
+  String defaultName = 'N/A',
+}) {
+  String name;
+
+  if (!user.firstName.isNullEmptyOrWhitespace) {
+    name = user.firstName;
+
+    if (!user.lastName.isNullEmptyOrWhitespace) {
+      name += ' ${user.lastName}';
+    }
+
+    return name;
+  }
+
+  return defaultName;
+}
+
+/// Gets the initial from someones name.
+String getNameInitials(
+  String name,
+) {
+  if (name.isNullEmptyOrWhitespace) {
+    return '';
+  }
+
+  List<String> parts = removeNonAlphaNumeric(name)
+      .split(' ')
+      .where((element) => (element.trim() != ''))
+      .toList();
+
+  if (parts.length == 1) {
+    return name.substring(0, 1).toUpperCase();
+  }
+
+  String firstName = parts[0];
+  String firstInitial = firstName.substring(0, 1).toUpperCase();
+  String lastName = parts[parts.length - 1];
+  String lastInitial = lastName.substring(0, 1).toUpperCase();
+  return '$firstInitial $lastInitial';
+}
