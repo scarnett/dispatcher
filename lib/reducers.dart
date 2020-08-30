@@ -15,6 +15,7 @@ AppState appStateReducer(
       busy: busyStatusReducer(state.busy, action),
       route: navigationReducer(state.route, action),
       message: messageReducer(state.message, action),
+      selectedTabIndex: selectedTabIndexReducer(state.selectedTabIndex, action),
       deviceState: deviceReducer(state.deviceState, action),
       contactsState: contactsReducer(state.contactsState, action),
       connectState: connectReducer(state.connectState, action),
@@ -92,4 +93,18 @@ Message _clearMessage(
   ClearMessageAction action,
 ) {
   return null;
+}
+
+// ------------------------------------------------------- Selected Tab Index
+final selectedTabIndexReducer = combineReducers<int>([
+  TypedReducer<int, SetSelectedTabIndexAction>(
+    _setSelectedTabIndex,
+  ),
+]);
+
+int _setSelectedTabIndex(
+  int selectedTabIndex,
+  SetSelectedTabIndexAction action,
+) {
+  return action.selectedTabIndex;
 }

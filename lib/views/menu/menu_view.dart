@@ -176,6 +176,7 @@ class _MenuViewState extends State<MenuView> {
           title: AppLocalizations.of(context).toThisDevice,
           icon: Icons.redo,
           onTap: _tapMigrateTo,
+          borderBottom: false,
         ),
       );
 

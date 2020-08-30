@@ -54,6 +54,21 @@ remotedev --port 8000
 
 # Docker
 
+__Install__  
+https://docs.docker.com/engine/install/
+
+
+## Docker Compose
+
+__Install__  
+https://docs.docker.com/compose/install/
+
+## Docker Build
+
+```bash
+docker-compose build
+```
+
 ## Run on a physical device
 
 ```bash

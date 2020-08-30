@@ -63,3 +63,13 @@ class ClearMessageAction {
   @override
   String toString() => 'ClearMessageAction';
 }
+
+class SetSelectedTabIndexAction {
+  final int selectedTabIndex;
+
+  SetSelectedTabIndexAction(this.selectedTabIndex);
+
+  @override
+  String toString() =>
+      'SetSelectedTabIndexAction{selectedTabIndex: $selectedTabIndex}';
+}

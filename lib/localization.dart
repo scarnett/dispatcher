@@ -33,6 +33,7 @@ class AppLocalizations {
   String get search => addMessage('Search');
   String get all => addMessage('All');
   String get sendInvite => addMessage('Send Invite');
+  String get sendMessage => addMessage('Send Message');
   String get yourInviteCode => addMessage('Your invite code');
   String get enterInviteCode => addMessage('Enter the invite code');
   String get lookup => addMessage('Lookup');

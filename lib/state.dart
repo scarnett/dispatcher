@@ -15,6 +15,7 @@ class AppState {
   final ConnectState connectState;
   final List<AppRoute> route;
   final Message message;
+  final int selectedTabIndex;
 
   AppState({
     this.busy,
@@ -23,6 +24,7 @@ class AppState {
     this.connectState,
     this.route,
     this.message,
+    this.selectedTabIndex,
   });
 
   factory AppState.initial() => AppState(
@@ -32,6 +34,7 @@ class AppState {
         connectState: ConnectState.initial(),
         route: const [AppRoutes.landing],
         message: null,
+        selectedTabIndex: 0,
       );
 
   AppState copyWith({
@@ -41,6 +44,7 @@ class AppState {
     ConnectState connectState,
     List<AppRoute> route,
     Message message,
+    int selectedTabIndex,
   }) =>
       AppState(
         busy: busy ?? this.busy,
@@ -49,6 +53,7 @@ class AppState {
         connectState: connectState ?? this.connectState,
         route: route ?? this.route,
         message: message ?? this.message,
+        selectedTabIndex: selectedTabIndex ?? this.selectedTabIndex,
       );
 
   static AppState fromJson(
@@ -63,6 +68,7 @@ class AppState {
               connectState: ConnectState.initial(),
               route: [AppRoutes.landing],
               message: null,
+              selectedTabIndex: 0,
             );
 
   dynamic toJson() => {

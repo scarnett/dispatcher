@@ -39,6 +39,7 @@ dependencies:
   camera: '^0.5.8+5'
   image_picker: '^0.6.7+4'
   cached_network_image: '^2.2.0+1'
+  circular_menu: '^1.1.0'
 
 dev_dependencies:
   flutter_test:
