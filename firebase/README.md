@@ -32,6 +32,8 @@ firebase deploy --only firestore:rules --project dispatcher-dev
 
 # Environment configuration
 ```bash
+firebase functions:config:set graphql.endpoint="..."
+firebase functions:config:set hasura.admin.secret="..."
 firebase functions:config:set twilio.accountsid="..."
 firebase functions:config:set twilio.authtoken="..."
 firebase functions:config:set twilio.outbound.phonenumber="..."

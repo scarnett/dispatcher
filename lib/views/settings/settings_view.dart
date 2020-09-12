@@ -4,9 +4,8 @@ import 'package:dispatcher/device/widgets/device_select_avatar.dart';
 import 'package:dispatcher/extensions/string_extensions.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/state.dart';
-import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/common_utils.dart';
-import 'package:dispatcher/views/settings/settings_keys.dart';
+import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/section_header.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:dispatcher/widgets/text_field.dart';
@@ -26,17 +25,18 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  TextEditingController _firstNameController = TextEditingController();
-  TextEditingController _lastNameController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
+    _scaffoldKey.currentState?.dispose();
+    _formKey.currentState?.dispose();
+    _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
     super.dispose();
@@ -50,18 +50,20 @@ class _SettingsViewState extends State<SettingsView> {
         converter: (store) => DeviceViewModel.fromStore(store),
         onInit: (store) {
           DeviceUser user = store.state.deviceState.device.user;
-          _firstNameController = TextEditingController(text: user.firstName);
-          _lastNameController = TextEditingController(text: user.lastName);
+          _nameController = TextEditingController(text: user.name);
           _emailController = TextEditingController(text: user.email);
         },
         builder: (_, viewModel) => Scaffold(
-          key: SettingsKeys.settingsScaffoldKey,
+          key: _scaffoldKey,
           appBar: SimpleAppBar(
             height: 80.0,
             automaticallyImplyLeading: false,
             title: AppLocalizations.of(context).settings,
           ),
-          body: _buildBody(viewModel),
+          body: Form(
+            key: _formKey,
+            child: _buildBody(viewModel),
+          ),
         ),
       );
 
@@ -85,13 +87,10 @@ class _SettingsViewState extends State<SettingsView> {
       child: Column(
         children: [
           Expanded(
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                children: filterNullWidgets(tiles),
-              ),
+            child: ListView(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              children: filterNullWidgets(tiles),
             ),
           ),
         ],
@@ -109,36 +108,22 @@ class _SettingsViewState extends State<SettingsView> {
         borderBottom: true,
         borderTop: true,
       ),
-      _buildFirstNameField(),
-      _buildLastNameField(),
+      _buildNameField(),
       _buildEmailField(),
       _buildPhoneNumberField(viewModel),
     ];
   }
 
-  /// Builds the 'first name' field
-  Widget _buildFirstNameField() => Padding(
+  /// Builds the 'name' field
+  Widget _buildNameField() => Padding(
         padding: const EdgeInsets.only(
           left: 20.0,
           right: 20.0,
           bottom: 10.0,
         ),
         child: CustomTextField(
-          controller: _firstNameController,
-          label: AppLocalizations.of(context).firstName,
-        ),
-      );
-
-  /// Builds the 'last name' field
-  Widget _buildLastNameField() => Padding(
-        padding: const EdgeInsets.only(
-          left: 20.0,
-          right: 20.0,
-          bottom: 10.0,
-        ),
-        child: CustomTextField(
-          controller: _lastNameController,
-          label: AppLocalizations.of(context).lastName,
+          controller: _nameController,
+          label: AppLocalizations.of(context).name,
         ),
       );
 
@@ -221,9 +206,8 @@ class _SettingsViewState extends State<SettingsView> {
           bottom: 20.0,
           top: 10.0,
         ),
-        child: FlatButton(
-          color: AppTheme.primary,
-          child: Text(AppLocalizations.of(context).save),
+        child: FormButton(
+          text: AppLocalizations.of(context).save,
           onPressed: () => _tapSave(viewModel),
         ),
       );
@@ -236,8 +220,7 @@ class _SettingsViewState extends State<SettingsView> {
       _formKey.currentState.save();
 
       Map<dynamic, dynamic> userData = Map<dynamic, dynamic>.from({
-        'first_name': _firstNameController.value.text,
-        'last_name': _lastNameController.value.text,
+        'name': _nameController.value.text,
         'email': _emailController.value.text,
       });
 
@@ -254,6 +237,7 @@ class _SettingsViewState extends State<SettingsView> {
         userData.putIfAbsent('phone', () => phoneData);
       }
 
+      /*
       viewModel.saveDevice(
         viewModel.device.id,
         {
@@ -261,6 +245,7 @@ class _SettingsViewState extends State<SettingsView> {
         },
         context: context,
       );
+      */
 
       // Close the keyboard if it's open
       FocusScope.of(context).unfocus();

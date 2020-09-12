@@ -3,14 +3,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// Displays the loading spinner
-class Spinner extends StatelessWidget {
+class Spinner extends StatefulWidget {
   final bool fill;
+  final Color fillColor;
+  final String message;
 
-  const Spinner({
+  Spinner({
     Key key,
     this.fill: false,
+    this.fillColor,
+    this.message,
   }) : super(key: key);
 
+  @override
+  State<StatefulWidget> createState() => SpinnerState();
+}
+
+class SpinnerState extends State<Spinner> {
   @override
   Widget build(
     BuildContext context,
@@ -19,20 +28,47 @@ class Spinner extends StatelessWidget {
 
   /// Builds the content
   Widget _buildContent() {
-    if (fill) {
+    if (widget.fill) {
+      List<Widget> children = <Widget>[];
+      children..add(_buildSpinner());
+
+      if (widget.message != null) {
+        children
+          ..add(
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                widget.message,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.subtitle1.copyWith(
+                      color: AppTheme.accent,
+                    ),
+              ),
+            ),
+          );
+      }
+
       return Positioned.fill(
         child: Container(
-          color: AppTheme.loadingBackground,
-          child: _buildSpinner(),
+          color: (widget.fillColor == null)
+              ? AppTheme.loadingBackground
+              : widget.fillColor,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: children,
+            ),
+          ),
         ),
       );
     }
 
-    return _buildSpinner();
+    return Center(
+      child: _buildSpinner(),
+    );
   }
 
   /// Builds the 'loading' spinner
-  Widget _buildSpinner() => Center(
-        child: CircularProgressIndicator(),
-      );
+  Widget _buildSpinner() => CircularProgressIndicator();
 }

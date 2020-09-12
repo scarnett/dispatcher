@@ -1,10 +1,10 @@
 import 'package:contacts_service/contacts_service.dart';
-import 'package:dispatcher/actions.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/routes.dart';
 import 'package:dispatcher/state.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/text_utils.dart';
+import 'package:dispatcher/views/contacts/contacts_utils.dart';
 import 'package:dispatcher/views/contacts/widgets/contacts_appbar.dart';
 import 'package:dispatcher/views/contacts/contacts_viewmodel.dart';
 import 'package:dispatcher/views/contacts/contact/widgets/contact_avatar.dart';
@@ -71,6 +71,8 @@ class _ContactsViewState extends State<ContactsView>
       StoreConnector<AppState, ContactsViewModel>(
         converter: (store) => ContactsViewModel.fromStore(store),
         onInitialBuild: (viewModel) {
+          askContactsPermissions(viewModel, context);
+
           _filteredContacts = _getFilteredContacts(viewModel);
           _searchTextController
               .addListener(() => _filterContactsListener(viewModel));
@@ -307,8 +309,6 @@ class _ContactsViewState extends State<ContactsView>
   ) {
     viewModel.setActiveContact(contact.identifier);
     viewModel.toggleSearching(searching: false);
-
-    StoreProvider.of<AppState>(context)
-        .dispatch(NavigatePushAction(AppRoutes.contact));
+    Navigator.pushNamed(context, AppRoutes.contact.name);
   }
 }

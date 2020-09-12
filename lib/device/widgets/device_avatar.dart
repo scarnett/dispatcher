@@ -96,7 +96,7 @@ class _DeviceAvatarState extends State<DeviceAvatar> {
         child: Align(
           alignment: Alignment.center,
           child: Text(
-            getNameInitials(getFormattedName(widget.user)),
+            getNameInitials(widget.user.name),
             style: TextStyle(
               fontSize: (radius / 1.5),
               color: Colors.white,

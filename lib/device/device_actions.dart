@@ -1,8 +1,41 @@
-import 'dart:io';
-import 'package:dispatcher/device/device_model.dart';
-import 'package:dispatcher/sms/sms_model.dart';
 import 'package:flutter/cupertino.dart';
 
+class FetchDeviceAction {
+  final String identifier;
+
+  FetchDeviceAction(
+    this.identifier,
+  );
+
+  @override
+  String toString() => 'FetchDeviceSuccessAction{identifier: $identifier}';
+}
+
+class FetchDeviceSuccessAction {
+  final dynamic data;
+
+  FetchDeviceSuccessAction(
+    this.data,
+  );
+
+  @override
+  String toString() => 'FetchDeviceSuccessAction{}';
+}
+
+class FetchDeviceErrorAction {
+  final dynamic error;
+  final BuildContext context;
+
+  FetchDeviceErrorAction(
+    this.error, {
+    this.context,
+  });
+
+  @override
+  String toString() => 'FetchDeviceErrorAction{error: $error}';
+}
+
+/*
 class RequestDeviceAction {
   final String identifier;
 
@@ -118,45 +151,6 @@ class RegisterDeviceErrorAction {
 
   @override
   String toString() => 'RegisterDeviceErrorAction{error: $error}';
-}
-
-class SaveDeviceAction {
-  final String documentId;
-  final dynamic data;
-  final BuildContext context;
-
-  SaveDeviceAction(
-    this.documentId,
-    this.data, {
-    this.context,
-  });
-
-  @override
-  String toString() => 'SaveDeviceAction{documentId: $documentId}';
-}
-
-class SaveDeviceSuccessAction {
-  final BuildContext context;
-
-  SaveDeviceSuccessAction({
-    this.context,
-  });
-
-  @override
-  String toString() => 'SaveDeviceSuccessAction{}';
-}
-
-class SaveDeviceErrorAction {
-  final dynamic error;
-  final BuildContext context;
-
-  SaveDeviceErrorAction(
-    this.error, {
-    this.context,
-  });
-
-  @override
-  String toString() => 'SaveDeviceErrorAction{error: $error}';
 }
 
 class SavePINVerificationCodeAction {
@@ -294,3 +288,4 @@ class UploadAvatarErrorAction {
   @override
   String toString() => 'UploadAvatarErrorAction{error: $error}';
 }
+*/

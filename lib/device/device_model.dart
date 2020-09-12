@@ -82,16 +82,14 @@ class Device {
 }
 
 class DeviceUser {
-  final String firstName;
-  final String lastName;
+  final String name;
   final String email;
   final DevicePhoneNumber phone;
   final DevicePIN pin;
   final String avatar;
 
   DeviceUser({
-    this.firstName,
-    this.lastName,
+    this.name,
     this.email,
     this.phone,
     this.pin,
@@ -106,8 +104,7 @@ class DeviceUser {
     }
 
     return DeviceUser(
-      firstName: user['first_name'],
-      lastName: user['last_name'],
+      name: user['name'],
       email: user['email'],
       phone: DevicePhoneNumber.fromSnapshot(user['phone']),
       pin: DevicePIN.fromSnapshot(user['pin']),
@@ -116,16 +113,14 @@ class DeviceUser {
   }
 
   DeviceUser copyWith({
-    String firstName,
-    String lastName,
+    String name,
     String email,
     DevicePhoneNumber phone,
     DevicePIN pin,
     String avatar,
   }) =>
       DeviceUser(
-        firstName: firstName ?? this.firstName,
-        lastName: lastName ?? this.lastName,
+        name: name ?? this.name,
         email: email ?? this.email,
         phone: phone ?? this.phone,
         pin: pin ?? this.pin,
@@ -138,8 +133,7 @@ class DeviceUser {
       (json == null)
           ? DeviceUser()
           : DeviceUser(
-              firstName: json['first_name'],
-              lastName: json['last_name'],
+              name: json['name'],
               email: json['email'],
               phone: DevicePhoneNumber.fromJson(json['phone']),
               pin: DevicePIN.fromJson(json['pin']),
@@ -147,8 +141,7 @@ class DeviceUser {
             );
 
   dynamic toJson() => {
-        'first_name': firstName,
-        'last_name': lastName,
+        'name': name,
         'email': email,
         'phone':
             (phone == null) ? DevicePhoneNumber().toJson() : phone.toJson(),
@@ -158,7 +151,7 @@ class DeviceUser {
 
   @override
   String toString() =>
-      'DeviceUser{first_name: $firstName, last_name: $lastName, email: $email, phone: $phone, avatar: $avatar}';
+      'DeviceUser{name: $name, email: $email, phone: $phone, avatar: $avatar}';
 }
 
 class DevicePhoneNumber {

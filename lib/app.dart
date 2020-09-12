@@ -1,19 +1,19 @@
 import 'package:dispatcher/config.dart';
-import 'package:dispatcher/keys.dart';
+import 'package:dispatcher/graphql/graphql_config.dart';
+import 'package:dispatcher/graphql/graphql_redux.dart';
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/route/route_aware.dart';
 import 'package:dispatcher/route/route_utils.dart';
 import 'package:dispatcher/state.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:screen/screen.dart';
 
 class DispatcherApp extends StatelessWidget {
   final Store<AppState> store;
+  final GlobalKey<NavigatorState> appNavKey = GlobalKey<NavigatorState>();
 
   DispatcherApp({
     Key key,
@@ -42,8 +42,9 @@ class DispatcherApp extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) =>
-      StoreProvider<AppState>(
+      GraphXProvider<AppState>(
         store: store,
+        client: HasuraConfig.initailizeClient(null), // TODO!
         child: MaterialApp(
           title: AppLocalizations.appTitle,
           theme: appThemeData,
@@ -51,11 +52,10 @@ class DispatcherApp extends StatelessWidget {
           localizationsDelegates: [
             AppLocalizationsDelegate(),
           ],
-          navigatorKey: AppKeys.appNavKey,
-          navigatorObservers: [
-            appRouteObserver,
-          ],
-          onGenerateRoute: (RouteSettings settings) => getAppRoute(settings),
+          navigatorKey: appNavKey,
+          onGenerateRoute: (RouteSettings settings) => getAppRoute(
+            settings,
+          ),
         ),
       );
 }

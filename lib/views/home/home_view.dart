@@ -1,12 +1,11 @@
 import 'dart:math';
 import 'package:circular_menu/circular_menu.dart';
-import 'package:dispatcher/actions.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/routes.dart';
 import 'package:dispatcher/state.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/viewmodel.dart';
-import 'package:dispatcher/views/contacts/contacts_view.dart';
+import 'package:dispatcher/views/connections/connections_views.dart';
 import 'package:dispatcher/views/menu/menu_view.dart';
 import 'package:dispatcher/views/settings/settings_view.dart';
 import 'package:dispatcher/widgets/bottom_app_bar.dart';
@@ -25,11 +24,14 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  final GlobalKey<CircularMenuState> bottomMenuKey =
+      GlobalKey<CircularMenuState>();
+
   PageController _pageController;
 
   final List<Widget> _tabContainers = <Widget>[
     Container(),
-    ContactsView(),
+    ConnectionsView(),
     SettingsView(),
     MenuView(),
   ];
@@ -82,7 +84,7 @@ class _HomeViewState extends State<HomeView> {
       }
     });
 
-    return false;
+    return Future.value(false);
   }
 
   List<Widget> _buildContent(
@@ -102,7 +104,7 @@ class _HomeViewState extends State<HomeView> {
             ),
             BottomNavBarItem(
               iconData: Icons.people,
-              text: AppLocalizations.of(context).contacts,
+              text: AppLocalizations.of(context).connections,
             ),
             BottomNavBarItem(
               iconData: Icons.settings,
@@ -134,6 +136,7 @@ class _HomeViewState extends State<HomeView> {
     Widget child,
   }) =>
       CircularMenu(
+        key: bottomMenuKey,
         alignment: Alignment.bottomCenter,
         toggleButtonAnimatedIconData: AnimatedIcons.menu_close,
         toggleButtonMargin: 10.0,
@@ -159,9 +162,9 @@ class _HomeViewState extends State<HomeView> {
             _tapConnect,
           ),
           _buildCircularMenuItem(
-            Icons.whatshot,
-            'What\'s Hot',
-            () => {},
+            Icons.contacts,
+            AppLocalizations.of(context).contacts,
+            _tapContacts,
           ),
         ],
         backgroundWidget: (child == null) ? Container() : child,
@@ -190,6 +193,13 @@ class _HomeViewState extends State<HomeView> {
   ) =>
       _pageController.jumpToPage(index);
 
-  _tapConnect() => StoreProvider.of<AppState>(context)
-      .dispatch(NavigatePushAction(AppRoutes.connect));
+  _tapConnect() {
+    bottomMenuKey.currentState.reverseAnimation();
+    Navigator.pushNamed(context, AppRoutes.connect.name);
+  }
+
+  _tapContacts() {
+    bottomMenuKey.currentState.reverseAnimation();
+    Navigator.pushNamed(context, AppRoutes.contacts.name);
+  }
 }

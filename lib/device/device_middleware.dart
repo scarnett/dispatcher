@@ -1,31 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dispatcher/actions.dart';
-import 'package:dispatcher/device/device_actions.dart';
-import 'package:dispatcher/device/device_model.dart';
-import 'package:dispatcher/device/device_services.dart';
-import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/model.dart';
-import 'package:dispatcher/routes.dart';
-import 'package:dispatcher/sms/sms_actions.dart';
-import 'package:dispatcher/state.dart';
-import 'package:dispatcher/views/settings/settings_keys.dart';
-import 'package:redux_epics/redux_epics.dart';
-import 'package:rxdart/rxdart.dart';
-
 final deviceMiddleware = [
-  _requestDeviceEpic,
-  _requestDeviceConnectionsEpic,
-  _registerDeviceEpic,
-  _loadedDeviceEpic,
-  _saveDeviceEpic,
-  _saveDeviceSuccessEpic,
-  _saveDeviceErrorEpic,
-  _savePINVerificationCodeEpic,
-  _savePINVerificationCodeSuccessEpic,
-  _clearPINVerificationCodeEpic,
-  _savePINCodeEpic,
+  // _requestDeviceEpic,
+  // _requestDeviceConnectionsEpic,
+  // _registerDeviceEpic,
+  // _loadedDeviceEpic,
+  //_saveDeviceEpic,
+  //_saveDeviceSuccessEpic,
+  //_saveDeviceErrorEpic,
+  //_savePINVerificationCodeEpic,
+  //_savePINVerificationCodeSuccessEpic,
+  //_clearPINVerificationCodeEpic,
+  //_savePINCodeEpic,
 ];
 
+/*
 Stream<dynamic> _requestDeviceEpic(
   Stream<dynamic> actions,
   EpicStore<AppState> store,
@@ -218,3 +205,4 @@ Stream<dynamic> _savePINCodeEpic(
             )
             .then<dynamic>((res) => SavePINCodeSuccessAction())
             .catchError((error) => SavePINCodeErrorAction(error))));
+*/

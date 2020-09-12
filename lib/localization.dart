@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:dispatcher/device/device_model.dart';
 import 'package:dispatcher/utils/common_utils.dart';
-import 'package:dispatcher/utils/user_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -22,9 +21,16 @@ class AppLocalizations {
 
   static String get appTitle => 'Dispatcher';
 
+  String get login => addMessage('Login');
+  String get logout => addMessage('Logout');
+  String get password => addMessage('Password');
+  String get passwordPlease => addMessage('Please enter your password');
+  String get create => addMessage('Create Account');
+  String get creating => addMessage('Creating your account. Please wait...');
   String get home => addMessage('Home');
   String get contacts => addMessage('Contacts');
   String get contactsNone => addMessage('No contacts found');
+  String get connections => addMessage('Connections');
   String get settings => addMessage('Settings');
   String get menu => addMessage('Menu');
   String get photo => addMessage('Photo');
@@ -41,9 +47,10 @@ class AppLocalizations {
   String get connectSuccess => addMessage('Connection Success!');
   String get cancel => addMessage('Cancel');
   String get personalDetails => addMessage('Personal Details');
-  String get firstName => addMessage('First Name');
-  String get lastName => addMessage('Last Name');
+  String get name => addMessage('Name');
+  String get namePlease => addMessage('Please enter your name');
   String get email => addMessage('Email');
+  String get emailPlease => addMessage('Please enter a valid email');
   String get phoneNumber => addMessage('Phone Number');
   String get avatar => addMessage('Avatar');
   String get avatarHowsItLike => addMessage('How\'s it look?');
@@ -71,9 +78,20 @@ class AppLocalizations {
   String get application => addMessage('Application');
   String get permissions => addMessage('Permissions');
   String get privacyPolicy => addMessage('Privacy Policy');
+  String get account => addMessage('Account');
   String get migrate => addMessage('Migrate');
   String get fromThisDevice => addMessage('From This Device');
   String get toThisDevice => addMessage('To This Device');
+
+  String get alreadyHaveAccount => addMessage('I already have an account');
+  String get dontHaveAccount => addMessage('I don\'t have an account');
+  String get cantCreateAccount => addMessage(
+      'There was an issue creating your account. Please contact support.');
+
+  String get cantAuthAccount => addMessage(
+      'Account not found. Please try again or contact support if this problem persists.');
+
+  String get authorizing => addMessage('Authorizing...');
 
   String inviteCodeText(
     String appName,
@@ -209,7 +227,7 @@ class AppLocalizations {
     DeviceUser user,
   ) =>
       addMessage(
-        'You successfully connected with ${getFormattedName(user)}!',
+        'You successfully connected with ${user.name}!',
         name: 'connectSuccessText',
         args: [
           user,
@@ -220,7 +238,7 @@ class AppLocalizations {
     DeviceUser user,
   ) =>
       addMessage(
-        'You\'re already connected with ${getFormattedName(user)}!',
+        'You\'re already connected with ${user.name}!',
         name: 'alreadyConnectedText',
         args: [
           user,
@@ -241,6 +259,16 @@ class AppLocalizations {
         name: 'migrateFromText',
         args: [
           appName,
+        ],
+      );
+
+  String passwordLength(
+    int minLength,
+  ) =>
+      addMessage(
+        'Password must be at least $minLength characters long',
+        args: [
+          minLength,
         ],
       );
 

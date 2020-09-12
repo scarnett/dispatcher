@@ -10,9 +10,10 @@ import camelcase from 'camelcase'
 import * as httpUtils from './utils/http_utils'
 
 const paths: string[] = [
-  './db/**/*.f.js',     // Firestore
-  './http/*.f.js',      // HTTP Endpoints
-  './schedule/*.f.js'   // Cron
+  './auth/*.f.js',         // Auth
+  './callable/**/*.f.js',  // HTTP Callables
+  './db/**/*.f.js',        // Database
+  './schedule/*.f.js'      // Cron
 ]
 
 for (const path of paths) {

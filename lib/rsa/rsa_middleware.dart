@@ -1,11 +1,5 @@
 import 'dart:async';
-import 'package:dispatcher/actions.dart';
-import 'package:dispatcher/device/device_actions.dart';
-import 'package:dispatcher/routes.dart';
-import 'package:dispatcher/rsa/rsa_keys.dart';
-import 'package:dispatcher/rsa/rsa_utils.dart';
 import 'package:dispatcher/state.dart';
-import 'package:pointycastle/export.dart';
 import 'package:redux/redux.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,13 +16,16 @@ class RsaMiddleware extends MiddlewareClass<AppState> {
     dynamic action,
     NextDispatcher next,
   ) async {
+    /*
     if (action is RegisterDeviceSuccessAction) {
       await _generateKeyPair(action, store);
     }
+    */
 
     next(action);
   }
 
+  /*
   Future _generateKeyPair(
     RegisterDeviceSuccessAction action,
     Store<AppState> store,
@@ -36,7 +33,7 @@ class RsaMiddleware extends MiddlewareClass<AppState> {
     // Generate the rsa keypair
     AsymmetricKeyPair<PublicKey, PrivateKey> keyPair = getKeyPair();
 
-    // Save the public key to firebase
+    // Save the public key
     store.dispatch(SaveDeviceAction(action.id, {
       'public_key': encodePublicPem(keyPair.publicKey),
     }));
@@ -50,4 +47,5 @@ class RsaMiddleware extends MiddlewareClass<AppState> {
     store.dispatch(RequestDeviceConnectionsAction(action.device.id));
     store.dispatch(NavigatePushAction(AppRoutes.home));
   }
+  */
 }

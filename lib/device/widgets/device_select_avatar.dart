@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'package:dispatcher/actions.dart';
 import 'package:dispatcher/device/device_model.dart';
 import 'package:dispatcher/device/device_viewmodel.dart';
 import 'package:dispatcher/device/widgets/device_avatar.dart';
@@ -7,9 +5,9 @@ import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/model.dart';
 import 'package:dispatcher/routes.dart';
 import 'package:dispatcher/state.dart';
-import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
+import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -66,9 +64,8 @@ class _DeviceSelectAvatarState extends State<DeviceSelectAvatar> {
                     flex: 5,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10.0),
-                      child: FlatButton(
-                        color: AppTheme.accent,
-                        child: Text(AppLocalizations.of(context).takePhoto),
+                      child: FormButton(
+                        text: AppLocalizations.of(context).takePhoto,
                         onPressed: () => _tapTakePhoto(),
                       ),
                     ),
@@ -77,9 +74,8 @@ class _DeviceSelectAvatarState extends State<DeviceSelectAvatar> {
                     flex: 5,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10.0),
-                      child: FlatButton(
-                        color: AppTheme.accent,
-                        child: Text(AppLocalizations.of(context).selectPhoto),
+                      child: FormButton(
+                        text: AppLocalizations.of(context).selectPhoto,
                         onPressed: () => _tapSelectPhoto(viewModel),
                       ),
                     ),
@@ -104,8 +100,8 @@ class _DeviceSelectAvatarState extends State<DeviceSelectAvatar> {
   }
 
   /// Handles the form 'take photo' tap
-  void _tapTakePhoto() => StoreProvider.of<AppState>(context)
-      .dispatch(NavigatePushAction(AppRoutes.avatarCamera));
+  void _tapTakePhoto() =>
+      Navigator.pushNamed(context, AppRoutes.avatarCamera.name);
 
   /// Handles the form 'select photo' tap
   void _tapSelectPhoto(
@@ -128,13 +124,15 @@ class _DeviceSelectAvatarState extends State<DeviceSelectAvatar> {
     DeviceViewModel viewModel,
     PickedFile avatarFile,
   ) {
+    /*
     viewModel.uploadAvatar(
       viewModel.device.id,
       File(avatarFile.path),
       context: context,
     );
+    */
 
-    Scaffold.of(context).showSnackBar(builSnackBar(Message(
+    Scaffold.of(context).showSnackBar(buildSnackBar(Message(
       text: AppLocalizations.of(context).avatarUpdated,
       type: MessageType.SUCCESS,
     )));

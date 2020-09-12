@@ -13,7 +13,7 @@ import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/date_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/views/pin/pin_config.dart';
-import 'package:dispatcher/views/pin/pin_keys.dart';
+import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/pin_code.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:dispatcher/widgets/spinner.dart';
@@ -35,6 +35,7 @@ class PINView extends StatefulWidget {
 }
 
 class _PINViewState extends State<PINView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _phoneNumberFormKey = GlobalKey<FormState>();
   TextEditingController _phoneController = TextEditingController();
 
@@ -59,7 +60,7 @@ class _PINViewState extends State<PINView> {
           ) {
             if (snapshot.hasData) {
               return Scaffold(
-                key: PINKeys.pinScaffoldKey,
+                key: _scaffoldKey,
                 appBar: SimpleAppBar(
                   height: 100.0,
                 ),
@@ -107,7 +108,7 @@ class _PINViewState extends State<PINView> {
         viewModel.device.user.pin.verificationCode.isNullEmptyOrWhitespace ||
         now.isAfter(viewModel.device.user.pin.verificationExpireDate)) {
       if (!viewModel.device.user.pin.verificationCode.isNullEmptyOrWhitespace) {
-        viewModel.clearPINVerificationCode(viewModel.device.id);
+        // viewModel.clearPINVerificationCode(viewModel.device.id);
       }
 
       return _buildSendVerificationCodeForm(viewModel);
@@ -142,15 +143,14 @@ class _PINViewState extends State<PINView> {
             padding: const EdgeInsets.only(
               top: 10.0,
             ),
-            child: FlatButton(
-              color: AppTheme.primary,
-              child: Text(AppLocalizations.of(context).updatePhoneNumber),
+            child: FormButton(
+              text: AppLocalizations.of(context).updatePhoneNumber,
               onPressed: () => _tapSavePhoneNumber(viewModel),
             ),
           ),
-          FlatButton(
+          FormButton(
             color: Colors.transparent,
-            child: Text(AppLocalizations.of(context).cancel),
+            text: AppLocalizations.of(context).cancel,
             onPressed: () => _tapCancel(viewModel),
             textColor: AppTheme.accent,
           ),
@@ -235,15 +235,14 @@ class _PINViewState extends State<PINView> {
             padding: const EdgeInsets.only(
               top: 10.0,
             ),
-            child: FlatButton(
-              color: AppTheme.primary,
-              child: Text(AppLocalizations.of(context).sendCode),
+            child: FormButton(
+              text: AppLocalizations.of(context).sendCode,
               onPressed: () => _tapSaveVerificationCode(viewModel),
             ),
           ),
-          FlatButton(
+          FormButton(
             color: Colors.transparent,
-            child: Text(AppLocalizations.of(context).cancel),
+            text: AppLocalizations.of(context).cancel,
             onPressed: () => _tapCancel(
               viewModel,
               clearVerificationCode: true,
@@ -288,10 +287,9 @@ class _PINViewState extends State<PINView> {
             padding: const EdgeInsets.only(
               top: 10.0,
             ),
-            child: FlatButton(
+            child: FormButton(
               color: AppTheme.primary,
-              disabledColor: AppTheme.hint,
-              child: Text(AppLocalizations.of(context).verifyCode),
+              text: AppLocalizations.of(context).verifyCode,
               onPressed: (!_verificationCode.isNullEmptyOrWhitespace &&
                       (_verificationCode.length ==
                           PINConfig.VERIFICATION_CODE_LENGTH))
@@ -299,18 +297,18 @@ class _PINViewState extends State<PINView> {
                   : null,
             ),
           ),
-          FlatButton(
+          FormButton(
             color: Colors.transparent,
-            child: Text(AppLocalizations.of(context).resendCode),
+            text: AppLocalizations.of(context).resendCode,
             onPressed: () => _tapCancel(
               viewModel,
               clearVerificationCode: true,
             ),
             textColor: AppTheme.accent,
           ),
-          FlatButton(
+          FormButton(
             color: Colors.transparent,
-            child: Text(AppLocalizations.of(context).cancel),
+            text: AppLocalizations.of(context).cancel,
             onPressed: () => _tapCancel(
               viewModel,
               clearVerificationCode: true,
@@ -352,18 +350,17 @@ class _PINViewState extends State<PINView> {
             padding: const EdgeInsets.only(
               top: 10.0,
             ),
-            child: FlatButton(
-              color: AppTheme.primary,
-              child: Text(AppLocalizations.of(context).save),
+            child: FormButton(
+              text: AppLocalizations.of(context).save,
               onPressed: (!_pinCode.isNullEmptyOrWhitespace &&
                       (_pinCode.length == PINConfig.PIN_CODE_LENGTH))
                   ? () => _tapSavePIN(viewModel)
                   : null,
             ),
           ),
-          FlatButton(
+          FormButton(
             color: Colors.transparent,
-            child: Text(AppLocalizations.of(context).cancel),
+            text: AppLocalizations.of(context).cancel,
             onPressed: () => _tapCancel(
               viewModel,
               clearVerificationCode: true,
@@ -393,9 +390,8 @@ class _PINViewState extends State<PINView> {
             padding: const EdgeInsets.only(
               top: 10.0,
             ),
-            child: FlatButton(
-              color: AppTheme.primary,
-              child: Text(AppLocalizations.of(context).ok),
+            child: FormButton(
+              text: AppLocalizations.of(context).ok,
               onPressed: () => _tapCancel(viewModel),
             ),
           ),
@@ -424,6 +420,7 @@ class _PINViewState extends State<PINView> {
         userData.putIfAbsent('phone', () => phoneData);
       }
 
+      /*
       viewModel.saveDevice(
         viewModel.device.id,
         {
@@ -431,6 +428,7 @@ class _PINViewState extends State<PINView> {
         },
         context: context,
       );
+      */
 
       // Close the keyboard if it's open
       FocusScope.of(context).unfocus();
@@ -459,12 +457,14 @@ class _PINViewState extends State<PINView> {
       sentDate: now,
     );
 
+    /*
     viewModel.savePINVerificationCode(
       viewModel.device.id,
       String.fromCharCodes(cipheredVerificationCode),
       now.add(Duration(minutes: 10)),
       sms,
     );
+    */
   }
 
   /// Handles the 'verify verification code' tap
@@ -482,12 +482,12 @@ class _PINViewState extends State<PINView> {
     if (decipheredVerificationCode == _verificationCode) {
       setState(() => _verified = true);
 
-      PINKeys.pinScaffoldKey.currentState.showSnackBar(builSnackBar(Message(
+      _scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
         text: AppLocalizations.of(context).validVerificationCode,
         type: MessageType.SUCCESS,
       )));
     } else {
-      PINKeys.pinScaffoldKey.currentState.showSnackBar(builSnackBar(Message(
+      _scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
         text: AppLocalizations.of(context).invalidVerificationCode,
         type: MessageType.ERROR,
       )));
@@ -503,17 +503,19 @@ class _PINViewState extends State<PINView> {
       _pinCode,
     );
 
+    /*
     viewModel.savePINCode(
       viewModel.device.id,
       String.fromCharCodes(cipheredPIN),
     );
+    */
 
     setState(() {
       _verified = false;
       _saved = true;
     });
 
-    PINKeys.pinScaffoldKey.currentState.showSnackBar(builSnackBar(Message(
+    _scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
       text: AppLocalizations.of(context).pinCodeUpdateConfirmationText,
       type: MessageType.SUCCESS,
     )));
@@ -525,7 +527,7 @@ class _PINViewState extends State<PINView> {
     bool clearVerificationCode = false,
   }) {
     if (clearVerificationCode) {
-      viewModel.clearPINVerificationCode(viewModel.device.id);
+      // viewModel.clearPINVerificationCode(viewModel.device.id);
     }
 
     Navigator.pop(context);

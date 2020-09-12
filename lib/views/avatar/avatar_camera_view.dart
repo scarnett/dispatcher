@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dispatcher/device/device_viewmodel.dart';
 import 'package:dispatcher/device/widgets/device_avatar.dart';
 import 'package:dispatcher/localization.dart';
@@ -7,6 +6,7 @@ import 'package:dispatcher/state.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/views/camera/camera_view.dart';
+import 'package:dispatcher/widgets/form_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -94,9 +94,9 @@ class _AvatarCameraViewState extends State<AvatarCameraView> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(right: 5.0),
-                    child: FlatButton(
+                    child: FormButton(
                       color: AppTheme.primary,
-                      child: Text(AppLocalizations.of(context).avatarReTake),
+                      text: AppLocalizations.of(context).avatarReTake,
                       onPressed: _tapRetake,
                     ),
                   ),
@@ -104,9 +104,9 @@ class _AvatarCameraViewState extends State<AvatarCameraView> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 5.0),
-                    child: FlatButton(
+                    child: FormButton(
                       color: AppTheme.primary,
-                      child: Text(AppLocalizations.of(context).avatarLikeIt),
+                      text: AppLocalizations.of(context).avatarLikeIt,
                       onPressed: _tapDone,
                     ),
                   ),
@@ -135,13 +135,15 @@ class _AvatarCameraViewState extends State<AvatarCameraView> {
   ) {
     setState(() => _filePath = filePath);
 
+    /*
     viewModel.uploadAvatar(
       viewModel.device.id,
       File(filePath),
       context: context,
     );
+    */
 
-    Scaffold.of(context).showSnackBar(builSnackBar(Message(
+    Scaffold.of(context).showSnackBar(buildSnackBar(Message(
       text: AppLocalizations.of(context).avatarUpdated,
       type: MessageType.SUCCESS,
     )));

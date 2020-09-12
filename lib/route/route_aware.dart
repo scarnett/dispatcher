@@ -1,7 +1,4 @@
-import 'package:dispatcher/actions.dart';
-import 'package:dispatcher/state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 
 final RouteObserver<PageRoute> appRouteObserver = RouteObserver<PageRoute>();
 
@@ -42,7 +39,7 @@ class RouteAwareWidgetState extends State<RouteAwareWidget> with RouteAware {
   @override
   void didPopNext() {
     // Covering route was popped off the navigator
-    StoreProvider.of<AppState>(context).dispatch(NavigatePopAction());
+    // StoreProvider.of<AppState>(context).dispatch(NavigatePopAction());
   }
 
   @override

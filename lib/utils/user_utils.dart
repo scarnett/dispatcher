@@ -1,25 +1,5 @@
-import 'package:dispatcher/device/device_model.dart';
 import 'package:dispatcher/extensions/string_extensions.dart';
 import 'package:dispatcher/utils/text_utils.dart';
-
-String getFormattedName(
-  DeviceUser user, {
-  String defaultName = 'N/A',
-}) {
-  String name;
-
-  if (!user.firstName.isNullEmptyOrWhitespace) {
-    name = user.firstName;
-
-    if (!user.lastName.isNullEmptyOrWhitespace) {
-      name += ' ${user.lastName}';
-    }
-
-    return name;
-  }
-
-  return defaultName;
-}
 
 /// Gets the initial from someones name.
 String getNameInitials(

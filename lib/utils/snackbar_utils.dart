@@ -2,7 +2,7 @@ import 'package:dispatcher/model.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:flutter/material.dart';
 
-SnackBar builSnackBar(
+SnackBar buildSnackBar(
   Message message,
 ) {
   return SnackBar(

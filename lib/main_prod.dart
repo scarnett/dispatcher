@@ -16,7 +16,9 @@ void main() async {
   // PROD Environment Specific Configuration
   AppConfig config = AppConfig(
     flavor: Flavor.RELEASE,
-    child: DispatcherApp(store: store),
+    child: DispatcherApp(
+      store: store,
+    ),
   );
 
   runApp(config);

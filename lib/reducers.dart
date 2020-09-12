@@ -1,8 +1,8 @@
 import 'package:dispatcher/actions.dart';
 import 'package:dispatcher/device/device_reducers.dart';
 import 'package:dispatcher/model.dart';
-import 'package:dispatcher/route/route_model.dart';
 import 'package:dispatcher/state.dart';
+import 'package:dispatcher/views/auth/auth_reducers.dart';
 import 'package:dispatcher/views/connect/connect_reducers.dart';
 import 'package:dispatcher/views/contacts/contacts_reducers.dart';
 import 'package:redux/redux.dart';
@@ -13,9 +13,9 @@ AppState appStateReducer(
 ) =>
     AppState(
       busy: busyStatusReducer(state.busy, action),
-      route: navigationReducer(state.route, action),
       message: messageReducer(state.message, action),
       selectedTabIndex: selectedTabIndexReducer(state.selectedTabIndex, action),
+      authState: authReducer(state.authState, action),
       deviceState: deviceReducer(state.deviceState, action),
       contactsState: contactsReducer(state.contactsState, action),
       connectState: connectReducer(state.connectState, action),
@@ -33,43 +33,6 @@ bool _setBusyStatus(
   SetAppBusyStatusAction action,
 ) =>
     action.status;
-
-// ------------------------------------------------------- Navigation
-final navigationReducer = combineReducers<List<AppRoute>>([
-  TypedReducer<List<AppRoute>, NavigateReplaceAction>(
-    _navigateReplace,
-  ),
-  TypedReducer<List<AppRoute>, NavigatePushAction>(
-    _navigatePush,
-  ),
-  TypedReducer<List<AppRoute>, NavigatePopAction>(
-    _navigatePop,
-  ),
-]);
-
-List<AppRoute> _navigateReplace(
-  List<AppRoute> route,
-  NavigateReplaceAction action,
-) =>
-    [action.route];
-
-List<AppRoute> _navigatePush(
-  List<AppRoute> route,
-  NavigatePushAction action,
-) {
-  List<AppRoute> result = List<AppRoute>.from(route);
-  result..add(action.route);
-  return result;
-}
-
-List<AppRoute> _navigatePop(
-  List<AppRoute> route,
-  NavigatePopAction action,
-) {
-  List<AppRoute> result = List<AppRoute>.from(route);
-  result.removeLast();
-  return result;
-}
 
 // ------------------------------------------------------- Message
 final messageReducer = combineReducers<Message>([

@@ -13,6 +13,7 @@ class CustomTextField extends StatefulWidget {
   final int maxLines;
   final bool autofocus;
   final TextInputType keyboardType;
+  final bool obscureText;
   final TextCapitalization textCapitalization;
   final TextEditingController controller;
   final FormFieldValidator<String> validator;
@@ -30,7 +31,8 @@ class CustomTextField extends StatefulWidget {
     this.suffixIcon,
     this.maxLines: 1,
     this.autofocus: false,
-    this.keyboardType,
+    this.keyboardType: TextInputType.text,
+    this.obscureText: false,
     this.textCapitalization: TextCapitalization.words,
     this.controller,
     this.validator,
@@ -51,6 +53,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         controller: widget.controller,
         autovalidate: widget.autovalidate,
         initialValue: widget.initialValue,
+        keyboardType: widget.keyboardType,
+        obscureText: widget.obscureText,
         maxLines: widget.maxLines,
         autofocus: widget.autofocus,
         textCapitalization: widget.textCapitalization,

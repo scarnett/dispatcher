@@ -1,12 +1,12 @@
 import 'package:dispatcher/device/device_middleware.dart';
 import 'package:dispatcher/middleware.dart';
 import 'package:dispatcher/reducers.dart';
-import 'package:dispatcher/rsa/rsa_middleware.dart';
 import 'package:dispatcher/sms/sms_middleware.dart';
 import 'package:dispatcher/state.dart';
 import 'package:dispatcher/storage/storage_middleware.dart';
 import 'package:dispatcher/views/connect/connect_middleware.dart';
-import 'package:logging/logging.dart';
+import 'package:logger/logger.dart';
+import 'package:logging/logging.dart' as logging;
 import 'package:redux/redux.dart';
 import 'package:redux_epics/redux_epics.dart';
 import 'package:redux_logging/redux_logging.dart';
@@ -14,10 +14,11 @@ import 'package:redux_persist/redux_persist.dart';
 import 'package:redux_persist_flutter/redux_persist_flutter.dart';
 import 'package:redux_dev_tools/redux_dev_tools.dart';
 import 'package:redux_remote_devtools/redux_remote_devtools.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 const String APP_STATE_KEY = 'APP_STATE';
 const String REMOTE_HOST = '192.168.0.22:8000'; // TODO! config
+
+Logger logger = Logger();
 
 /// App store configuration
 Future<Store<AppState>> createStore({
@@ -55,9 +56,6 @@ Future<Store<AppState>> createDevStore({
   // Load initial state
   final initialState = await persistor.load();
 
-  // Load shared preferences
-  final sharedPrefs = await SharedPreferences.getInstance();
-
   // Build the middleware
   middleware
     ..addAll([
@@ -69,21 +67,21 @@ Future<Store<AppState>> createDevStore({
           ...smsMiddleware,
         ]),
       ),
-      RsaMiddleware(sharedPrefs),
+      // RsaMiddleware(sharedPrefs),
       StorageMiddleware(),
     ]);
 
   if (enableLogger) {
     // Load the logger
-    final Logger logger = Logger('Logger');
-    logger.onRecord
-        .where((record) => record.loggerName == logger.name)
-        .listen((loggingMiddlewareRecord) => print(loggingMiddlewareRecord));
+    final logging.Logger _logger = logging.Logger('Logger');
+    _logger.onRecord
+        .where((record) => record.loggerName == _logger.name)
+        .listen((loggingMiddlewareRecord) => logger.d(loggingMiddlewareRecord));
 
     // Add it to the middleware
     middleware
       ..add(
-        LoggingMiddleware(logger: logger),
+        LoggingMiddleware(logger: _logger),
       );
 
     return _getDefaultStoreConfiguration(middleware: middleware);
@@ -113,9 +111,6 @@ Future<Store<AppState>> createDevStore({
 Future<Store<AppState>> _getDefaultStoreConfiguration({
   List<Middleware<AppState>> middleware,
 }) async {
-  // Load shared preferences
-  final sharedPrefs = await SharedPreferences.getInstance();
-
   // Configure the state persistor
   final persistor = Persistor<AppState>(
     storage: FlutterStorage(
@@ -142,7 +137,7 @@ Future<Store<AppState>> _getDefaultStoreConfiguration({
                 ...smsMiddleware,
               ]),
             ),
-            RsaMiddleware(sharedPrefs),
+            // RsaMiddleware(sharedPrefs),
             StorageMiddleware(),
           ]
         : middleware,

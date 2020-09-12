@@ -6,7 +6,6 @@ import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/model.dart';
 import 'package:dispatcher/state.dart';
 import 'package:dispatcher/views/connect/connect_actions.dart';
-import 'package:dispatcher/views/connect/connect_keys.dart';
 import 'package:redux_epics/redux_epics.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -45,6 +44,7 @@ Stream<dynamic> _lookupDeviceByInviteCodeEpic(
                   return LookupDeviceByInviteCodeSuccessAction(
                     device,
                     action.context,
+                    action.snackbarScaffoldKey,
                   );
                 })
                 .takeUntil(actions.where(
@@ -65,7 +65,7 @@ Stream<dynamic> _lookupDeviceByInviteCodeSuccessEpic(
             text: AppLocalizations.of(action.context).connectionNotFoundText,
             type: MessageType.ERROR,
           ),
-          key: ConnectKeys.connectScaffoldKey,
+          key: action.snackbarScaffoldKey,
         );
       }
 
@@ -74,7 +74,7 @@ Stream<dynamic> _lookupDeviceByInviteCodeSuccessEpic(
           text: AppLocalizations.of(action.context).connectionFoundText,
           type: MessageType.SUCCESS,
         ),
-        key: ConnectKeys.connectScaffoldKey,
+        key: action.snackbarScaffoldKey,
       );
     });
 
@@ -90,9 +90,10 @@ Stream<dynamic> _connectDeviceEpic(
             .add({
               'device_id': payload.deviceId,
             })
-            .then<dynamic>((res) => ConnectDeviceSuccessAction(payload.context))
-            .catchError(
-                (error) => ConnectDeviceErrorAction(error, payload.context))));
+            .then<dynamic>((res) => ConnectDeviceSuccessAction(
+                payload.context, payload.snackbarScaffoldKey))
+            .catchError((error) => ConnectDeviceErrorAction(
+                error, payload.context, payload.snackbarScaffoldKey))));
 
 Stream<dynamic> _connectDeviceSuccessEpic(
   Stream<dynamic> actions,
@@ -107,7 +108,7 @@ Stream<dynamic> _connectDeviceSuccessEpic(
             text: AppLocalizations.of(action.context).connectSuccess,
             type: MessageType.SUCCESS,
           ),
-          key: ConnectKeys.connectScaffoldKey,
+          key: action.snackbarScaffoldKey,
         );
       }
 
@@ -127,7 +128,7 @@ Stream<dynamic> _connectDeviceErrorEpic(
             text: AppLocalizations.of(action.context).error,
             type: MessageType.ERROR,
           ),
-          key: ConnectKeys.connectScaffoldKey,
+          key: action.snackbarScaffoldKey,
         );
       }
 

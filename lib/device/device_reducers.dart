@@ -1,15 +1,14 @@
-import 'package:dispatcher/device/device_actions.dart';
-import 'package:dispatcher/device/device_model.dart';
 import 'package:dispatcher/device/device_state.dart';
 import 'package:redux/redux.dart';
 
 final deviceReducer = combineReducers<DeviceState>([
-  TypedReducer<DeviceState, RequestDeviceSuccessAction>(_requestDevice),
-  TypedReducer<DeviceState, RequestDeviceConnectionsSuccessAction>(
-      _requestDeviceConnections),
-  TypedReducer<DeviceState, RegisterDeviceSuccessAction>(_registerDevice),
+  //TypedReducer<DeviceState, RequestDeviceSuccessAction>(_requestDevice),
+  //TypedReducer<DeviceState, RequestDeviceConnectionsSuccessAction>(
+  //    _requestDeviceConnections),
+  //TypedReducer<DeviceState, RegisterDeviceSuccessAction>(_registerDevice),
 ]);
 
+/*
 DeviceState _requestDevice(
   DeviceState state,
   RequestDeviceSuccessAction action,
@@ -36,3 +35,4 @@ DeviceState _registerDevice(
         publicKey: action.device.publicKey,
       ),
     );
+*/

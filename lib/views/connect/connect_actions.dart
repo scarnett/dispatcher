@@ -1,13 +1,16 @@
 import 'package:dispatcher/device/device_model.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class LookupDeviceByInviteCodeAction {
   final String inviteCode;
   final BuildContext context;
+  final GlobalKey<ScaffoldState> snackbarScaffoldKey;
 
   LookupDeviceByInviteCodeAction(
     this.inviteCode,
     this.context,
+    this.snackbarScaffoldKey,
   );
 
   @override
@@ -17,10 +20,12 @@ class LookupDeviceByInviteCodeAction {
 class LookupDeviceByInviteCodeSuccessAction {
   final Device device;
   final BuildContext context;
+  final GlobalKey<ScaffoldState> snackbarScaffoldKey;
 
   LookupDeviceByInviteCodeSuccessAction(
     this.device,
     this.context,
+    this.snackbarScaffoldKey,
   );
 
   @override
@@ -47,11 +52,13 @@ class ConnectDeviceAction {
   final String deviceId;
   final String connectDeviceId;
   final BuildContext context;
+  final GlobalKey<ScaffoldState> snackbarScaffoldKey;
 
   ConnectDeviceAction(
     this.deviceId,
     this.connectDeviceId,
     this.context,
+    this.snackbarScaffoldKey,
   );
 
   @override
@@ -61,9 +68,11 @@ class ConnectDeviceAction {
 
 class ConnectDeviceSuccessAction {
   final BuildContext context;
+  final GlobalKey<ScaffoldState> snackbarScaffoldKey;
 
   ConnectDeviceSuccessAction(
     this.context,
+    this.snackbarScaffoldKey,
   );
 
   @override
@@ -73,10 +82,12 @@ class ConnectDeviceSuccessAction {
 class ConnectDeviceErrorAction {
   final dynamic error;
   final BuildContext context;
+  final GlobalKey<ScaffoldState> snackbarScaffoldKey;
 
   ConnectDeviceErrorAction(
     this.error,
     this.context,
+    this.snackbarScaffoldKey,
   );
 
   @override

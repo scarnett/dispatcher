@@ -3,6 +3,7 @@ import 'package:dispatcher/routes.dart';
 import 'package:dispatcher/views/avatar/avatar_camera_view.dart';
 import 'package:dispatcher/views/connect/connect_view.dart';
 import 'package:dispatcher/views/contacts/contact/contact_view.dart';
+import 'package:dispatcher/views/contacts/contacts_view.dart';
 import 'package:dispatcher/views/home/home_view.dart';
 import 'package:dispatcher/views/landing/landing_view.dart';
 import 'package:dispatcher/views/migrate/from_device/from_device_view.dart';
@@ -14,22 +15,35 @@ import 'package:flutter/material.dart';
 MaterialPageRoute getAppRoute(
   RouteSettings settings,
 ) {
-  if (settings.name == AppRoutes.contact.path) {
+  // Contact
+  if (settings.name == AppRoutes.contact.name) {
     return SlideLeftRoute(ContactView(), settings: settings);
-  } else if (settings.name == AppRoutes.home.path) {
+    // Contacts
+  } else if (settings.name == AppRoutes.contacts.name) {
+    return SlideUpRoute(ContactsView(), settings: settings);
+    // Home
+  } else if (settings.name == AppRoutes.home.name) {
     return MainRoute(HomeView(), settings: settings);
-  } else if (settings.name == AppRoutes.connect.path) {
+    // Connect
+  } else if (settings.name == AppRoutes.connect.name) {
     return SlideUpRoute(ConnectView(), settings: settings);
-  } else if (settings.name == AppRoutes.avatarCamera.path) {
+    // Avatar Camera
+  } else if (settings.name == AppRoutes.avatarCamera.name) {
     return SlideUpRoute(AvatarCameraView(), settings: settings);
-  } else if (settings.name == AppRoutes.changePIN.path) {
+    // PIN
+  } else if (settings.name == AppRoutes.changePIN.name) {
     return SlideLeftRoute(PINView(), settings: settings);
-  } else if (settings.name == AppRoutes.migrateFrom.path) {
+    // Migrate From Device
+  } else if (settings.name == AppRoutes.migrateFrom.name) {
     return SlideLeftRoute(MigrateFromDeviceView(), settings: settings);
-  } else if (settings.name == AppRoutes.migrateTo.path) {
+    // Migrate To Device
+  } else if (settings.name == AppRoutes.migrateTo.name) {
     return SlideLeftRoute(MigrateToDeviceView(), settings: settings);
   }
 
   // Default route
-  return MainRoute(LandingView(), settings: settings);
+  return MainRoute(
+    LandingView(),
+    settings: settings,
+  );
 }

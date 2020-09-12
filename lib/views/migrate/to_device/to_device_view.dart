@@ -5,9 +5,9 @@ import 'package:dispatcher/model.dart';
 import 'package:dispatcher/state.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
-import 'package:dispatcher/views/migrate/migrate_keys.dart';
 import 'package:dispatcher/views/pin/pin_config.dart';
 import 'package:dispatcher/views/pin/pin_utils.dart';
+import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/pin_code.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,6 +26,8 @@ class MigrateToDeviceView extends StatefulWidget {
 }
 
 class _MigrateToDeviceViewState extends State<MigrateToDeviceView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   bool _authticated = false;
   String _pinCode;
   SharedPreferences _prefs;
@@ -38,7 +40,7 @@ class _MigrateToDeviceViewState extends State<MigrateToDeviceView> {
         converter: (store) => DeviceViewModel.fromStore(store),
         onInit: (store) async => _prefs = await SharedPreferences.getInstance(),
         builder: (_, viewModel) => Scaffold(
-          key: MigrateKeys.migrateScaffoldKey,
+          key: _scaffoldKey,
           appBar: SimpleAppBar(
             height: 100.0,
           ),
@@ -90,15 +92,14 @@ class _MigrateToDeviceViewState extends State<MigrateToDeviceView> {
             padding: const EdgeInsets.only(
               top: 10.0,
             ),
-            child: FlatButton(
-              color: AppTheme.primary,
-              child: Text(AppLocalizations.of(context).setPINCode),
+            child: FormButton(
+              text: AppLocalizations.of(context).setPINCode,
               onPressed: () => _tapValidatePIN(viewModel),
             ),
           ),
-          FlatButton(
+          FormButton(
             color: Colors.transparent,
-            child: Text(AppLocalizations.of(context).cancel),
+            text: AppLocalizations.of(context).cancel,
             onPressed: () => _tapCancel(),
             textColor: AppTheme.accent,
           ),
@@ -137,19 +138,18 @@ class _MigrateToDeviceViewState extends State<MigrateToDeviceView> {
             padding: const EdgeInsets.only(
               top: 10.0,
             ),
-            child: FlatButton(
-              color: AppTheme.primary,
+            child: FormButton(
               disabledColor: AppTheme.hint,
-              child: Text(AppLocalizations.of(context).verifyPINCode),
+              text: AppLocalizations.of(context).verifyPINCode,
               onPressed: (!_pinCode.isNullEmptyOrWhitespace &&
                       (_pinCode.length == PINConfig.PIN_CODE_LENGTH))
                   ? () => _tapValidatePIN(viewModel)
                   : null,
             ),
           ),
-          FlatButton(
+          FormButton(
             color: Colors.transparent,
-            child: Text(AppLocalizations.of(context).cancel),
+            text: AppLocalizations.of(context).cancel,
             onPressed: () => _tapCancel(),
             textColor: AppTheme.accent,
           ),
@@ -172,9 +172,9 @@ class _MigrateToDeviceViewState extends State<MigrateToDeviceView> {
               fontWeight: FontWeight.w300,
             ),
           ),
-          FlatButton(
+          FormButton(
             color: Colors.transparent,
-            child: Text(AppLocalizations.of(context).cancel),
+            text: AppLocalizations.of(context).cancel,
             onPressed: () => Navigator.pop(context),
             textColor: AppTheme.accent,
           ),
@@ -188,8 +188,7 @@ class _MigrateToDeviceViewState extends State<MigrateToDeviceView> {
     if (isValidPIN(_prefs, viewModel.device.user.pin, _pinCode)) {
       setState(() => _authticated = true);
     } else {
-      MigrateKeys.migrateScaffoldKey.currentState
-          .showSnackBar(builSnackBar(Message(
+      _scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
         text: AppLocalizations.of(context).invalidPINCode,
         type: MessageType.ERROR,
       )));

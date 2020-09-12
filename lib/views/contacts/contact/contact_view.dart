@@ -5,6 +5,7 @@ import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/text_utils.dart';
 import 'package:dispatcher/views/contacts/contacts_viewmodel.dart';
 import 'package:dispatcher/views/contacts/contact/widgets/contact_avatar.dart';
+import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -53,7 +54,7 @@ class _ContactViewState extends State<ContactView> {
     ContactsViewModel viewModel,
   ) async {
     viewModel.clearActiveContact();
-    return true;
+    return Future.value(true);
   }
 
   Widget _buildContact(
@@ -125,9 +126,8 @@ class _ContactViewState extends State<ContactView> {
   Widget _buildInviteButton(
     ContactsViewModel viewModel,
   ) =>
-      FlatButton(
-        color: AppTheme.primary,
-        child: Text(AppLocalizations.of(context).sendInvite),
+      FormButton(
+        text: AppLocalizations.of(context).sendInvite,
         onPressed: () => Share.share(
           AppLocalizations.of(context).inviteCodeText(
             AppLocalizations.appTitle,

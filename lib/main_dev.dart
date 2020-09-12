@@ -16,7 +16,9 @@ void main() async {
   // DEV Environment Specific Configuration
   AppConfig config = AppConfig(
     flavor: Flavor.DEVELOPMENT,
-    child: DispatcherApp(store: store),
+    child: DispatcherApp(
+      store: store,
+    ),
   );
 
   runApp(config);

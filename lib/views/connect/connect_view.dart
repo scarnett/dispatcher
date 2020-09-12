@@ -3,9 +3,8 @@ import 'package:dispatcher/extensions/string_extensions.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/state.dart';
 import 'package:dispatcher/theme.dart';
-import 'package:dispatcher/utils/user_utils.dart';
-import 'package:dispatcher/views/connect/connect_keys.dart';
 import 'package:dispatcher/views/connect/connect_viewmodel.dart';
+import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/pin_code.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,6 +21,8 @@ class ConnectView extends StatefulWidget {
 }
 
 class _ConnectViewState extends State<ConnectView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   String inviteCode;
 
   @override
@@ -33,7 +34,7 @@ class _ConnectViewState extends State<ConnectView> {
         builder: (_, viewModel) => WillPopScope(
           onWillPop: () => _willPopCallback(viewModel),
           child: Scaffold(
-            key: ConnectKeys.connectScaffoldKey,
+            key: _scaffoldKey,
             appBar: SimpleAppBar(
               height: 100.0,
             ),
@@ -56,7 +57,7 @@ class _ConnectViewState extends State<ConnectView> {
     ConnectViewModel viewModel,
   ) async {
     viewModel.cancelConnectDevice();
-    return true;
+    return Future.value(true);
   }
 
   // TODO! update 'connections' of other device
@@ -120,18 +121,18 @@ class _ConnectViewState extends State<ConnectView> {
               ),
             ),
           ),
-          FlatButton(
+          FormButton(
             color: AppTheme.primary,
-            disabledColor: AppTheme.hint,
-            child: Text(AppLocalizations.of(context).lookup),
+            text: AppLocalizations.of(context).lookup,
             onPressed: (!inviteCode.isNullEmptyOrWhitespace &&
                     (inviteCode.length == INVITE_CODE_LENGTH))
-                ? () => viewModel.lookupDeviceByInviteCode(inviteCode, context)
+                ? () => viewModel.lookupDeviceByInviteCode(
+                    inviteCode, context, _scaffoldKey)
                 : null,
           ),
-          FlatButton(
+          FormButton(
             color: Colors.transparent,
-            child: Text(AppLocalizations.of(context).cancel),
+            text: AppLocalizations.of(context).cancel,
             onPressed: () => Navigator.pop(context),
             textColor: AppTheme.accent,
           ),
@@ -168,7 +169,7 @@ class _ConnectViewState extends State<ConnectView> {
               ),
             ),
             Text(
-              getFormattedName(viewModel.lookupResult.user),
+              viewModel.lookupResult.user.name,
               style: Theme.of(context).textTheme.headline5,
             ),
             viewModel.lookupResult.user.email.isNullEmptyOrWhitespace
@@ -179,19 +180,20 @@ class _ConnectViewState extends State<ConnectView> {
                   ),
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
-              child: FlatButton(
+              child: FormButton(
                 color: AppTheme.primary,
-                child: Text(AppLocalizations.of(context).connect),
+                text: AppLocalizations.of(context).connect,
                 onPressed: () => viewModel.connectDevice(
                   viewModel.deviceId,
                   viewModel.lookupResult.id,
                   context,
+                  _scaffoldKey,
                 ),
               ),
             ),
-            FlatButton(
+            FormButton(
               color: Colors.transparent,
-              child: Text(AppLocalizations.of(context).cancel),
+              text: AppLocalizations.of(context).cancel,
               onPressed: () => viewModel.cancelConnectDevice(),
               textColor: AppTheme.accent,
             ),
@@ -232,9 +234,8 @@ class _ConnectViewState extends State<ConnectView> {
             ),
             Padding(
               padding: const EdgeInsets.only(right: 5.0),
-              child: FlatButton(
-                color: AppTheme.primary,
-                child: Text(AppLocalizations.of(context).ok),
+              child: FormButton(
+                text: AppLocalizations.of(context).ok,
                 onPressed: () => _tapOK(viewModel),
               ),
             ),
@@ -275,9 +276,8 @@ class _ConnectViewState extends State<ConnectView> {
             ),
             Padding(
               padding: const EdgeInsets.only(right: 5.0),
-              child: FlatButton(
-                color: AppTheme.primary,
-                child: Text(AppLocalizations.of(context).ok),
+              child: FormButton(
+                text: AppLocalizations.of(context).ok,
                 onPressed: () => _tapOK(viewModel),
               ),
             ),
@@ -310,9 +310,8 @@ class _ConnectViewState extends State<ConnectView> {
             ),
             Padding(
               padding: const EdgeInsets.only(right: 5.0),
-              child: FlatButton(
-                color: AppTheme.primary,
-                child: Text(AppLocalizations.of(context).ok),
+              child: FormButton(
+                text: AppLocalizations.of(context).ok,
                 onPressed: () => _tapOK(
                   viewModel,
                   redirect: false,

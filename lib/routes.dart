@@ -2,8 +2,14 @@ import 'package:dispatcher/route/route_model.dart';
 
 class AppRoutes {
   static const AppRoute landing = AppRoute(name: 'landing', path: '/');
+  static const AppRoute auth = AppRoute(name: 'auth', path: '/auth');
+  static const AppRoute logout = AppRoute(name: 'logout', path: '/logout');
   static const AppRoute home = AppRoute(name: 'home', path: '/home');
   static const AppRoute connect = AppRoute(name: 'connect', path: '/connect');
+
+  static const AppRoute contacts =
+      AppRoute(name: 'contacts', path: '/contacts');
+
   static const AppRoute contact = AppRoute(name: 'contact', path: '/contact');
 
   static const AppRoute settings =

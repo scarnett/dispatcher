@@ -1,5 +1,3 @@
-import 'package:dispatcher/actions.dart';
-import 'package:dispatcher/keys.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/routes.dart';
 import 'package:dispatcher/state.dart';
@@ -7,6 +5,7 @@ import 'package:dispatcher/viewmodel.dart';
 import 'package:dispatcher/widgets/list_select_item.dart';
 import 'package:dispatcher/widgets/section_header.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -46,7 +45,8 @@ class _MenuViewState extends State<MenuView> {
     List<Widget> items = []
       ..addAll(_applicationSection(viewModel))
       ..addAll(_securitySection(viewModel))
-      ..addAll(_migrateSection(viewModel));
+      ..addAll(_migrateSection(viewModel))
+      ..addAll(_accountSection(viewModel));
 
     return Column(
       children: <Widget>[
@@ -183,9 +183,35 @@ class _MenuViewState extends State<MenuView> {
     return tiles;
   }
 
+  /// Builds the 'account' section
+  List<Widget> _accountSection(
+    AppViewModel viewModel,
+  ) {
+    List<Widget> tiles = [];
+    tiles
+      ..add(
+        SectionHeader(
+          text: AppLocalizations.of(context).account,
+          borderTop: true,
+        ),
+      );
+
+    tiles
+      ..add(
+        ListSelectItem(
+          title: AppLocalizations.of(context).logout,
+          icon: Icons.exit_to_app,
+          borderBottom: false,
+          onTap: () => _tapLogout(viewModel),
+        ),
+      );
+
+    return tiles;
+  }
+
   /// Handles the 'change pin' tap
-  void _tapChangePIN() => StoreProvider.of<AppState>(context)
-      .dispatch(NavigatePushAction(AppRoutes.changePIN));
+  void _tapChangePIN() =>
+      Navigator.pushNamed(context, AppRoutes.changePIN.name);
 
   /// Handles the 'change email' tap
   void _tapUpdateEmail() => this._tapSettings();
@@ -195,19 +221,30 @@ class _MenuViewState extends State<MenuView> {
 
   /// Handles the 'settings' tap
   void _tapSettings() {
+    /*
     final BottomNavigationBar navigationBar =
         AppKeys.appBottomNavKey.currentWidget;
     navigationBar.onTap(3);
+    */
   }
 
   /// Handles the 'permissions' tap
   void _tapPermissions() async => await openAppSettings();
 
   /// Handles the 'migrate from' tap
-  void _tapMigrateFrom() => StoreProvider.of<AppState>(context)
-      .dispatch(NavigatePushAction(AppRoutes.migrateFrom));
+  void _tapMigrateFrom() =>
+      Navigator.pushNamed(context, AppRoutes.migrateFrom.name);
 
   /// Handles the 'migrate to' tap
-  void _tapMigrateTo() => StoreProvider.of<AppState>(context)
-      .dispatch(NavigatePushAction(AppRoutes.migrateTo));
+  void _tapMigrateTo() =>
+      Navigator.pushNamed(context, AppRoutes.migrateTo.name);
+
+  /// Handles the 'logout' tap
+  void _tapLogout(
+    AppViewModel viewModel,
+  ) {
+    viewModel.setSelectedTabIndex(0);
+    FirebaseAuth.instance.signOut();
+    Navigator.pushReplacementNamed(context, AppRoutes.landing.name);
+  }
 }

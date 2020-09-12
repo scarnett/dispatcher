@@ -1,9 +1,6 @@
 import 'dart:async';
-import 'package:dispatcher/actions.dart';
-import 'package:dispatcher/device/device_actions.dart';
 import 'package:dispatcher/state.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart' as Path;
 import 'package:redux/redux.dart';
 
 class StorageMiddleware extends MiddlewareClass<AppState> {
@@ -15,13 +12,14 @@ class StorageMiddleware extends MiddlewareClass<AppState> {
     dynamic action,
     NextDispatcher next,
   ) async {
-    if (action is UploadAvatarAction) {
-      await _uploadAvatar(action, store);
-    }
+    //if (action is UploadAvatarAction) {
+    //await _uploadAvatar(action, store);
+    //}
 
     next(action);
   }
 
+  /*
   Future _uploadAvatar(
     UploadAvatarAction action,
     Store<AppState> store,
@@ -70,4 +68,5 @@ class StorageMiddleware extends MiddlewareClass<AppState> {
     }).catchError(
         (error) => UploadAvatarErrorAction(error, context: action.context));
   }
+  */
 }

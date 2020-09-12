@@ -1,6 +1,7 @@
 import 'package:dispatcher/device/device_model.dart';
 import 'package:dispatcher/views/connect/connect_actions.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
 import 'package:dispatcher/state.dart';
 
@@ -11,10 +12,10 @@ class ConnectViewModel {
   final bool alreadyConnected;
   final bool cantConnect;
   final bool connected;
-  final Function(String inviteCode, BuildContext contex)
-      lookupDeviceByInviteCode;
-  final Function(String deviceId, String connectDeviceId, BuildContext context)
-      connectDevice;
+  final Function(String inviteCode, BuildContext contex,
+      GlobalKey<ScaffoldState> snackbarScaffoldKey) lookupDeviceByInviteCode;
+  final Function(String deviceId, String connectDeviceId, BuildContext context,
+      GlobalKey<ScaffoldState> snackbarScaffoldKey) connectDevice;
   final Function() cancelConnectDevice;
 
   ConnectViewModel({
@@ -39,12 +40,16 @@ class ConnectViewModel {
         alreadyConnected: store.state.connectState.alreadyConnected,
         cantConnect: store.state.connectState.cantConnect,
         connected: store.state.connectState.connected,
-        lookupDeviceByInviteCode: (String inviteCode, BuildContext context) =>
-            store.dispatch(LookupDeviceByInviteCodeAction(inviteCode, context)),
-        connectDevice:
-            (String deviceId, String connectDeviceId, BuildContext context) =>
-                store.dispatch(
-                    ConnectDeviceAction(deviceId, connectDeviceId, context)),
+        lookupDeviceByInviteCode: (String inviteCode, BuildContext context,
+                GlobalKey<ScaffoldState> snackbarScaffoldKey) =>
+            store.dispatch(LookupDeviceByInviteCodeAction(
+                inviteCode, context, snackbarScaffoldKey)),
+        connectDevice: (String deviceId,
+                String connectDeviceId,
+                BuildContext context,
+                GlobalKey<ScaffoldState> snackbarScaffoldKey) =>
+            store.dispatch(ConnectDeviceAction(
+                deviceId, connectDeviceId, context, snackbarScaffoldKey)),
         cancelConnectDevice: () =>
             store.dispatch(CancelLookupDeviceByInviteCodeAction()),
       );
