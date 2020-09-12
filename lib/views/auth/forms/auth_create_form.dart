@@ -172,14 +172,6 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
     _formKey.currentState.save();
 
     try {
-      // Runs the 'callableUsersCreate' Firebase callable function
-      final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-        functionName: 'callableUsersCreate',
-      );
-
-      PhoneNumber phoneNumber = await PhoneNumber.getRegionInfoFromPhoneNumber(
-          _phoneNumberController.text, 'US'); // TODO!
-
       // Generate the keys
       rsa.AsymmetricKeyPair<rsa.PublicKey, rsa.PrivateKey> keyPair =
           getKeyPair();
@@ -189,6 +181,11 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
       await sharedPreferenceService
           .setPrivateKey(encodePrivatePem(keyPair.privateKey));
 
+      // Gets the phone number data
+      PhoneNumber phoneNumber = await PhoneNumber.getRegionInfoFromPhoneNumber(
+          _phoneNumberController.text, 'US'); // TODO!
+
+      // Builds the user data map
       Map<String, dynamic> userData = Map<String, dynamic>.from({
         'displayName': _nameController.text,
         'password': _passwordController.text,
@@ -201,6 +198,11 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
         'pubkey': RsaKeyHelper().encodePublicKeyToPem(keyPair.publicKey)
       });
 
+      // Runs the 'callableUsersCreate' Firebase callable function
+      final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+        functionName: 'callableUsersCreate',
+      );
+
       // Post the user data to Firebase
       await callable.call(userData);
 
@@ -210,6 +212,7 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
         password: _passwordController.text,
       );
 
+      // Reset busy status and navigate
       store.dispatch(SetAppBusyStatusAction(false));
       Navigator.pushNamed(context, AppRoutes.landing.name);
     } catch (e) {

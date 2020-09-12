@@ -11,7 +11,7 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
   const pubkey: string = data.pubkey
 
   if (!displayName || !password || !email || !phone || !pubkey) {
-    throw new functions.https.HttpsError('cancelled', 'signup-failed', 'missing information')
+    throw new functions.https.HttpsError('cancelled', 'user-create-failed', 'missing information')
   }
 
   try {

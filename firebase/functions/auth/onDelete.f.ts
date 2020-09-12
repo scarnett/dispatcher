@@ -27,11 +27,11 @@ exports = module.exports = functions.auth.user().onDelete(async (user: functions
   try {
     const endpoint: string = functions.config().graphql.endpoint
     const adminSecret: string = functions.config().hasura.admin.secret
-    const data: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
+    const response: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
       identifier: user.uid,
     })
 
-    return data
+    return response
   } catch (e) {
     throw new functions.https.HttpsError('aborted', 'sync-failed', JSON.stringify(e, undefined, 2))
   }
