@@ -1,9 +1,6 @@
-import 'package:dispatcher/state.dart';
-import 'package:dispatcher/views/connections/connections_viewmodel.dart';
 import 'package:dispatcher/views/connections/widgets/connections_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 
 class ConnectionsView extends StatefulWidget {
   ConnectionsView({
@@ -26,12 +23,9 @@ class _ConnectionsViewState extends State<ConnectionsView>
   Widget build(
     BuildContext context,
   ) =>
-      StoreConnector<AppState, ConnectionsViewModel>(
-        converter: (store) => ConnectionsViewModel.fromStore(store),
-        builder: (_, viewModel) => Scaffold(
-          appBar: ConnectionsAppBar(
-            height: 140,
-          ),
+      Scaffold(
+        appBar: ConnectionsAppBar(
+          height: 140,
         ),
       );
 }

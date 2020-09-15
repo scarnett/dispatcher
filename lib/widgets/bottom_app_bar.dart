@@ -1,8 +1,5 @@
-import 'package:dispatcher/state.dart';
 import 'package:dispatcher/theme.dart';
-import 'package:dispatcher/viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 
 class BottomNavBarItem {
   IconData iconData;
@@ -23,6 +20,7 @@ class BottomNavBar extends StatefulWidget {
   final double iconSize;
   final double verboseIconSize;
   final Color color;
+  final int selectedIndex;
   final Color selectedColor;
   final ValueChanged<int> onTabSelected;
   final bool verbose;
@@ -34,6 +32,7 @@ class BottomNavBar extends StatefulWidget {
     this.iconSize: 24.0,
     this.verboseIconSize: 28.0,
     this.color,
+    this.selectedIndex: 0,
     this.selectedColor: AppTheme.accent,
     this.onTabSelected,
     this.verbose: false,
@@ -50,41 +49,36 @@ class BottomNavBarState extends State<BottomNavBar>
   @override
   Widget build(
     BuildContext context,
-  ) =>
-      StoreConnector<AppState, AppViewModel>(
-        converter: (store) => AppViewModel.fromStore(store),
-        builder: (_, viewModel) {
-          List<Widget> items = List.generate(
-            widget.items.length,
-            (int index) => _buildTabItem(
-              viewModel: viewModel,
-              item: widget.items[index],
-              index: index,
-              onPressed: (index) => _updateIndex(index),
-            ),
-          );
+  ) {
+    List<Widget> items = List.generate(
+      widget.items.length,
+      (int index) => _buildTabItem(
+        item: widget.items[index],
+        index: index,
+        onPressed: (index) => _updateIndex(index),
+      ),
+    );
 
-          items..insert(items.length >> 1, Container());
+    items..insert(items.length >> 1, Container());
 
-          return Container(
-            decoration: BoxDecoration(
-              color: AppTheme.background,
-              border: Border(
-                top: BorderSide(
-                  color: AppTheme.border.withOpacity(0.5),
-                ),
-              ),
-            ),
-            alignment: Alignment.topCenter,
-            height: widget.height,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: items,
-            ),
-          );
-        },
-      );
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.background,
+        border: Border(
+          top: BorderSide(
+            color: AppTheme.border.withOpacity(0.5),
+          ),
+        ),
+      ),
+      alignment: Alignment.topCenter,
+      height: widget.height,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: items,
+      ),
+    );
+  }
 
   void _updateIndex(
     int index,
@@ -93,7 +87,6 @@ class BottomNavBarState extends State<BottomNavBar>
   }
 
   Widget _buildTabItem({
-    AppViewModel viewModel,
     BottomNavBarItem item,
     int index,
     ValueChanged<int> onPressed,
@@ -101,7 +94,6 @@ class BottomNavBarState extends State<BottomNavBar>
       Material(
         type: MaterialType.transparency,
         child: _buildButton(
-          viewModel,
           item,
           index,
           onPressed,
@@ -109,14 +101,12 @@ class BottomNavBarState extends State<BottomNavBar>
       );
 
   Widget _buildButton(
-    AppViewModel viewModel,
     BottomNavBarItem item,
     int index,
     ValueChanged<int> onPressed,
   ) {
-    Color color = (viewModel.selectedTabIndex == index)
-        ? widget.selectedColor
-        : widget.color;
+    Color color =
+        (widget.selectedIndex == index) ? widget.selectedColor : widget.color;
 
     if (widget.verbose) {
       return InkWell(

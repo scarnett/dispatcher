@@ -8,7 +8,6 @@ import 'package:dispatcher/state.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/widgets/form_button.dart';
-import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:image_picker/image_picker.dart';
@@ -92,9 +91,12 @@ class _DeviceSelectAvatarState extends State<DeviceSelectAvatar> {
   Widget _buildSpinner(
     DeviceViewModel viewModel,
   ) {
+    // TODO!
+    /*
     if (viewModel.busy) {
       return Spinner(fill: true);
     }
+    */
 
     return null;
   }

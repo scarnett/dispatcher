@@ -53,6 +53,12 @@ class _ConnectViewState extends State<ConnectView> {
         ),
       );
 
+  @override
+  void dispose() {
+    _scaffoldKey.currentState.dispose();
+    super.dispose();
+  }
+
   Future<bool> _willPopCallback(
     ConnectViewModel viewModel,
   ) async {

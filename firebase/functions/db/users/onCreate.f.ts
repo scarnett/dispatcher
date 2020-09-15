@@ -20,13 +20,16 @@ exports = module.exports = functions.firestore
           insert_user_phone_numbers_one(
             object: $phone
           ) {
-            user
+            dial_code
+            iso_code
+            phone_number
           }
           
           insert_user_invite_codes_one(
             object: $invite_code
           ) {
-            user
+            code
+            expire_date
           }
           
           insert_user_keys_one(
@@ -42,7 +45,8 @@ exports = module.exports = functions.firestore
               email: $email
             }
           ) {
-            identifier
+            name
+            email
           }
         }`
 

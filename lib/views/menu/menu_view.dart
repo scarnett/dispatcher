@@ -1,19 +1,23 @@
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/routes.dart';
-import 'package:dispatcher/state.dart';
-import 'package:dispatcher/viewmodel.dart';
+import 'package:dispatcher/views/home/bloc/home.dart';
+import 'package:dispatcher/views/home/bloc/home_bloc.dart';
+import 'package:dispatcher/views/home/bloc/home_events.dart';
 import 'package:dispatcher/widgets/list_select_item.dart';
 import 'package:dispatcher/widgets/section_header.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Displays the app menu view
 class MenuView extends StatefulWidget {
+  final PageController pageController;
+
   MenuView({
     Key key,
+    this.pageController,
   }) : super(key: key);
 
   @override
@@ -25,28 +29,29 @@ class _MenuViewState extends State<MenuView> {
   Widget build(
     BuildContext context,
   ) =>
-      StoreConnector<AppState, AppViewModel>(
-        converter: (store) => AppViewModel.fromStore(store),
-        builder: (_, viewModel) => Scaffold(
+      BlocBuilder<HomeBloc, HomeState>(
+        builder: (
+          BuildContext context,
+          HomeState state,
+        ) =>
+            Scaffold(
           resizeToAvoidBottomPadding: false,
           appBar: SimpleAppBar(
             height: 80.0,
             automaticallyImplyLeading: false,
             title: AppLocalizations.of(context).menu,
           ),
-          body: _buildBody(viewModel),
+          body: _buildBody(),
         ),
       );
 
   /// Builds the menu body
-  Widget _buildBody(
-    AppViewModel viewModel,
-  ) {
+  Widget _buildBody() {
     List<Widget> items = []
-      ..addAll(_applicationSection(viewModel))
-      ..addAll(_securitySection(viewModel))
-      ..addAll(_migrateSection(viewModel))
-      ..addAll(_accountSection(viewModel));
+      ..addAll(_applicationSection())
+      ..addAll(_securitySection())
+      ..addAll(_migrateSection())
+      ..addAll(_accountSection());
 
     return Column(
       children: <Widget>[
@@ -62,9 +67,7 @@ class _MenuViewState extends State<MenuView> {
   }
 
   /// Builds the 'application' section
-  List<Widget> _applicationSection(
-    AppViewModel viewModel,
-  ) {
+  List<Widget> _applicationSection() {
     List<Widget> tiles = [];
     tiles
       ..add(
@@ -106,9 +109,7 @@ class _MenuViewState extends State<MenuView> {
   }
 
   /// Builds the 'security' section
-  List<Widget> _securitySection(
-    AppViewModel viewModel,
-  ) {
+  List<Widget> _securitySection() {
     List<Widget> tiles = [];
     tiles
       ..add(
@@ -149,9 +150,7 @@ class _MenuViewState extends State<MenuView> {
   }
 
   /// Builds the 'migrate' section
-  List<Widget> _migrateSection(
-    AppViewModel viewModel,
-  ) {
+  List<Widget> _migrateSection() {
     List<Widget> tiles = [];
     tiles
       ..add(
@@ -184,9 +183,7 @@ class _MenuViewState extends State<MenuView> {
   }
 
   /// Builds the 'account' section
-  List<Widget> _accountSection(
-    AppViewModel viewModel,
-  ) {
+  List<Widget> _accountSection() {
     List<Widget> tiles = [];
     tiles
       ..add(
@@ -202,7 +199,7 @@ class _MenuViewState extends State<MenuView> {
           title: AppLocalizations.of(context).logout,
           icon: Icons.exit_to_app,
           borderBottom: false,
-          onTap: () => _tapLogout(viewModel),
+          onTap: _tapLogout,
         ),
       );
 
@@ -221,11 +218,8 @@ class _MenuViewState extends State<MenuView> {
 
   /// Handles the 'settings' tap
   void _tapSettings() {
-    /*
-    final BottomNavigationBar navigationBar =
-        AppKeys.appBottomNavKey.currentWidget;
-    navigationBar.onTap(3);
-    */
+    context.bloc<HomeBloc>().add(SelectedTabIndex(2));
+    widget.pageController.jumpToPage(2);
   }
 
   /// Handles the 'permissions' tap
@@ -240,10 +234,8 @@ class _MenuViewState extends State<MenuView> {
       Navigator.pushNamed(context, AppRoutes.migrateTo.name);
 
   /// Handles the 'logout' tap
-  void _tapLogout(
-    AppViewModel viewModel,
-  ) {
-    viewModel.setSelectedTabIndex(0);
+  void _tapLogout() {
+    context.bloc<HomeBloc>().add(SelectedTabIndex(0));
     FirebaseAuth.instance.signOut();
     Navigator.pushReplacementNamed(context, AppRoutes.landing.name);
   }

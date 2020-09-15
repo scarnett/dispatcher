@@ -85,7 +85,7 @@ class _AvatarCameraViewState extends State<AvatarCameraView> {
             Padding(
               padding: const EdgeInsets.only(bottom: 10.0),
               child: DeviceAvatar(
-                user: viewModel.device.user,
+                user: null, //viewModel.device.user,
                 avatarRadius: 48.0,
               ),
             ),

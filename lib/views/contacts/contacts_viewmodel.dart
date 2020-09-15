@@ -43,7 +43,7 @@ class ContactsViewModel {
         contactsLabels: store.state.contactsState.contactsLabels,
         activeContact: store.state.contactsState.activeContact,
         searching: store.state.contactsState.searching,
-        inviteCode: store.state.deviceState.device.inviteCode,
+        // inviteCode: store.state.deviceState.device.inviteCode,
         getContact: (identifier) => store.state.contactsState.contacts
             .firstWhere((contact) => contact.identifier == identifier),
         getActiveContact: () => store.state.contactsState.contacts.firstWhere(

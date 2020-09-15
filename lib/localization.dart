@@ -21,6 +21,8 @@ class AppLocalizations {
 
   static String get appTitle => 'Dispatcher';
 
+  String get loading => addMessage('Loading...');
+  String get loadingUser => addMessage('Loading User');
   String get login => addMessage('Login');
   String get logout => addMessage('Logout');
   String get password => addMessage('Password');

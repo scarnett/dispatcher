@@ -34,8 +34,8 @@ class ConnectViewModel {
     Store<AppState> store,
   ) =>
       ConnectViewModel(
-        deviceId: store.state.deviceState.device.id,
-        connections: store.state.deviceState.connections,
+        //deviceId: store.state.deviceState.device.id,
+        // connections: store.state.deviceState.connections,
         lookupResult: store.state.connectState.lookupResult,
         alreadyConnected: store.state.connectState.alreadyConnected,
         cantConnect: store.state.connectState.cantConnect,

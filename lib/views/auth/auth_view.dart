@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/state.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
-import 'package:dispatcher/views/auth/auth_viewmodel.dart';
-import 'package:dispatcher/views/auth/auth_widgets.dart';
+import 'package:dispatcher/views/auth/bloc/auth.dart';
 import 'package:dispatcher/views/auth/views/auth_login_view.dart';
 import 'package:dispatcher/views/auth/views/auth_create_view.dart';
+import 'package:dispatcher/views/auth/widgets/auth_wrapper.dart';
 import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Displays the auth view
 class AuthView extends StatefulWidget {
@@ -36,6 +35,7 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _scaffoldKey.currentState?.dispose();
     _pageController?.dispose();
     super.dispose();
   }
@@ -44,11 +44,14 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
   Widget build(
     BuildContext context,
   ) =>
-      StoreConnector<AppState, AuthViewModel>(
-        converter: (store) => AuthViewModel.fromStore(store),
-        builder: (_, viewModel) => WillPopScope(
+      BlocBuilder<AuthBloc, AuthState>(
+        builder: (
+          BuildContext context,
+          AuthState state,
+        ) =>
+            WillPopScope(
           onWillPop: () => _willPopCallback(),
-          child: _getContent(viewModel),
+          child: _getContent(state),
         ),
       );
 
@@ -62,7 +65,7 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
   }
 
   Widget _getContent(
-    AuthViewModel viewModel,
+    AuthState state,
   ) =>
       Scaffold(
         key: _scaffoldKey,
@@ -80,20 +83,18 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
                     PageView(
                       controller: _pageController,
                       physics: NeverScrollableScrollPhysics(),
-                      children: _getPages(viewModel),
+                      children: _getPages(),
                     ),
                   ],
                 ),
               ),
             ),
-            _buildLoader(viewModel),
+            _buildLoader(state),
           ],
         ),
       );
 
-  List<Widget> _getPages(
-    AuthViewModel viewModel,
-  ) {
+  List<Widget> _getPages() {
     List<Widget> pages = [];
     pages
       ..add(
@@ -132,13 +133,20 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
       );
 
   Widget _buildLoader(
-    AuthViewModel viewModel,
+    AuthState state,
   ) {
-    if (viewModel.busy) {
-      return Spinner(
-        fill: true,
-        message: AppLocalizations.of(context).authorizing, // TODO!
-      );
+    if (state != null) {
+      if (state.authorizing) {
+        return Spinner(
+          fill: true,
+          message: AppLocalizations.of(context).authorizing,
+        );
+      } else if (state.creating) {
+        return Spinner(
+          fill: true,
+          message: AppLocalizations.of(context).creating,
+        );
+      }
     }
 
     return Container();

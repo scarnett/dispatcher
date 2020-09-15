@@ -1,16 +1,15 @@
-import 'package:dispatcher/actions.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/model.dart';
 import 'package:dispatcher/routes.dart';
-import 'package:dispatcher/state.dart';
+import 'package:dispatcher/services/shared_preference_service.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
+import 'package:dispatcher/views/auth/bloc/auth.dart';
 import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
-import 'package:redux/redux.dart';
 
 /// Builds the auth login form
 class AuthLoginForm extends StatefulWidget {
@@ -45,14 +44,20 @@ class _AuthLoginFormState extends State<AuthLoginForm> {
   Widget build(
     BuildContext context,
   ) =>
-      Form(
-        key: _formKey,
-        child: Column(
-          children: <Widget>[
-            _buildEmailField(),
-            _buildPasswordField(),
-            _buildLoginButton(),
-          ],
+      BlocBuilder<AuthBloc, AuthState>(
+        builder: (
+          BuildContext context,
+          AuthState state,
+        ) =>
+            Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              _buildEmailField(),
+              _buildPasswordField(),
+              _buildLoginButton(),
+            ],
+          ),
         ),
       );
 
@@ -108,28 +113,35 @@ class _AuthLoginFormState extends State<AuthLoginForm> {
       return;
     }
 
-    final Store store = StoreProvider.of<AppState>(context);
-    store.dispatch(SetAppBusyStatusAction(true));
-
     _formKey.currentState.save();
+    context.bloc<AuthBloc>().add(SetAuthorizing(true));
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+      await _firebaseAuth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
 
-      store.dispatch(SetAppBusyStatusAction(false));
+      // Store the auth token
+      await sharedPreferenceService.getSharedPreferencesInstance();
+      await sharedPreferenceService
+          .setToken(await _firebaseAuth.currentUser.getIdToken(true));
+
+      context.bloc<AuthBloc>().add(SetAuthorizing(false));
       Navigator.pushNamed(context, AppRoutes.landing.name);
     } catch (e) {
       logger.e('Error authenticating the firebase user', e);
 
-      store.dispatch(SetAppBusyStatusAction(false));
+      context.bloc<AuthBloc>().add(SetAuthorizing(false));
 
-      widget.scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
-        text: AppLocalizations.of(context).cantAuthAccount,
-        type: MessageType.ERROR,
-      )));
+      if (context != null) {
+        widget.scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
+          text: AppLocalizations.of(context).cantAuthAccount,
+          type: MessageType.ERROR,
+        )));
+      }
     }
   }
 }

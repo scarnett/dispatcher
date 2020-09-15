@@ -58,6 +58,12 @@ class _MigrateToDeviceViewState extends State<MigrateToDeviceView> {
         ),
       );
 
+  @override
+  void dispose() {
+    _scaffoldKey.currentState.dispose();
+    super.dispose();
+  }
+
   /// Builds the migrate to body
   Widget _buildBody(
     DeviceViewModel viewModel,

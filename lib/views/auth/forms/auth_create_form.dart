@@ -1,23 +1,21 @@
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:dispatcher/actions.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/model.dart';
 import 'package:dispatcher/routes.dart';
 import 'package:dispatcher/rsa/rsa_key_helper.dart';
 import 'package:dispatcher/rsa/rsa_utils.dart';
 import 'package:dispatcher/services/shared_preference_service.dart';
-import 'package:dispatcher/state.dart';
 import 'package:dispatcher/utils/email_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
+import 'package:dispatcher/views/auth/bloc/auth.dart';
 import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:logger/logger.dart';
 import 'package:pointycastle/export.dart' as rsa;
-import 'package:redux/redux.dart';
 
 /// Builds the auth create form
 class AuthCreateForm extends StatefulWidget {
@@ -57,16 +55,22 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
   Widget build(
     BuildContext context,
   ) =>
-      Form(
-        key: _formKey,
-        child: Column(
-          children: <Widget>[
-            _buildNameField(),
-            _buildPasswordField(),
-            _buildEmailField(),
-            _buildPhoneNumberField(),
-            _buildCreateButton(),
-          ],
+      BlocBuilder<AuthBloc, AuthState>(
+        builder: (
+          BuildContext context,
+          AuthState state,
+        ) =>
+            Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              _buildNameField(),
+              _buildPasswordField(),
+              _buildEmailField(),
+              _buildPhoneNumberField(),
+              _buildCreateButton(),
+            ],
+          ),
         ),
       );
 
@@ -166,10 +170,8 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
       return;
     }
 
-    final Store store = StoreProvider.of<AppState>(context);
-    store.dispatch(SetAppBusyStatusAction(true));
-
     _formKey.currentState.save();
+    context.bloc<AuthBloc>().add(SetCreating(true));
 
     try {
       // Generate the keys
@@ -206,19 +208,25 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
       // Post the user data to Firebase
       await callable.call(userData);
 
+      final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
       // Signin to Firebase with the user credentials
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await _firebaseAuth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
 
-      // Reset busy status and navigate
-      store.dispatch(SetAppBusyStatusAction(false));
+      // Store the auth token
+      await sharedPreferenceService
+          .setToken(await _firebaseAuth.currentUser.getIdToken());
+
+      // Navigate
+      context.bloc<AuthBloc>().add(SetCreating(false));
       Navigator.pushNamed(context, AppRoutes.landing.name);
     } catch (e) {
       logger.e('Error creating the Firebase user', e);
 
-      store.dispatch(SetAppBusyStatusAction(false));
+      context.bloc<AuthBloc>().add(SetCreating(false));
 
       if (context != null) {
         widget.scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(

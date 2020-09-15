@@ -1,14 +1,11 @@
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:dispatcher/actions.dart';
-import 'package:dispatcher/device/device_model.dart';
-import 'package:dispatcher/device/device_viewmodel.dart';
-import 'package:dispatcher/device/widgets/device_select_avatar.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/model.dart';
-import 'package:dispatcher/state.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/email_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
+import 'package:dispatcher/views/home/bloc/home.dart';
+import 'package:dispatcher/views/home/bloc/home_bloc.dart';
 import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/section_header.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
@@ -16,9 +13,8 @@ import 'package:dispatcher/widgets/text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:redux/redux.dart';
 
 /// Displays the settings view
 class SettingsView extends StatefulWidget {
@@ -53,14 +49,14 @@ class _SettingsViewState extends State<SettingsView> {
   Widget build(
     BuildContext context,
   ) =>
-      StoreConnector<AppState, DeviceViewModel>(
-        converter: (store) => DeviceViewModel.fromStore(store),
-        onInit: (store) {
-          DeviceUser user = store.state.deviceState.device.user;
-          _nameController = TextEditingController(text: user.name);
-          _emailController = TextEditingController(text: user.email);
-        },
-        builder: (_, viewModel) => Scaffold(
+      BlocBuilder<HomeBloc, HomeState>(builder: (
+        BuildContext context,
+        HomeState state,
+      ) {
+        _nameController = TextEditingController(text: state.user.name);
+        _emailController = TextEditingController(text: state.user.email);
+
+        return Scaffold(
           key: _scaffoldKey,
           appBar: SimpleAppBar(
             height: 80.0,
@@ -69,19 +65,19 @@ class _SettingsViewState extends State<SettingsView> {
           ),
           body: Form(
             key: _formKey,
-            child: _buildBody(viewModel),
+            child: _buildBody(state),
           ),
-        ),
-      );
+        );
+      });
 
   /// Builds the settings body
   Widget _buildBody(
-    DeviceViewModel viewModel,
+    HomeState state,
   ) {
     List<Widget> tiles = [];
     tiles
-      ..addAll(_buildPersonalDetailsSection(viewModel))
-      ..addAll(_buildAvatarSection(viewModel))
+      ..addAll(_buildPersonalDetailsSection(state))
+      ..addAll(_buildAvatarSection())
       ..add(
         Divider(
           indent: 20.0,
@@ -107,7 +103,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   /// Builds the 'personal details' section
   List<Widget> _buildPersonalDetailsSection(
-    DeviceViewModel viewModel,
+    HomeState state,
   ) {
     return [
       SectionHeader(
@@ -117,7 +113,7 @@ class _SettingsViewState extends State<SettingsView> {
       ),
       _buildNameField(),
       _buildEmailField(),
-      _buildPhoneNumberField(viewModel),
+      _buildPhoneNumberField(state),
     ];
   }
 
@@ -161,7 +157,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   /// Builds the 'phone number' field
   Widget _buildPhoneNumberField(
-    DeviceViewModel viewModel,
+    HomeState state,
   ) =>
       Padding(
         padding: const EdgeInsets.only(
@@ -174,7 +170,7 @@ class _SettingsViewState extends State<SettingsView> {
           selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
           ignoreBlank: true,
           autoValidate: false,
-          initialValue: viewModel.device.user.phone.toPhoneNumber(),
+          initialValue: state.user.phone.toPhoneNumber(),
           selectorTextStyle: Theme.of(context).textTheme.bodyText1,
           textFieldController: _phoneController,
           inputDecoration: InputDecoration(
@@ -185,30 +181,26 @@ class _SettingsViewState extends State<SettingsView> {
       );
 
   /// Builds the 'avatar' section
-  List<Widget> _buildAvatarSection(
-    DeviceViewModel viewModel,
-  ) {
+  List<Widget> _buildAvatarSection() {
     return [
       SectionHeader(
         text: AppLocalizations.of(context).avatar,
         borderBottom: true,
         borderTop: true,
       ),
-      _buildAvatar(viewModel),
+      _buildAvatar(),
     ];
   }
 
   /// Builds the 'avatar'
-  Widget _buildAvatar(
-    DeviceViewModel viewModel,
-  ) =>
-      Padding(
+  Widget _buildAvatar() => Padding(
         padding: const EdgeInsets.only(
           left: 20.0,
           right: 20.0,
           bottom: 15.0,
         ),
-        child: DeviceSelectAvatar(user: viewModel.device.user), // TODO!
+        // child: DeviceSelectAvatar(user: viewModel.device.user),
+        child: Container(),
       );
 
   /// Builds the form button
@@ -230,9 +222,6 @@ class _SettingsViewState extends State<SettingsView> {
     if (_formKey.currentState.validate()) {
       // Close the keyboard if it's open
       FocusScope.of(context).unfocus();
-
-      final Store store = StoreProvider.of<AppState>(context);
-      store.dispatch(SetAppBusyStatusAction(true));
 
       _formKey.currentState.save();
 
@@ -259,8 +248,6 @@ class _SettingsViewState extends State<SettingsView> {
 
       // Post the user data to Firebase
       await callable.call(userData);
-
-      store.dispatch(SetAppBusyStatusAction(false));
 
       // Success message
       _scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(

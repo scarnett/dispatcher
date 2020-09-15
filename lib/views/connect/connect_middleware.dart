@@ -1,22 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dispatcher/actions.dart';
-import 'package:dispatcher/device/device_model.dart';
-import 'package:dispatcher/device/device_services.dart';
-import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/model.dart';
-import 'package:dispatcher/state.dart';
-import 'package:dispatcher/views/connect/connect_actions.dart';
-import 'package:redux_epics/redux_epics.dart';
-import 'package:rxdart/rxdart.dart';
-
 final connectMiddleware = [
-  _lookupDeviceByInviteCodeEpic,
-  _lookupDeviceByInviteCodeSuccessEpic,
-  _connectDeviceEpic,
-  _connectDeviceSuccessEpic,
-  _connectDeviceErrorEpic,
+  //_lookupDeviceByInviteCodeEpic,
+  //_lookupDeviceByInviteCodeSuccessEpic,
+  //_connectDeviceEpic,
+  //_connectDeviceSuccessEpic,
+  //_connectDeviceErrorEpic,
 ];
 
+/*
 Stream<dynamic> _lookupDeviceByInviteCodeEpic(
   Stream<dynamic> actions,
   EpicStore<AppState> store,
@@ -134,3 +124,4 @@ Stream<dynamic> _connectDeviceErrorEpic(
 
       return {};
     });
+*/

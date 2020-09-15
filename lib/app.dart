@@ -1,23 +1,19 @@
 import 'package:dispatcher/config.dart';
-import 'package:dispatcher/graphql/graphql_config.dart';
-import 'package:dispatcher/graphql/graphql_redux.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/route/route_utils.dart';
-import 'package:dispatcher/state.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:redux/redux.dart';
 import 'package:screen/screen.dart';
 
 class DispatcherApp extends StatelessWidget {
-  final Store<AppState> store;
+  final String token;
   final GlobalKey<NavigatorState> appNavKey = GlobalKey<NavigatorState>();
 
   DispatcherApp({
     Key key,
-    this.store,
+    this.token,
   }) : super(key: key) {
     // Keeps the screen on
     Screen.keepOn(true);
@@ -42,20 +38,16 @@ class DispatcherApp extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) =>
-      GraphXProvider<AppState>(
-        store: store,
-        client: HasuraConfig.initailizeClient(null), // TODO!
-        child: MaterialApp(
-          title: AppLocalizations.appTitle,
-          theme: appThemeData,
-          debugShowCheckedModeBanner: AppConfig.isDebug(context),
-          localizationsDelegates: [
-            AppLocalizationsDelegate(),
-          ],
-          navigatorKey: appNavKey,
-          onGenerateRoute: (RouteSettings settings) => getAppRoute(
-            settings,
-          ),
+      MaterialApp(
+        title: AppLocalizations.appTitle,
+        theme: appThemeData,
+        debugShowCheckedModeBanner: AppConfig.isDebug(context),
+        localizationsDelegates: [
+          AppLocalizationsDelegate(),
+        ],
+        navigatorKey: appNavKey,
+        onGenerateRoute: (RouteSettings settings) => getAppRoute(
+          settings,
         ),
       );
 }

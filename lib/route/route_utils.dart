@@ -4,7 +4,6 @@ import 'package:dispatcher/views/avatar/avatar_camera_view.dart';
 import 'package:dispatcher/views/connect/connect_view.dart';
 import 'package:dispatcher/views/contacts/contact/contact_view.dart';
 import 'package:dispatcher/views/contacts/contacts_view.dart';
-import 'package:dispatcher/views/home/home_view.dart';
 import 'package:dispatcher/views/landing/landing_view.dart';
 import 'package:dispatcher/views/migrate/from_device/from_device_view.dart';
 import 'package:dispatcher/views/migrate/to_device/to_device_view.dart';
@@ -21,9 +20,6 @@ MaterialPageRoute getAppRoute(
     // Contacts
   } else if (settings.name == AppRoutes.contacts.name) {
     return SlideUpRoute(ContactsView(), settings: settings);
-    // Home
-  } else if (settings.name == AppRoutes.home.name) {
-    return MainRoute(HomeView(), settings: settings);
     // Connect
   } else if (settings.name == AppRoutes.connect.name) {
     return SlideUpRoute(ConnectView(), settings: settings);

@@ -85,6 +85,7 @@ class _PINViewState extends State<PINView> {
 
   @override
   void dispose() {
+    _scaffoldKey.currentState.dispose();
     _phoneController.dispose();
     _verified = false;
     _saved = false;
