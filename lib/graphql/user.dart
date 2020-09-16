@@ -12,3 +12,13 @@ const String fetchUserQueryStr = r'''
       }
     }
     ''';
+
+const String fetchUserPINQueryStr = r'''
+    query UserPINQuery($identifier: String!) {
+      user_pins(where: {user: {_eq: $identifier}}) {
+        pin_code
+        verification_code
+        verification_expire_code
+      }
+    }
+    ''';

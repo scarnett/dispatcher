@@ -1,7 +1,9 @@
 import 'package:dispatcher/localization.dart';
+import 'package:dispatcher/repository/auth_repository.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
-import 'package:dispatcher/views/auth/bloc/auth.dart';
+import 'package:dispatcher/views/auth/bloc/bloc.dart';
+import 'package:dispatcher/views/auth/login/bloc/bloc.dart';
 import 'package:dispatcher/views/auth/widgets/auth_wrapper.dart';
 import 'package:dispatcher/widgets/form_button.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +11,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Displays the auth login view
 class AuthLoginView extends StatefulWidget {
-  final GlobalKey<ScaffoldState> scaffoldKey;
   final PageController pageController;
 
   AuthLoginView({
     Key key,
-    this.scaffoldKey,
     this.pageController,
   }) : super(key: key);
 
@@ -28,16 +28,17 @@ class _AuthLoginViewState extends State<AuthLoginView> {
     BuildContext context,
   ) {
     List<Widget> items = [
-      AuthFormMode.LOGIN.getForm(widget.scaffoldKey),
+      AuthFormMode.LOGIN.getForm(),
       _buildCreateButton(),
     ];
 
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (
-        BuildContext context,
-        AuthState state,
-      ) =>
-          wrapAuthPage(items),
+    return Scaffold(
+      body: BlocProvider<LoginBloc>(
+        create: (BuildContext context) => LoginBloc(
+          authRepository: RepositoryProvider.of<AuthRepository>(context),
+        ),
+        child: wrapAuthPage(items),
+      ),
     );
   }
 
@@ -52,7 +53,7 @@ class _AuthLoginViewState extends State<AuthLoginView> {
   /// Handles the 'create' tap
   void _tapCreate() {
     AuthFormMode mode = AuthFormMode.CREATE;
-    context.bloc<AuthBloc>().add(SetFormMode(mode));
+    context.bloc<AuthBloc>().add(SetAuthFormMode(mode));
     moveToPage(widget.pageController, mode);
   }
 }

@@ -1,6 +1,8 @@
+import 'package:dispatcher/utils/date_utils.dart';
+import 'package:equatable/equatable.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
-class User {
+class User extends Equatable {
   final String identifier;
   final String name;
   final String email;
@@ -44,11 +46,14 @@ class User {
       };
 
   @override
+  List<Object> get props => [identifier, name, email, phone];
+
+  @override
   String toString() =>
       'User{identifier: $identifier, name: $name, email: $email, phone: $phone}';
 }
 
-class UserPhoneNumber {
+class UserPhoneNumber extends Equatable {
   final String dialCode;
   final String isoCode;
   final String phoneNumber;
@@ -94,6 +99,58 @@ class UserPhoneNumber {
       };
 
   @override
+  List<Object> get props => [dialCode, isoCode, phoneNumber];
+
+  @override
   String toString() =>
       'UserPhoneNumber{dial_code: $dialCode, iso_code: $isoCode, phone_number: $phoneNumber}';
+}
+
+class UserPIN extends Equatable {
+  final String pinCode;
+  final String verificationCode;
+  final DateTime verificationExpireDate;
+
+  UserPIN({
+    this.pinCode,
+    this.verificationCode,
+    this.verificationExpireDate,
+  });
+
+  UserPIN copyWith({
+    String pinCode,
+    String verificationCode,
+    DateTime verificationExpireDate,
+  }) =>
+      UserPIN(
+        pinCode: pinCode ?? this.pinCode,
+        verificationCode: verificationCode ?? this.verificationCode,
+        verificationExpireDate:
+            verificationExpireDate ?? this.verificationExpireDate,
+      );
+
+  static UserPIN fromJson(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? UserPIN()
+          : UserPIN(
+              pinCode: json['pin_code'],
+              verificationCode: json['verification_code'],
+              verificationExpireDate:
+                  fromIso8601String(json['verification_expire_date']),
+            );
+
+  dynamic toJson() => {
+        'pin_code': pinCode,
+        'verification_code': verificationCode,
+        'verification_expire_date': toIso8601String(verificationExpireDate),
+      };
+
+  @override
+  List<Object> get props => [pinCode, verificationCode, verificationExpireDate];
+
+  @override
+  String toString() =>
+      'UserPIN{pin_code: $pinCode, verification_code: $verificationCode, verification_expire_date: $verificationExpireDate}';
 }

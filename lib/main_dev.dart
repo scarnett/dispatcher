@@ -1,8 +1,9 @@
 import 'package:bloc/bloc.dart';
+import 'package:dispatcher/auth_repository.dart';
 import 'package:dispatcher/app.dart';
-import 'package:dispatcher/blocs/bloc_observer.dart';
+import 'package:dispatcher/bloc/bloc_observer.dart';
 import 'package:dispatcher/config.dart';
-import 'package:dispatcher/services/shared_preference_service.dart';
+import 'package:dispatcher/user_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -11,13 +12,13 @@ void main() async {
   Bloc.observer = AppBlocObserver();
 
   await Firebase.initializeApp();
-  await sharedPreferenceService.getSharedPreferencesInstance();
 
   // DEV Environment Specific Configuration
   AppConfig config = AppConfig(
     flavor: Flavor.DEVELOPMENT,
     child: DispatcherApp(
-      token: await sharedPreferenceService.token,
+      authRepository: AuthRepository(),
+      userRepository: UserRepository(),
     ),
   );
 

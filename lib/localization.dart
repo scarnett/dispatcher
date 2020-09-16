@@ -52,8 +52,10 @@ class AppLocalizations {
   String get name => addMessage('Name');
   String get namePlease => addMessage('Please enter your name');
   String get email => addMessage('Email');
-  String get emailPlease => addMessage('Please enter a valid email');
+  String get emailPlease => addMessage('Please enter your email');
+  String get emailValidPlease => addMessage('Please enter a valid email');
   String get phoneNumber => addMessage('Phone Number');
+  String get phoneNumberPlease => addMessage('Please enter your phone number');
   String get avatar => addMessage('Avatar');
   String get avatarHowsItLike => addMessage('How\'s it look?');
   String get avatarReTake => addMessage('Re-Take');

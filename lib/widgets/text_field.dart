@@ -2,10 +2,12 @@ import 'package:dispatcher/theme.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatefulWidget {
+  final Key key;
   final String label;
   final bool autovalidate;
   final String initialValue;
   final String hintText;
+  final String errorText;
   final Color color;
   final IconData icon;
   final Color iconColor;
@@ -21,10 +23,12 @@ class CustomTextField extends StatefulWidget {
   final FormFieldSetter<String> onChanged;
 
   CustomTextField({
+    this.key,
     this.label,
     this.autovalidate = false,
     this.initialValue,
     this.hintText,
+    this.errorText,
     this.color: Colors.black,
     this.icon,
     this.iconColor,
@@ -50,6 +54,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     BuildContext context,
   ) =>
       TextFormField(
+        key: widget.key,
         controller: widget.controller,
         autovalidate: widget.autovalidate,
         initialValue: widget.initialValue,
@@ -67,6 +72,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         decoration: InputDecoration(
           labelText: widget.label,
           hintText: widget.hintText,
+          errorText: widget.errorText,
           contentPadding: const EdgeInsets.only(
             left: 0.0,
             right: 20.0,

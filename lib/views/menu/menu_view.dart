@@ -1,12 +1,13 @@
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/routes.dart';
+import 'package:dispatcher/views/auth/auth_view.dart';
+import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/home/bloc/home.dart';
 import 'package:dispatcher/views/home/bloc/home_bloc.dart';
 import 'package:dispatcher/views/home/bloc/home_events.dart';
 import 'package:dispatcher/widgets/list_select_item.dart';
 import 'package:dispatcher/widgets/section_header.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -235,8 +236,8 @@ class _MenuViewState extends State<MenuView> {
 
   /// Handles the 'logout' tap
   void _tapLogout() {
-    context.bloc<HomeBloc>().add(SelectedTabIndex(0));
-    FirebaseAuth.instance.signOut();
-    Navigator.pushReplacementNamed(context, AppRoutes.landing.name);
+    // context.bloc<HomeBloc>().add(SelectedTabIndex(0));
+    context.bloc<AuthBloc>().add(AuthLogoutRequested());
+    Navigator.pushReplacement(context, AuthView.route());
   }
 }

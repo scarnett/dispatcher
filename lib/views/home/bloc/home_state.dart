@@ -1,4 +1,4 @@
-import 'package:dispatcher/user/user_model.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 

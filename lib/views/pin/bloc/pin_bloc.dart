@@ -1,36 +1,33 @@
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/services/graphql_service.dart';
-import 'package:dispatcher/views/home/bloc/home_events.dart';
-import 'package:dispatcher/views/home/bloc/home_state.dart';
+import 'package:dispatcher/views/pin/bloc/pin.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql/client.dart';
 import 'package:logger/logger.dart';
 
-class HomeBloc extends Bloc<HomeEvent, HomeState> {
+class PINBloc extends Bloc<PINEvent, PINState> {
   GraphQLService service;
   Logger logger = Logger();
 
-  HomeBloc(
+  PINBloc(
     String token,
   ) : super(null) {
     service = GraphQLService(token);
   }
 
-  HomeState get initialState => HomeState.loadInProgress();
+  PINState get initialState => PINState.loadInProgress();
 
   @override
-  Stream<HomeState> mapEventToState(
-    HomeEvent event,
+  Stream<PINState> mapEventToState(
+    PINEvent event,
   ) async* {
-    if (event is FetchHomeData) {
-      yield* _mapFetchHomeDataToStates(event);
-    } else if (event is SelectedTabIndex) {
-      yield _mapSelectedTabIndexToStates(event);
+    if (event is FetchPINData) {
+      yield* _mapFetchPINDataToStates(event);
     }
   }
 
-  Stream<HomeState> _mapFetchHomeDataToStates(
-    FetchHomeData event,
+  Stream<PINState> _mapFetchPINDataToStates(
+    FetchPINData event,
   ) async* {
     final String query = event.query;
     final Map<String, dynamic> variables = event.variables ?? null;
@@ -42,20 +39,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (result.hasException) {
         logger.e(result.exception.graphqlErrors.toString());
         logger.e(result.exception.clientException.toString());
-        yield HomeState.loadFail();
+        yield PINState.loadFail();
       } else {
-        yield HomeState.loadSuccess(User.fromJson(result.data['users'][0]));
+        yield PINState.loadSuccess(UserPIN.fromJson(result.data['users'][0]));
       }
     } catch (e) {
       logger.e(e.toString());
-      yield HomeState.loadFail();
+      yield PINState.loadFail();
     }
   }
-
-  HomeState _mapSelectedTabIndexToStates(
-    SelectedTabIndex event,
-  ) =>
-      state.copyWith(
-        selectedTabIndex: event.index,
-      );
 }

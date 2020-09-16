@@ -1,7 +1,14 @@
-import 'package:dispatcher/views/auth/forms/auth_create_form.dart';
-import 'package:dispatcher/views/auth/forms/auth_login_form.dart';
+import 'package:dispatcher/views/auth/create/create_form.dart';
+import 'package:dispatcher/views/auth/login/login_form.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+enum AuthStatus {
+  UNKNOWN,
+  AUTHENTICATED,
+  UNAUTHENTICATED,
+  LOGOUT,
+}
 
 enum AuthFormMode {
   CREATE,
@@ -22,15 +29,13 @@ extension AuthFormModeExtension on AuthFormMode {
     }
   }
 
-  Widget getForm(
-    GlobalKey<ScaffoldState> scaffoldKey,
-  ) {
+  Widget getForm() {
     switch (this) {
       case AuthFormMode.CREATE:
-        return AuthCreateForm(scaffoldKey: scaffoldKey);
+        return AuthCreateForm();
 
       case AuthFormMode.LOGIN:
-        return AuthLoginForm(scaffoldKey: scaffoldKey);
+        return AuthLoginForm();
 
       default:
         return Container();

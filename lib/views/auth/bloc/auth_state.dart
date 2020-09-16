@@ -1,48 +1,58 @@
 import 'package:dispatcher/views/auth/auth_enums.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 class AuthState extends Equatable {
+  final AuthStatus status;
   final AuthFormMode mode;
-  final bool authorizing;
-  final bool creating;
+  final User user;
+  final String token;
 
   const AuthState._({
+    this.status = AuthStatus.UNKNOWN,
     this.mode = AuthFormMode.LOGIN,
-    this.authorizing = false,
-    this.creating = false,
+    this.user,
+    this.token,
   });
 
-  const AuthState.initial() : this._();
+  const AuthState.unknown() : this._();
+
+  const AuthState.authenticated(
+    User user,
+    String token,
+  ) : this._(
+          status: AuthStatus.AUTHENTICATED,
+          user: user,
+          token: token,
+        );
+
+  const AuthState.unauthenticated()
+      : this._(status: AuthStatus.UNAUTHENTICATED);
+
+  const AuthState.logout()
+      : this._(
+          user: null,
+          token: null,
+          status: AuthStatus.UNAUTHENTICATED,
+        );
 
   const AuthState.formMode(
     AuthFormMode mode,
   ) : this._(mode: mode);
 
-  const AuthState.authorizing(
-    bool authorizing,
-  ) : this._(authorizing: authorizing);
-
-  const AuthState.creating(
-    bool creating,
-  ) : this._(creating: creating);
-
   AuthState copyWith({
     AuthFormMode mode,
-    bool authorizing,
-    bool creating,
   }) =>
       AuthState._(
         mode: mode ?? this.mode,
-        authorizing: authorizing ?? this.authorizing,
-        creating: creating ?? this.creating,
       );
 
   @override
-  List<Object> get props => [mode, authorizing, creating];
+  List<Object> get props => [status, mode, user, token];
 
   @override
   String toString() =>
-      'AuthState{mode: $mode, authorizing: $authorizing, creating: $creating}';
+      'AuthState{status: $status, mode: $mode, user: $user, token: $token}';
 }

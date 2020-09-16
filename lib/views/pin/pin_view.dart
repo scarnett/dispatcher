@@ -7,7 +7,6 @@ import 'package:dispatcher/rsa/rsa_key_helper.dart';
 import 'package:dispatcher/rsa/rsa_keys.dart';
 import 'package:dispatcher/rsa/rsa_utils.dart';
 import 'package:dispatcher/sms/sms_model.dart';
-import 'package:dispatcher/state.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/date_utils.dart';
@@ -19,7 +18,6 @@ import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pointycastle/export.dart' as rsa;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,37 +47,21 @@ class _PINViewState extends State<PINView> {
   Widget build(
     BuildContext context,
   ) =>
-      StoreConnector<AppState, DeviceViewModel>(
-        converter: (store) => DeviceViewModel.fromStore(store),
-        onInit: (store) async => _prefs = await SharedPreferences.getInstance(),
-        builder: (_, viewModel) => FutureBuilder<SharedPreferences>(
-          future: SharedPreferences.getInstance(),
-          builder: (
-            BuildContext context,
-            AsyncSnapshot<SharedPreferences> snapshot,
-          ) {
-            if (snapshot.hasData) {
-              return Scaffold(
-                key: _scaffoldKey,
-                appBar: SimpleAppBar(
-                  height: 100.0,
-                ),
-                body: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      children: <Widget>[
-                        _buildBody(viewModel),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }
-
-            return Spinner();
-          },
+      Scaffold(
+        key: _scaffoldKey,
+        appBar: SimpleAppBar(
+          height: 100.0,
+        ),
+        body: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Align(
+            alignment: Alignment.center,
+            child: Column(
+              children: <Widget>[
+                _buildBody(null),
+              ],
+            ),
+          ),
         ),
       );
 

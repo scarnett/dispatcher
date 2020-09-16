@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'package:circular_menu/circular_menu.dart';
+import 'package:dispatcher/graphql/user.dart';
+import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/home/bloc/home_bloc.dart';
 import 'package:dispatcher/views/home/bloc/home_events.dart';
 import 'package:dispatcher/views/home/bloc/home_state.dart';
@@ -17,6 +19,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeView extends StatefulWidget {
+  static Route route() => MaterialPageRoute<void>(builder: (_) => HomeView());
+
   HomeView({
     Key key,
   }) : super(key: key);
@@ -47,16 +51,30 @@ class _HomeViewState extends State<HomeView> {
   Widget build(
     BuildContext context,
   ) =>
-      BlocBuilder<HomeBloc, HomeState>(
-        builder: (
+      BlocProvider<HomeBloc>(
+        create: (
           BuildContext context,
-          HomeState state,
         ) =>
-            WillPopScope(
-          onWillPop: () => _willPopCallback(state),
-          child: Scaffold(
-            extendBody: true,
-            body: _buildContent(state),
+            HomeBloc(context.bloc<AuthBloc>().state.token)
+              ..add(
+                FetchHomeData(
+                  fetchUserQueryStr,
+                  variables: {
+                    'identifier': context.bloc<AuthBloc>().state.user.uid,
+                  },
+                ),
+              ),
+        child: BlocBuilder<HomeBloc, HomeState>(
+          builder: (
+            BuildContext context,
+            HomeState state,
+          ) =>
+              WillPopScope(
+            onWillPop: () => _willPopCallback(state),
+            child: Scaffold(
+              extendBody: true,
+              body: _buildContent(state),
+            ),
           ),
         ),
       );
@@ -88,9 +106,6 @@ class _HomeViewState extends State<HomeView> {
         message: AppLocalizations.of(context).loadingUser,
       );
     }
-
-    // TODO! remove
-    print(state.user);
 
     List<Widget> children = [];
     children..add(_buildBody());
