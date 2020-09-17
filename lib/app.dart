@@ -1,8 +1,7 @@
-import 'package:dispatcher/auth_repository.dart';
 import 'package:dispatcher/config.dart';
 import 'package:dispatcher/localization.dart';
+import 'package:dispatcher/repository/repository.dart';
 import 'package:dispatcher/theme.dart';
-import 'package:dispatcher/user_repository.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
 import 'package:dispatcher/views/auth/auth_view.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
@@ -50,7 +49,7 @@ class DispatcherApp extends StatelessWidget {
       RepositoryProvider.value(
         value: authRepository,
         child: BlocProvider(
-          create: (_) => AuthBloc(
+          create: (BuildContext context) => AuthBloc(
             authRepository: authRepository,
             userRepository: userRepository,
           ),
@@ -92,9 +91,7 @@ class _AppViewState extends State<DispatcherAppView> {
             switch (state.status) {
               case AuthStatus.AUTHENTICATED:
                 _navigator.pushAndRemoveUntil<void>(
-                  HomeView.route(),
-                  (route) => false,
-                );
+                    HomeView.route(), (route) => false);
 
                 break;
 

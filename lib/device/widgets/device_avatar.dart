@@ -73,7 +73,11 @@ class _DeviceAvatarState extends State<DeviceAvatar> {
 
     return CachedNetworkImage(
       imageUrl: widget.user.avatar,
-      placeholder: (context, url) => Padding(
+      placeholder: (
+        BuildContext context,
+        String url,
+      ) =>
+          Padding(
         padding: const EdgeInsets.all(20.0),
         child: CircularProgressIndicator(),
       ),

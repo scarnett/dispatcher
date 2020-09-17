@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:dispatcher/repository/auth_repository.dart';
-import 'package:dispatcher/user_repository.dart';
+import 'package:dispatcher/repository/repository.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
 import 'package:dispatcher/views/auth/bloc/auth_event.dart';
 import 'package:dispatcher/views/auth/bloc/auth_state.dart';

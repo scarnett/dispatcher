@@ -51,7 +51,7 @@ class _AuthLoginFormState extends State<AuthLoginForm> {
   /// Builds the 'email' field
   Widget _buildEmailField() => BlocBuilder<LoginBloc, LoginState>(
         buildWhen: (previous, current) => (previous.email != current.email),
-        builder: (context, state) => Padding(
+        builder: (BuildContext context, LoginState state) => Padding(
           padding: const EdgeInsets.only(
             left: 20.0,
             right: 20.0,
@@ -74,7 +74,7 @@ class _AuthLoginFormState extends State<AuthLoginForm> {
   Widget _buildPasswordField() => BlocBuilder<LoginBloc, LoginState>(
         buildWhen: (previous, current) =>
             (previous.password != current.password),
-        builder: (context, state) => Padding(
+        builder: (BuildContext context, LoginState state) => Padding(
           padding: const EdgeInsets.only(
             left: 20.0,
             right: 20.0,
@@ -96,7 +96,7 @@ class _AuthLoginFormState extends State<AuthLoginForm> {
   /// Builds the login button
   Widget _buildLoginButton() => BlocBuilder<LoginBloc, LoginState>(
         buildWhen: (previous, current) => (previous.status != current.status),
-        builder: (context, state) => Padding(
+        builder: (BuildContext context, LoginState state) => Padding(
           padding: const EdgeInsets.only(
             left: 20.0,
             right: 20.0,

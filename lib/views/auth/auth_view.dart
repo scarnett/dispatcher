@@ -61,7 +61,11 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
         resizeToAvoidBottomInset: true,
         body: AnimatedBuilder(
           animation: _pageController,
-          builder: (context, _) => Container(
+          builder: (
+            BuildContext context,
+            Widget _,
+          ) =>
+              Container(
             child: Stack(
               alignment: AlignmentDirectional.topCenter,
               children: <Widget>[

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:dispatcher/auth_repository.dart';
+import 'package:dispatcher/repository/auth_repository.dart';
 import 'package:dispatcher/rsa/rsa_key_helper.dart';
 import 'package:dispatcher/rsa/rsa_utils.dart';
 import 'package:dispatcher/services/shared_preference_service.dart';

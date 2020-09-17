@@ -29,7 +29,7 @@ class AppLocalizations {
   String get passwordPlease => addMessage('Please enter your password');
   String get create => addMessage('Create Account');
   String get creating => addMessage('Creating your account. Please wait...');
-  String get home => addMessage('Home');
+  String get dashboard => addMessage('Dashboard');
   String get contacts => addMessage('Contacts');
   String get contactsNone => addMessage('No contacts found');
   String get connections => addMessage('Connections');

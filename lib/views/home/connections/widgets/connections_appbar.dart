@@ -1,9 +1,6 @@
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/state.dart';
-import 'package:dispatcher/views/contacts/contacts_viewmodel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 
 class ConnectionsAppBar extends StatefulWidget implements PreferredSizeWidget {
   // The height of the AppBar
@@ -30,13 +27,7 @@ class _ConnectionsAppBarState extends State<ConnectionsAppBar> {
         automaticallyImplyLeading: false,
         flexibleSpace: Container(
           width: MediaQuery.of(context).copyWith().size.width,
-          child: StoreConnector<AppState, ContactsViewModel>(
-            converter: (store) => ContactsViewModel.fromStore(store),
-            builder: (_, viewModel) => Align(
-              alignment: Alignment.topLeft,
-              child: _buildTitle(),
-            ),
-          ),
+          child: _buildTitle(),
         ),
       );
 

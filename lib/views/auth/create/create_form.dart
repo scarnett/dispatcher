@@ -58,7 +58,7 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
   Widget _buildNameField() =>
       BlocBuilder<CreateAccountBloc, CreateAccountState>(
         buildWhen: (previous, current) => (previous.name != current.name),
-        builder: (context, state) => Padding(
+        builder: (BuildContext context, CreateAccountState state) => Padding(
           padding: const EdgeInsets.only(
             left: 20.0,
             right: 20.0,
@@ -83,7 +83,7 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
       BlocBuilder<CreateAccountBloc, CreateAccountState>(
         buildWhen: (previous, current) =>
             (previous.password != current.password),
-        builder: (context, state) => Padding(
+        builder: (BuildContext context, CreateAccountState state) => Padding(
           padding: const EdgeInsets.only(
             left: 20.0,
             right: 20.0,
@@ -107,7 +107,7 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
   Widget _buildEmailField() =>
       BlocBuilder<CreateAccountBloc, CreateAccountState>(
         buildWhen: (previous, current) => (previous.email != current.email),
-        builder: (context, state) => Padding(
+        builder: (BuildContext context, CreateAccountState state) => Padding(
           padding: const EdgeInsets.only(
             left: 20.0,
             right: 20.0,
@@ -130,7 +130,7 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
   Widget _buildPhoneNumberField() =>
       BlocBuilder<CreateAccountBloc, CreateAccountState>(
         buildWhen: (previous, current) => (previous.phone != current.phone),
-        builder: (context, state) => Padding(
+        builder: (BuildContext context, CreateAccountState state) => Padding(
           padding: const EdgeInsets.only(
             left: 20.0,
             right: 20.0,
@@ -162,7 +162,7 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
   Widget _buildCreateButton() =>
       BlocBuilder<CreateAccountBloc, CreateAccountState>(
         buildWhen: (previous, current) => (previous.status != current.status),
-        builder: (context, state) => Padding(
+        builder: (BuildContext context, CreateAccountState state) => Padding(
           padding: const EdgeInsets.only(
             left: 20.0,
             right: 20.0,

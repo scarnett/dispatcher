@@ -1,4 +1,4 @@
-import 'package:dispatcher/views/connections/widgets/connections_appbar.dart';
+import 'package:dispatcher/views/home/connections/widgets/connections_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

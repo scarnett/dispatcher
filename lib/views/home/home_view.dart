@@ -8,9 +8,10 @@ import 'package:dispatcher/views/home/bloc/home_state.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/routes.dart';
 import 'package:dispatcher/theme.dart';
-import 'package:dispatcher/views/connections/connections_views.dart';
-import 'package:dispatcher/views/menu/menu_view.dart';
-import 'package:dispatcher/views/settings/settings_view.dart';
+import 'package:dispatcher/views/home/connections/connections_views.dart';
+import 'package:dispatcher/views/home/dashboard/dashboard_view.dart';
+import 'package:dispatcher/views/home/menu/menu_view.dart';
+import 'package:dispatcher/views/home/settings/settings_view.dart';
 import 'package:dispatcher/widgets/bottom_app_bar.dart';
 import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,18 +19,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomeView extends StatefulWidget {
+class HomeView extends StatelessWidget {
   static Route route() => MaterialPageRoute<void>(builder: (_) => HomeView());
 
-  HomeView({
+  const HomeView({
     Key key,
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _HomeViewState();
+  Widget build(
+    BuildContext context,
+  ) =>
+      BlocProvider<HomeBloc>(
+        create: (BuildContext context) =>
+            HomeBloc(context.bloc<AuthBloc>().state.token)
+              ..add(
+                FetchHomeData(
+                  fetchUserQueryStr,
+                  variables: {
+                    'identifier': context.bloc<AuthBloc>().state.user.uid,
+                  },
+                ),
+              ),
+        child: HomePageView(),
+      );
 }
 
-class _HomeViewState extends State<HomeView> {
+class HomePageView extends StatefulWidget {
+  HomePageView({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _HomePageViewState();
+}
+
+class _HomePageViewState extends State<HomePageView> {
   final GlobalKey<CircularMenuState> bottomMenuKey =
       GlobalKey<CircularMenuState>();
 
@@ -51,30 +76,16 @@ class _HomeViewState extends State<HomeView> {
   Widget build(
     BuildContext context,
   ) =>
-      BlocProvider<HomeBloc>(
-        create: (
+      BlocBuilder<HomeBloc, HomeState>(
+        builder: (
           BuildContext context,
+          HomeState state,
         ) =>
-            HomeBloc(context.bloc<AuthBloc>().state.token)
-              ..add(
-                FetchHomeData(
-                  fetchUserQueryStr,
-                  variables: {
-                    'identifier': context.bloc<AuthBloc>().state.user.uid,
-                  },
-                ),
-              ),
-        child: BlocBuilder<HomeBloc, HomeState>(
-          builder: (
-            BuildContext context,
-            HomeState state,
-          ) =>
-              WillPopScope(
-            onWillPop: () => _willPopCallback(state),
-            child: Scaffold(
-              extendBody: true,
-              body: _buildContent(state),
-            ),
+            WillPopScope(
+          onWillPop: () => _willPopCallback(state),
+          child: Scaffold(
+            extendBody: true,
+            body: _buildContent(state),
           ),
         ),
       );
@@ -137,8 +148,8 @@ class _HomeViewState extends State<HomeView> {
         selectedIndex: state.selectedTabIndex,
         items: [
           BottomNavBarItem(
-            iconData: Icons.home,
-            text: AppLocalizations.of(context).home,
+            iconData: Icons.dashboard,
+            text: AppLocalizations.of(context).dashboard,
           ),
           BottomNavBarItem(
             iconData: Icons.people,
@@ -214,7 +225,7 @@ class _HomeViewState extends State<HomeView> {
       );
 
   List<Widget> _getTabContainers() => <Widget>[
-        Container(),
+        DashboardView(),
         ConnectionsView(),
         SettingsView(),
         MenuView(pageController: _pageController),

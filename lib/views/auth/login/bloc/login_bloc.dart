@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:dispatcher/auth_repository.dart';
+import 'package:dispatcher/repository/auth_repository.dart';
 import 'package:dispatcher/views/auth/login/login.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
