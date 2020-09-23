@@ -35,7 +35,6 @@ dependencies:
   pointycastle: '^1.0.2'
   encrypt: '^4.0.2'
   shared_preferences: '^0.5.8'
-  qr_flutter: '^3.2.0'
   barcode_scan: '^3.0.1'
   intl_phone_number_input: '^0.4.6+2'
   camera: '^0.5.8+5'

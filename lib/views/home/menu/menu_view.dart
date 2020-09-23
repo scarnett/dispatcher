@@ -51,7 +51,6 @@ class _MenuViewState extends State<MenuView> {
     List<Widget> items = []
       ..addAll(_applicationSection())
       ..addAll(_securitySection())
-      ..addAll(_migrateSection())
       ..addAll(_accountSection());
 
     return Column(
@@ -150,39 +149,6 @@ class _MenuViewState extends State<MenuView> {
     return tiles;
   }
 
-  /// Builds the 'migrate' section
-  List<Widget> _migrateSection() {
-    List<Widget> tiles = [];
-    tiles
-      ..add(
-        SectionHeader(
-          text: AppLocalizations.of(context).migrate,
-          borderTop: true,
-        ),
-      );
-
-    tiles
-      ..add(
-        ListSelectItem(
-          title: AppLocalizations.of(context).fromThisDevice,
-          icon: Icons.undo,
-          onTap: _tapMigrateFrom,
-        ),
-      );
-
-    tiles
-      ..add(
-        ListSelectItem(
-          title: AppLocalizations.of(context).toThisDevice,
-          icon: Icons.redo,
-          onTap: _tapMigrateTo,
-          borderBottom: false,
-        ),
-      );
-
-    return tiles;
-  }
-
   /// Builds the 'account' section
   List<Widget> _accountSection() {
     List<Widget> tiles = [];
@@ -225,14 +191,6 @@ class _MenuViewState extends State<MenuView> {
 
   /// Handles the 'permissions' tap
   void _tapPermissions() async => await openAppSettings();
-
-  /// Handles the 'migrate from' tap
-  void _tapMigrateFrom() =>
-      Navigator.pushNamed(context, AppRoutes.migrateFrom.name);
-
-  /// Handles the 'migrate to' tap
-  void _tapMigrateTo() =>
-      Navigator.pushNamed(context, AppRoutes.migrateTo.name);
 
   /// Handles the 'logout' tap
   void _tapLogout() {

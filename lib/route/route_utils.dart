@@ -3,8 +3,6 @@ import 'package:dispatcher/routes.dart';
 import 'package:dispatcher/views/avatar/avatar_camera_view.dart';
 import 'package:dispatcher/views/connect/connect_view.dart';
 import 'package:dispatcher/views/landing/landing_view.dart';
-import 'package:dispatcher/views/migrate/from_device/from_device_view.dart';
-import 'package:dispatcher/views/migrate/to_device/to_device_view.dart';
 import 'package:dispatcher/views/pin/pin_view.dart';
 import 'package:flutter/material.dart';
 
@@ -21,12 +19,6 @@ MaterialPageRoute getAppRoute(
     // PIN
   } else if (settings.name == AppRoutes.changePIN.name) {
     return SlideLeftRoute(PINView(), settings: settings);
-    // Migrate From Device
-  } else if (settings.name == AppRoutes.migrateFrom.name) {
-    return SlideLeftRoute(MigrateFromDeviceView(), settings: settings);
-    // Migrate To Device
-  } else if (settings.name == AppRoutes.migrateTo.name) {
-    return SlideLeftRoute(MigrateToDeviceView(), settings: settings);
   }
 
   // Default route

@@ -83,9 +83,6 @@ class AppLocalizations {
   String get permissions => addMessage('Permissions');
   String get privacyPolicy => addMessage('Privacy Policy');
   String get account => addMessage('Account');
-  String get migrate => addMessage('Migrate');
-  String get fromThisDevice => addMessage('From This Device');
-  String get toThisDevice => addMessage('To This Device');
 
   String get alreadyHaveAccount => addMessage('I already have an account');
   String get dontHaveAccount => addMessage('I don\'t have an account');
@@ -151,18 +148,6 @@ class AppLocalizations {
         'I agree to receieving this one-time test message. Message and data ' +
             'rates may apply.',
         name: 'enterPhoneNumberDisclaimer',
-      );
-
-  String get setPinCodeMigrateFrom => addMessage(
-        'Please set your PIN code first. We need to make sure it\'s ' +
-            'really you by before we can migrate from this device.',
-        name: 'enterPhoneNumber',
-      );
-
-  String get setPinCodeMigrateTo => addMessage(
-        'Please set your PIN code first. We need to make sure it\'s ' +
-            'really you by before we can migrate to this device.',
-        name: 'enterPhoneNumber',
       );
 
   String sendPinVerificationCodeText(
@@ -252,18 +237,6 @@ class AppLocalizations {
   String get cantConnectText => addMessage(
         'Sorry but we can\'t connect you with this account.',
         name: 'cantConnectText',
-      );
-
-  String migrateFromText(
-    String appName,
-  ) =>
-      addMessage(
-        'Please scan this QR code on the device that you\'re migrating ' +
-            '$appName from.',
-        name: 'migrateFromText',
-        args: [
-          appName,
-        ],
       );
 
   String passwordLength(

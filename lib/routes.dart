@@ -10,10 +10,4 @@ class AppRoutes {
 
   static const AppRoute changePIN =
       AppRoute(name: 'changePIN', path: '/change-pin');
-
-  static const AppRoute migrateFrom =
-      AppRoute(name: 'migrateFrom', path: '/migrate-from');
-
-  static const AppRoute migrateTo =
-      AppRoute(name: 'migrateTo', path: '/migrate-to');
 }
