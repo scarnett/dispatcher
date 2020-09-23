@@ -1,16 +1,17 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/model.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/email_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
+import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/home/bloc/home.dart';
 import 'package:dispatcher/views/home/bloc/home_bloc.dart';
 import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/section_header.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:dispatcher/widgets/text_field.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +28,6 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -53,8 +53,9 @@ class _SettingsViewState extends State<SettingsView> {
         BuildContext context,
         HomeState state,
       ) {
-        _nameController = TextEditingController(text: state.user.name);
-        _emailController = TextEditingController(text: state.user.email);
+        User user = context.bloc<AuthBloc>().state.user;
+        _nameController = TextEditingController(text: user.name);
+        _emailController = TextEditingController(text: user.email);
 
         return Scaffold(
           key: _scaffoldKey,
@@ -170,7 +171,8 @@ class _SettingsViewState extends State<SettingsView> {
           selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
           ignoreBlank: true,
           autoValidate: false,
-          initialValue: state.user.phone.toPhoneNumber(),
+          initialValue:
+              context.bloc<AuthBloc>().state.user.phone.toPhoneNumber(),
           selectorTextStyle: Theme.of(context).textTheme.bodyText1,
           textFieldController: _phoneController,
           inputDecoration: InputDecoration(
@@ -231,7 +233,7 @@ class _SettingsViewState extends State<SettingsView> {
 
       // Builds the user data map
       Map<dynamic, dynamic> userData = Map<dynamic, dynamic>.from({
-        'identifier': _firebaseAuth.currentUser.uid,
+        'identifier': context.bloc<AuthBloc>().state.firebaseUser.uid,
         'name': _nameController.value.text,
         'email': _emailController.value.text,
         'phone': {

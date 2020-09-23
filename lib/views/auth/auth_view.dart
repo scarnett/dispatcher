@@ -47,6 +47,7 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
         child: _getContent(),
       );
 
+  /// Handles the android back button
   Future<bool> _willPopCallback() {
     if (_pageController.page.round() > 0) {
       moveToPage(_pageController, AuthFormMode.LOGIN);
@@ -56,6 +57,7 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
     return Future.value(true);
   }
 
+  /// Builds the content
   Widget _getContent() => Scaffold(
         key: _scaffoldKey,
         resizeToAvoidBottomInset: true,
@@ -81,6 +83,7 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
         ),
       );
 
+  /// Builds the PageView pages
   List<Widget> _getPages() {
     List<Widget> pages = [];
     pages

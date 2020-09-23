@@ -28,47 +28,39 @@ class SpinnerState extends State<Spinner> {
 
   /// Builds the content
   Widget _buildContent() {
-    if (widget.fill) {
-      List<Widget> children = <Widget>[];
-      children..add(_buildSpinner());
+    List<Widget> children = <Widget>[];
+    children..add(_buildSpinner());
 
-      if (widget.message != null) {
-        children
-          ..add(
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Text(
-                widget.message,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.subtitle1.copyWith(
-                      color: AppTheme.accent,
-                    ),
-              ),
-            ),
-          );
-      }
-
-      return Positioned.fill(
-        child: Container(
-          color: (widget.fillColor == null)
-              ? AppTheme.loadingBackground
-              : widget.fillColor,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: children,
-            ),
-          ),
-        ),
-      );
+    if (widget.message != null) {
+      children..add(_buildMessage());
     }
 
-    return Center(
-      child: _buildSpinner(),
+    return Container(
+      color: (widget.fillColor == null)
+          ? AppTheme.loadingBackground
+          : widget.fillColor,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: children,
+        ),
+      ),
     );
   }
 
   /// Builds the 'loading' spinner
   Widget _buildSpinner() => CircularProgressIndicator();
+
+  /// Builds the 'loading' message
+  Widget _buildMessage() => Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Text(
+          widget.message,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.subtitle1.copyWith(
+                color: AppTheme.accent,
+              ),
+        ),
+      );
 }

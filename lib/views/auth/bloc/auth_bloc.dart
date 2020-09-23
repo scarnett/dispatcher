@@ -1,16 +1,24 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:dispatcher/graphql/user.dart';
+import 'package:dispatcher/models/user.dart';
 import 'package:dispatcher/repository/repository.dart';
+import 'package:dispatcher/services/graphql_service.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
 import 'package:dispatcher/views/auth/bloc/auth_event.dart';
 import 'package:dispatcher/views/auth/bloc/auth_state.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:graphql/client.dart';
+import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
   final UserRepository _userRepository;
+
   StreamSubscription<AuthStatus> _authStatusSubscription;
+  GraphQLService _service;
+  Logger _logger = Logger();
 
   AuthBloc({
     @required AuthRepository authRepository,
@@ -52,9 +60,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (event.status == AuthStatus.LOGOUT) {
       return AuthState.logout();
     } else {
-      final User user = await _tryGetUser();
-      if ((user != null) && !user.isAnonymous) {
-        return AuthState.authenticated(user, await user.getIdToken());
+      final firebase.User firebaseUser = await _tryGetFirebaseUser();
+      if ((firebaseUser != null) && !firebaseUser.isAnonymous) {
+        final String token = await firebaseUser.getIdToken();
+        final User user = await _tryGetUser(firebaseUser.uid, token);
+        return AuthState.authenticated(firebaseUser, user, token);
       }
     }
 
@@ -63,8 +73,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return const AuthState.unauthenticated();
 
       case AuthStatus.AUTHENTICATED:
-        final User user = await _tryGetUser();
-        return AuthState.authenticated(user, await user.getIdToken());
+        final firebase.User firebaseUser = await _tryGetFirebaseUser();
+        final String token = await firebaseUser.getIdToken();
+        final User user = await _tryGetUser(firebaseUser.uid, token);
+        return AuthState.authenticated(firebaseUser, user, token);
 
       case AuthStatus.UNKNOWN:
       default:
@@ -79,11 +91,38 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         mode: event.mode,
       );
 
-  Future<User> _tryGetUser() async {
+  Future<firebase.User> _tryGetFirebaseUser() async {
     try {
-      return await _userRepository.getUser();
+      return await _userRepository.getFirebaseUser();
     } on Exception {
       return null;
     }
+  }
+
+  Future<User> _tryGetUser(
+    String identifier,
+    String token,
+  ) async {
+    try {
+      _service = GraphQLService(token);
+
+      final QueryResult result = await _service.performMutation(
+        fetchUserQueryStr,
+        variables: {
+          'identifier': identifier,
+        },
+      );
+
+      if (result.hasException) {
+        _logger.e(result.exception.graphqlErrors.toString());
+        _logger.e(result.exception.clientException.toString());
+      } else {
+        return User.fromJson(result.data['users'][0]);
+      }
+    } catch (e) {
+      _logger.e(e.toString());
+    }
+
+    return null;
   }
 }

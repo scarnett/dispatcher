@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:circular_menu/circular_menu.dart';
-import 'package:dispatcher/graphql/user.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
+import 'package:dispatcher/views/contacts/contacts_view.dart';
 import 'package:dispatcher/views/home/bloc/home_bloc.dart';
 import 'package:dispatcher/views/home/bloc/home_events.dart';
 import 'package:dispatcher/views/home/bloc/home_state.dart';
@@ -31,16 +31,7 @@ class HomeView extends StatelessWidget {
     BuildContext context,
   ) =>
       BlocProvider<HomeBloc>(
-        create: (BuildContext context) =>
-            HomeBloc(context.bloc<AuthBloc>().state.token)
-              ..add(
-                FetchHomeData(
-                  fetchUserQueryStr,
-                  variables: {
-                    'identifier': context.bloc<AuthBloc>().state.user.uid,
-                  },
-                ),
-              ),
+        create: (BuildContext context) => HomeBloc(),
         child: HomePageView(),
       );
 }
@@ -112,7 +103,7 @@ class _HomePageViewState extends State<HomePageView> {
   Widget _buildContent(
     HomeState state,
   ) {
-    if ((state == null) || (state.user == null)) {
+    if ((state == null) || (context.bloc<AuthBloc>().state.user == null)) {
       return Spinner(
         message: AppLocalizations.of(context).loadingUser,
       );
@@ -252,6 +243,6 @@ class _HomePageViewState extends State<HomePageView> {
   /// Handles the 'contacts' tap
   _tapContacts() {
     bottomMenuKey.currentState.reverseAnimation();
-    Navigator.pushNamed(context, AppRoutes.contacts.name);
+    Navigator.push(context, ContactsView.route());
   }
 }

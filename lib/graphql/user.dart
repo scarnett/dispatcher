@@ -9,6 +9,10 @@ const String fetchUserQueryStr = r'''
           iso_code
           phone_number
         }
+        user_invite_code {
+          code
+          expire_date
+        }
       }
     }
     ''';

@@ -7,19 +7,6 @@ abstract class HomeEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class FetchHomeData extends HomeEvent {
-  final String query;
-  final Map<String, dynamic> variables;
-
-  const FetchHomeData(
-    this.query, {
-    this.variables,
-  });
-
-  @override
-  List<Object> get props => [query, variables];
-}
-
 class SelectedTabIndex extends HomeEvent {
   final int index;
 

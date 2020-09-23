@@ -1,16 +1,16 @@
 import 'dart:async';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 
 class UserRepository {
-  User _user;
+  firebase.User _firebaseUser;
 
-  Future<User> getUser() async {
-    if (_user != null) {
-      return _user;
+  Future<firebase.User> getFirebaseUser() async {
+    if (_firebaseUser != null) {
+      return _firebaseUser;
     }
 
-    final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-    _user = _firebaseAuth.currentUser;
-    return _user;
+    final firebase.FirebaseAuth _firebaseAuth = firebase.FirebaseAuth.instance;
+    _firebaseUser = _firebaseAuth.currentUser;
+    return _firebaseUser;
   }
 }

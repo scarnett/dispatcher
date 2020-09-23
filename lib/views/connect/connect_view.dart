@@ -59,6 +59,7 @@ class _ConnectViewState extends State<ConnectView> {
     super.dispose();
   }
 
+  /// Handles the android back button
   Future<bool> _willPopCallback(
     ConnectViewModel viewModel,
   ) async {

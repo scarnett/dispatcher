@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:dispatcher/services/shared_preference_service.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:meta/meta.dart';
 
 class AuthRepository {
@@ -21,7 +21,7 @@ class AuthRepository {
     assert(email != null);
     assert(password != null);
 
-    final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+    final firebase.FirebaseAuth _firebaseAuth = firebase.FirebaseAuth.instance;
     await _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
@@ -36,7 +36,7 @@ class AuthRepository {
   }
 
   void logOut() async {
-    FirebaseAuth.instance.signOut();
+    firebase.FirebaseAuth.instance.signOut();
 
     // Remove the auth token
     await sharedPreferenceService.getSharedPreferencesInstance();

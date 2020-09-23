@@ -1,19 +1,21 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/state.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/text_utils.dart';
-import 'package:dispatcher/views/contacts/contacts_viewmodel.dart';
+import 'package:dispatcher/views/auth/bloc/bloc.dart';
+import 'package:dispatcher/views/contacts/bloc/contacts.dart';
 import 'package:dispatcher/views/contacts/contact/widgets/contact_avatar.dart';
 import 'package:dispatcher/widgets/form_button.dart';
-import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share/share.dart';
 
 class ContactView extends StatefulWidget {
+  final PageController pageController;
+
   ContactView({
     Key key,
+    this.pageController,
   }) : super(key: key);
 
   @override
@@ -21,46 +23,55 @@ class ContactView extends StatefulWidget {
 }
 
 class _ContactViewState extends State<ContactView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(
     BuildContext context,
   ) =>
-      StoreConnector<AppState, ContactsViewModel>(
-        converter: (store) => ContactsViewModel.fromStore(store),
-        builder: (_, viewModel) => WillPopScope(
-          onWillPop: () => _willPopCallback(viewModel),
-          child: Scaffold(
-            appBar: SimpleAppBar(
-              height: 100.0,
-            ),
-            body: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Align(
-                alignment: Alignment.center,
-                child: Column(
-                  children: <Widget>[
-                    _buildContact(viewModel),
-                    _buildInviteCodeText(viewModel),
-                    _buildInviteButton(viewModel),
-                  ],
+      BlocBuilder<ContactsBloc, ContactsState>(
+        builder: (
+          BuildContext context,
+          ContactsState state,
+        ) =>
+            Scaffold(
+          key: _scaffoldKey,
+          resizeToAvoidBottomInset: true,
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                    children: <Widget>[
+                      _buildContact(state),
+                      _buildInviteCodeText(),
+                      _buildInviteButton(),
+                    ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
       );
 
-  Future<bool> _willPopCallback(
-    ContactsViewModel viewModel,
-  ) async {
-    viewModel.clearActiveContact();
-    return Future.value(true);
-  }
-
   Widget _buildContact(
-    ContactsViewModel viewModel,
+    ContactsState state,
   ) {
-    Contact contact = viewModel.getActiveContact();
+    assert(state.contacts != null);
+
+    Contact contact = state.contacts.firstWhere(
+        (contact) => contact.identifier == state.activeContact,
+        orElse: () => null);
+
+    if (contact == null) {
+      return Container();
+    }
+
     List<Widget> children = <Widget>[];
     children
       ..add(
@@ -99,10 +110,7 @@ class _ContactViewState extends State<ContactView> {
     );
   }
 
-  Widget _buildInviteCodeText(
-    ContactsViewModel viewModel,
-  ) =>
-      Padding(
+  Widget _buildInviteCodeText() => Padding(
         padding: const EdgeInsets.only(
           bottom: 20.0,
           top: 20.0,
@@ -110,7 +118,7 @@ class _ContactViewState extends State<ContactView> {
         child: Column(
           children: <Widget>[
             Text(
-              viewModel.inviteCode.code,
+              context.bloc<AuthBloc>().state.user.inviteCode.code,
               style: Theme.of(context).textTheme.headline6.copyWith(
                     color: AppTheme.accent,
                   ),
@@ -123,15 +131,12 @@ class _ContactViewState extends State<ContactView> {
         ),
       );
 
-  Widget _buildInviteButton(
-    ContactsViewModel viewModel,
-  ) =>
-      FormButton(
+  Widget _buildInviteButton() => FormButton(
         text: AppLocalizations.of(context).sendInvite,
         onPressed: () => Share.share(
           AppLocalizations.of(context).inviteCodeText(
             AppLocalizations.appTitle,
-            viewModel.inviteCode.code,
+            context.bloc<AuthBloc>().state.user.inviteCode.code,
           ),
         ),
       );

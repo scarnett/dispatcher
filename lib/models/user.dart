@@ -7,12 +7,14 @@ class User extends Equatable {
   final String name;
   final String email;
   final UserPhoneNumber phone;
+  final UserInviteCode inviteCode;
 
   User({
     this.identifier,
     this.name,
     this.email,
     this.phone,
+    this.inviteCode,
   });
 
   User copyWith({
@@ -20,12 +22,14 @@ class User extends Equatable {
     String name,
     String email,
     UserPhoneNumber phone,
+    UserInviteCode inviteCode,
   }) =>
       User(
         identifier: identifier ?? this.identifier,
         name: name ?? this.name,
         email: email ?? this.email,
         phone: phone ?? this.phone,
+        inviteCode: inviteCode ?? this.inviteCode,
       );
 
   static User fromJson(
@@ -36,6 +40,7 @@ class User extends Equatable {
         name: json['name'],
         email: json['email'],
         phone: UserPhoneNumber.fromJson(json['user_phone_number']),
+        inviteCode: UserInviteCode.fromJson(json['user_invite_code']),
       );
 
   dynamic toJson() => {
@@ -43,14 +48,15 @@ class User extends Equatable {
         'name': name,
         'email': email,
         'phone': phone.toJson(),
+        'inviteCode': inviteCode.toJson(),
       };
 
   @override
-  List<Object> get props => [identifier, name, email, phone];
+  List<Object> get props => [identifier, name, email, phone, inviteCode];
 
   @override
   String toString() =>
-      'User{identifier: $identifier, name: $name, email: $email, phone: $phone}';
+      'User{identifier: $identifier, name: $name, email: $email, phone: $phone, inviteCode: $inviteCode}';
 }
 
 class UserPhoneNumber extends Equatable {
@@ -104,6 +110,41 @@ class UserPhoneNumber extends Equatable {
   @override
   String toString() =>
       'UserPhoneNumber{dial_code: $dialCode, iso_code: $isoCode, phone_number: $phoneNumber}';
+}
+
+class UserInviteCode {
+  final String code;
+  final DateTime expireDate;
+
+  UserInviteCode({
+    this.code,
+    this.expireDate,
+  });
+
+  UserInviteCode copyWith({
+    String code,
+    DateTime expireDate,
+  }) =>
+      UserInviteCode(
+        code: code ?? this.code,
+        expireDate: expireDate ?? this.expireDate,
+      );
+
+  static UserInviteCode fromJson(
+    dynamic json,
+  ) =>
+      UserInviteCode(
+        code: json['code'],
+        expireDate: fromIso8601String(json['expire_date']),
+      );
+
+  dynamic toJson() => {
+        'code': code,
+        'expire_date': toIso8601String(expireDate),
+      };
+
+  @override
+  String toString() => 'UserInviteCode{code: $code, expire_date: $expireDate}';
 }
 
 class UserPIN extends Equatable {

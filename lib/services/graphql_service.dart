@@ -7,7 +7,7 @@ class GraphQLService {
     String token,
   ) {
     HttpLink link = HttpLink(
-      uri: 'https://proper-molly-55.hasura.app/v1/graphql',
+      uri: 'https://proper-molly-55.hasura.app/v1/graphql', // TODO! config
       headers: {
         'Authorization': 'Bearer $token',
       },

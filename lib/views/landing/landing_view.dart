@@ -12,11 +12,14 @@ class LandingView extends StatefulWidget {
 }
 
 class _LandingViewState extends State<LandingView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(
     BuildContext context,
   ) =>
       Scaffold(
+        key: _scaffoldKey,
         body: Container(
           child: Spinner(
             message: AppLocalizations.of(context).loading,

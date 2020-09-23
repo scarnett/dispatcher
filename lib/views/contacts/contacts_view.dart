@@ -1,38 +1,58 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/routes.dart';
-import 'package:dispatcher/state.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/text_utils.dart';
-import 'package:dispatcher/views/contacts/contacts_utils.dart';
+import 'package:dispatcher/views/contacts/bloc/contacts_bloc.dart';
+import 'package:dispatcher/views/contacts/bloc/contacts_events.dart';
+import 'package:dispatcher/views/contacts/bloc/contacts_state.dart';
+import 'package:dispatcher/views/contacts/contact/contact_view.dart';
+import 'package:dispatcher/views/contacts/contacts_enums.dart';
 import 'package:dispatcher/views/contacts/widgets/contacts_appbar.dart';
-import 'package:dispatcher/views/contacts/contacts_viewmodel.dart';
 import 'package:dispatcher/views/contacts/contact/widgets/contact_avatar.dart';
 import 'package:dispatcher/widgets/none_found.dart';
 import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supercharged/supercharged.dart';
 
-class ContactsView extends StatefulWidget {
-  ContactsView({
+class ContactsView extends StatelessWidget {
+  static Route route() =>
+      MaterialPageRoute<void>(builder: (_) => ContactsView());
+
+  const ContactsView({
     Key key,
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ContactsViewState();
+  Widget build(
+    BuildContext context,
+  ) =>
+      BlocProvider<ContactsBloc>(
+        create: (BuildContext context) => ContactsBloc()
+          ..add(
+            FetchContactsData(context),
+          ),
+        child: ContactsPageView(),
+      );
 }
 
-class _ContactsViewState extends State<ContactsView>
+class ContactsPageView extends StatefulWidget {
+  ContactsPageView({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _ContactsPageViewState();
+}
+
+class _ContactsPageViewState extends State<ContactsPageView>
     with WidgetsBindingObserver, TickerProviderStateMixin {
-  // List of contact labels
-  List<String> _contactsLabels = <String>[];
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // List of filtered contacts
-  List<Contact> _filteredContacts = <Contact>[];
+  PageController _pageController;
 
-  // The contact list tab controller
-  TabController _contactTabController;
+  TabController _tabController;
 
   // The scroll controller for the ListView
   ScrollController _contactListViewController;
@@ -40,16 +60,23 @@ class _ContactsViewState extends State<ContactsView>
   // The text controller for the search field
   TextEditingController _searchTextController;
 
-  // Search contacts criteria
-  String _searchCriteria;
-
-  // The index of the active contact tab
-  int _activeContactTabIndex = 0;
-
   @override
   void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    // Setup the PageView controller
+    _pageController = PageController(
+      initialPage: 0,
+    )..addListener(() {
+        // Clear the active contact if the user navigates back to the contact list
+        if (_pageController.page.round() == 0) {
+          context.bloc<ContactsBloc>().add(ClearActiveContact());
+        }
+      });
+
+    // Setup the TabBar controller
+    _tabController = TabController(
+      vsync: this,
+      length: 0,
+    );
 
     // Setup the ListView controller
     _contactListViewController = ScrollController();
@@ -57,99 +84,75 @@ class _ContactsViewState extends State<ContactsView>
     // Setup the Search text controller
     _searchTextController = TextEditingController();
 
-    // Setup the tab controller
-    _contactTabController = TabController(
-      vsync: this,
-      length: 0,
-    );
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _pageController?.dispose();
+    _tabController?.dispose();
+    _contactListViewController?.dispose();
+    _searchTextController?.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(
     BuildContext context,
   ) =>
-      StoreConnector<AppState, ContactsViewModel>(
-        converter: (store) => ContactsViewModel.fromStore(store),
-        onInitialBuild: (viewModel) {
-          askContactsPermissions(viewModel, context);
+      BlocListener<ContactsBloc, ContactsState>(
+        listener: (
+          BuildContext context,
+          ContactsState state,
+        ) {
+          _updateContactsLabels(state);
 
-          _filteredContacts = _getFilteredContacts(viewModel);
-          _searchTextController
-              .addListener(() => _filterContactsListener(viewModel));
-
-          updateContactsLabels(viewModel);
+          if (!state.searching) {
+            _searchTextController.clear();
+          }
         },
-        onWillChange: (_, viewModel) => updateContactsLabels(viewModel),
-        builder: (_, viewModel) => Scaffold(
-          appBar: ContactsAppBar(
-            height: 140,
-            tabController: _contactTabController,
-            tabLabels: _contactsLabels..sort(),
-          ),
-          body: Column(
-            children: <Widget>[
-              _buildSearch(viewModel),
-              _buildContacts(viewModel),
-            ],
+        child: BlocBuilder<ContactsBloc, ContactsState>(
+          builder: (
+            BuildContext context,
+            ContactsState state,
+          ) =>
+              WillPopScope(
+            onWillPop: () => _willPopCallback(state),
+            child: AnimatedBuilder(
+              animation: _pageController,
+              builder: (
+                BuildContext context,
+                Widget _,
+              ) =>
+                  PageView(
+                controller: _pageController,
+                physics: NeverScrollableScrollPhysics(),
+                children: _getPages(state),
+              ),
+            ),
           ),
         ),
       );
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _contactTabController.dispose();
-    _contactListViewController.dispose();
-    _searchTextController.dispose();
-    super.dispose();
-  }
-
-  /// Updates the contacts labels list.
-  updateContactsLabels(
-    ContactsViewModel viewModel,
-  ) =>
-      setState(() {
-        _contactsLabels = viewModel.contactsLabels;
-
-        // Setup the tab controller
-        _contactTabController = TabController(
-          vsync: this,
-          length: _contactsLabels.length,
-        );
-
-        _contactTabController.addListener(() => _handleTabSelection(viewModel));
-      });
-
-  /// Listens to the search criteria and filters the contacts list.
-  _filterContactsListener(
-    ContactsViewModel viewModel,
-  ) =>
-      setState(() {
-        _searchCriteria = _searchTextController.text;
-        _filteredContacts = _getFilteredContacts(viewModel);
-      });
-
-  /// Handles a tap on one of the tabs.
-  void _handleTabSelection(
-    ContactsViewModel viewModel,
+  /// Handles the android back button
+  Future<bool> _willPopCallback(
+    ContactsState state,
   ) {
-    if (!_contactTabController.indexIsChanging) {
-      setState(() {
-        _activeContactTabIndex = _contactTabController.index;
-        _filteredContacts = _getFilteredContacts(viewModel);
-
-        // Scrolls the list back to the top
-        _contactListViewController
-            .jumpTo(_contactListViewController.position.minScrollExtent);
-      });
+    if (_pageController.page.round() > 0) {
+      moveToPage(_pageController, ContactsMode.CONTACTS);
+      return Future.value(false);
     }
+
+    return Future.value(true);
   }
 
   /// Builds the search text field widget.
   Widget _buildSearch(
-    ContactsViewModel viewModel,
+    ContactsState state,
   ) {
-    if (viewModel.searching) {
+    if (state.searching) {
       return Padding(
         padding: const EdgeInsets.only(
           bottom: 2.0,
@@ -160,15 +163,17 @@ class _ContactsViewState extends State<ContactsView>
         child: TextFormField(
           autofocus: true,
           controller: _searchTextController,
+          onChanged: (criteria) =>
+              context.bloc<ContactsBloc>().add(SearchChanged(criteria)),
           decoration: InputDecoration(
             hintText: AppLocalizations.of(context).search,
-            suffixIcon: (_searchCriteria != '')
+            suffixIcon: (state.search.value != '')
                 ? IconButton(
                     icon: Icon(
                       Icons.close,
                       color: AppTheme.hint,
                     ),
-                    onPressed: () => _searchTextController.clear(),
+                    onPressed: _tapClearSearch,
                   )
                 : null,
           ),
@@ -179,15 +184,54 @@ class _ContactsViewState extends State<ContactsView>
     return Container();
   }
 
+  /// Builds the PageView pages
+  List<Widget> _getPages(
+    ContactsState state,
+  ) {
+    List<Widget> pages = [];
+    pages
+      ..add(_getContacts(state))
+      ..add(
+        ContactView(
+          pageController: _pageController,
+        ),
+      );
+
+    return pages;
+  }
+
+  /// Builds the 'contacts' page
+  Widget _getContacts(
+    ContactsState state,
+  ) =>
+      Scaffold(
+        key: _scaffoldKey,
+        resizeToAvoidBottomInset: true,
+        appBar: ContactsAppBar(
+          height: 140,
+          tabController: _tabController,
+        ),
+        body: Column(
+          children: <Widget>[
+            _buildSearch(state),
+            _buildContacts(state),
+          ],
+        ),
+      );
+
   /// Builds a list of contact widgets.
   Widget _buildContacts(
-    ContactsViewModel viewModel,
+    ContactsState state,
   ) {
-    if (_filteredContacts == null) {
+    if (state.contacts == null) {
       return Spinner();
     }
 
-    if (_filteredContacts.length == 0) {
+    List<Contact> _contacts = (state.filteredContacts != null)
+        ? state.filteredContacts
+        : state.contacts;
+
+    if (_contacts?.length == 0) {
       return NoneFound(
         message: AppLocalizations.of(context).contactsNone,
       );
@@ -198,15 +242,15 @@ class _ContactsViewState extends State<ContactsView>
         controller: _contactListViewController,
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
-        itemCount: _filteredContacts?.length ?? 0,
+        itemCount: _contacts?.length ?? 0,
         itemBuilder: (
           BuildContext context,
           int index,
         ) {
-          Contact contact = _filteredContacts?.elementAt(index);
+          Contact contact = _contacts?.elementAt(index);
 
           return InkWell(
-            onTap: () => _setActiveContact(viewModel, contact),
+            onTap: () => _tapContact(contact),
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 10.0,
@@ -261,54 +305,44 @@ class _ContactsViewState extends State<ContactsView>
     );
   }
 
-  /// Filters the contact list by label
-  List<Contact> _getFilteredContacts(
-    ContactsViewModel viewModel,
-  ) {
-    if (_activeContactTabIndex == 0) {
-      return _filterByCriteria(viewModel.contacts);
-    }
-
-    List<Contact> filteredContacts = <Contact>[];
-
-    for (Contact contact in viewModel.contacts) {
-      String activeTabLabel =
-          (_contactsLabels[_activeContactTabIndex]).toLowerCase();
-
-      List<Item> labels = contact.emails
-          .where((email) => (email.label.toLowerCase() == activeTabLabel))
-          .toList();
-
-      if (labels.length > 0) {
-        filteredContacts..add(contact);
-      }
-    }
-
-    return _filterByCriteria(filteredContacts);
-  }
-
-  /// Filters the contact list by search criteria
-  List<Contact> _filterByCriteria(
-    List<Contact> contacts,
-  ) {
-    if ((_searchCriteria != null) && (_searchCriteria.length > 1)) {
-      return contacts
-          .where((contact) => contact.displayName
-              .toLowerCase()
-              .contains(_searchCriteria.toLowerCase()))
-          .toList();
-    }
-
-    return contacts;
-  }
-
-  /// Sets the active contact and navigates to the contact details
-  void _setActiveContact(
-    ContactsViewModel viewModel,
+  /// Handles the 'contact' tap
+  void _tapContact(
     Contact contact,
   ) {
-    viewModel.setActiveContact(contact.identifier);
-    viewModel.toggleSearching(searching: false);
-    Navigator.pushNamed(context, AppRoutes.contact.name);
+    context.bloc<ContactsBloc>().add(ActiveContact(contact.identifier));
+    moveToPage(_pageController, ContactsMode.CONTACT);
+  }
+
+  /// Handles the 'clear search' tap
+  void _tapClearSearch() {
+    _searchTextController.clear();
+    context.bloc<ContactsBloc>().add(const ClearSearch());
+  }
+
+  void _updateContactsLabels(
+    ContactsState state,
+  ) {
+    setState(() {
+      // Setup the tab controller
+      _tabController = TabController(
+        vsync: this,
+        length: (state.contactLabels == null) ? 0 : state.contactLabels.length,
+      );
+
+      _tabController.animateTo(state.activeContactTabIndex);
+    });
+  }
+
+  void moveToPage(
+    PageController pageController,
+    ContactsMode contactsMode, {
+    int pageAnimationDuration: 150,
+    Cubic pageAnimationCurve: Curves.easeInOut,
+  }) {
+    pageController.animateToPage(
+      contactsMode.pageIndex,
+      duration: pageAnimationDuration.milliseconds,
+      curve: pageAnimationCurve,
+    );
   }
 }
