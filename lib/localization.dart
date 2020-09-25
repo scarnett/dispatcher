@@ -196,6 +196,10 @@ class AppLocalizations {
         'Your PIN was updated successfully!',
         name: 'pinCodeUpdateConfirmationText',
       );
+
+  String get settingsUpdated =>
+      addMessage('Your settings were updated successfully!');
+
   String get avatarUpdated =>
       addMessage('Your avatar was updated successfully!');
 

@@ -11,9 +11,6 @@ class HomeState extends Equatable {
 
   const HomeState.initial() : this._();
 
-  const HomeState.selectedTabIndex(int selectedTabIndex)
-      : this._(selectedTabIndex: selectedTabIndex);
-
   HomeState copyWith({
     int selectedTabIndex,
   }) =>

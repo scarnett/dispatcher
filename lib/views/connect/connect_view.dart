@@ -1,4 +1,3 @@
-import 'package:dispatcher/device/widgets/device_avatar.dart';
 import 'package:dispatcher/extensions/string_extensions.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/state.dart';
@@ -7,6 +6,7 @@ import 'package:dispatcher/views/connect/connect_viewmodel.dart';
 import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/pin_code.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
+import 'package:dispatcher/views/avatar/widgets/avatar_display.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -129,7 +129,6 @@ class _ConnectViewState extends State<ConnectView> {
             ),
           ),
           FormButton(
-            color: AppTheme.primary,
             text: AppLocalizations.of(context).lookup,
             onPressed: (!inviteCode.isNullEmptyOrWhitespace &&
                     (inviteCode.length == INVITE_CODE_LENGTH))
@@ -170,8 +169,8 @@ class _ConnectViewState extends State<ConnectView> {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 10.0),
-              child: DeviceAvatar(
-                user: viewModel.lookupResult.user,
+              child: AvatarDisplay(
+                user: null, // TODO!
                 avatarRadius: 48.0,
               ),
             ),
@@ -188,7 +187,6 @@ class _ConnectViewState extends State<ConnectView> {
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
               child: FormButton(
-                color: AppTheme.primary,
                 text: AppLocalizations.of(context).connect,
                 onPressed: () => viewModel.connectDevice(
                   viewModel.deviceId,
@@ -234,8 +232,8 @@ class _ConnectViewState extends State<ConnectView> {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 10.0),
-              child: DeviceAvatar(
-                user: viewModel.lookupResult.user,
+              child: AvatarDisplay(
+                user: null, // TODO!
                 avatarRadius: 48.0,
               ),
             ),
@@ -276,8 +274,8 @@ class _ConnectViewState extends State<ConnectView> {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 10.0),
-              child: DeviceAvatar(
-                user: viewModel.lookupResult.user,
+              child: AvatarDisplay(
+                user: null, // TODO!
                 avatarRadius: 48.0,
               ),
             ),

@@ -2,6 +2,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/shadow_utils.dart';
 import 'package:dispatcher/utils/user_utils.dart';
+import 'package:dispatcher/widgets/progress.dart';
 import 'package:flutter/material.dart';
 
 class ContactAvatar extends StatefulWidget {
@@ -67,7 +68,7 @@ class _ContactAvatarState extends State<ContactAvatar> {
         (widget.contact.avatar.length == 0)) {
       return Padding(
         padding: const EdgeInsets.all(10.0),
-        child: CircularProgressIndicator(),
+        child: Progress(),
       );
     }
 

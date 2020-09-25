@@ -3,6 +3,7 @@ import 'package:dispatcher/model.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/views/auth/create/bloc/bloc.dart';
 import 'package:dispatcher/widgets/form_button.dart';
+import 'package:dispatcher/widgets/progress.dart';
 import 'package:dispatcher/widgets/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -169,7 +170,7 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
             top: 10.0,
           ),
           child: state.status.isSubmissionInProgress
-              ? const CircularProgressIndicator()
+              ? Progress()
               : FormButton(
                   key: const Key('createForm_create_formButton'),
                   text: AppLocalizations.of(context).create,

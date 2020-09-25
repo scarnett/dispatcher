@@ -1,7 +1,6 @@
 import 'package:dispatcher/reducers.dart';
 import 'package:dispatcher/sms/sms_middleware.dart';
 import 'package:dispatcher/state.dart';
-import 'package:dispatcher/storage/storage_middleware.dart';
 import 'package:dispatcher/views/connect/connect_middleware.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_epics/redux_epics.dart';
@@ -38,7 +37,6 @@ Future<Store<AppState>> createDevStore() async {
           ...smsMiddleware,
         ]),
       ),
-      StorageMiddleware(),
     ]);
 
   return _getDefaultStoreConfiguration();
@@ -58,7 +56,6 @@ Future<Store<AppState>> _getDefaultStoreConfiguration({
                 ...smsMiddleware,
               ]),
             ),
-            StorageMiddleware(),
           ]
         : middleware,
   );

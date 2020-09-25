@@ -2,31 +2,49 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:camera/camera.dart';
-import 'package:dispatcher/device/device_viewmodel.dart';
-import 'package:dispatcher/state.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/date_utils.dart';
 import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
-class CameraView extends StatefulWidget {
+class CameraView extends StatelessWidget {
   final void Function(String filePath) saveCallback;
   final void Function() closeCallback;
 
-  CameraView({
+  const CameraView({
     Key key,
     this.saveCallback,
     this.closeCallback,
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _CameraViewState();
+  Widget build(
+    BuildContext context,
+  ) =>
+      CameraPageView(
+        saveCallback: saveCallback,
+        closeCallback: closeCallback,
+      );
 }
 
-class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
+class CameraPageView extends StatefulWidget {
+  final void Function(String filePath) saveCallback;
+  final void Function() closeCallback;
+
+  CameraPageView({
+    Key key,
+    this.saveCallback,
+    this.closeCallback,
+  }) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _CameraPageViewState();
+}
+
+class _CameraPageViewState extends State<CameraPageView>
+    with TickerProviderStateMixin {
   final ImagePicker _picker = ImagePicker();
   CameraController _controller;
   List<CameraDescription> _cameras;
@@ -36,25 +54,29 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
   double max = (pi * 2.0);
 
   @override
+  void initState() {
+    super.initState();
+
+    _loadCameras().then((value) {
+      CameraDescription camera = _cameras[_selectedCamera];
+      _onNewCameraSelected(camera);
+    });
+  }
+
+  @override
   Widget build(
     BuildContext context,
   ) =>
-      StoreConnector<AppState, DeviceViewModel>(
-        converter: (store) => DeviceViewModel.fromStore(store),
-        onInitialBuild: (viewModel) async {
-          await _loadCameras();
-
-          CameraDescription camera = _cameras[_selectedCamera];
-          _onNewCameraSelected(camera);
-        },
-        builder: (_, viewModel) => FutureBuilder<List<CameraDescription>>(
+      Scaffold(
+        extendBody: true,
+        body: FutureBuilder<List<CameraDescription>>(
           future: availableCameras(),
           builder: (
             BuildContext context,
             AsyncSnapshot<List<CameraDescription>> snapshot,
           ) {
             if (snapshot.hasData) {
-              return _createContent(viewModel);
+              return _createContent();
             }
 
             return Spinner();
@@ -62,35 +84,33 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
         ),
       );
 
+  /// Loads the cameras
   Future<void> _loadCameras() async {
     WidgetsFlutterBinding.ensureInitialized();
     _cameras = await availableCameras();
   }
 
-  Widget _createContent(
-    DeviceViewModel viewModel,
-  ) =>
-      Column(
+  /// Creates the content
+  Widget _createContent() => Column(
         children: <Widget>[
           Expanded(
             child: Container(
               child: Center(
-                child: _cameraPreviewWidget(viewModel),
+                child: _cameraPreviewWidget(),
               ),
             ),
           ),
         ],
       );
 
-  Widget _cameraPreviewWidget(
-    DeviceViewModel viewModel,
-  ) {
+  /// Creates the camera preview overlays
+  Widget _cameraPreviewWidget() {
     if (_controller.value.isInitialized) {
       List<Widget> children = List<Widget>();
       children
         ..addAll([
           _buildPreview(),
-          _buildPreviewOverlays(viewModel),
+          _buildPreviewOverlays(),
           _buildCloseButton(),
         ]);
 
@@ -102,6 +122,7 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
     return Container();
   }
 
+  /// Builds the close button
   Widget _buildCloseButton() => Positioned(
         top: 40.0,
         left: 20.0,
@@ -114,6 +135,7 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
         ),
       );
 
+  /// Builds the preview
   Widget _buildPreview() {
     final size = MediaQuery.of(context).size;
     final deviceRatio = (size.width / size.height);
@@ -129,9 +151,8 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildPreviewOverlays(
-    DeviceViewModel viewModel,
-  ) {
+  /// Builds the preview overlays
+  Widget _buildPreviewOverlays() {
     if ((_controller == null) || !_controller.value.isInitialized) {
       return Container();
     }
@@ -142,12 +163,13 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           _buildRuleOfThirdsLayer(),
-          _buildControls(viewModel),
+          _buildControls(),
         ],
       ),
     );
   }
 
+  /// Builds the 'rule of thirds' overlay
   Widget _buildRuleOfThirdsLayer() => Expanded(
         child: Container(
           child: Column(
@@ -192,9 +214,8 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
         ),
       );
 
-  Widget _buildControls(
-    DeviceViewModel viewModel,
-  ) {
+  /// Builds the controls
+  Widget _buildControls() {
     if ((_controller == null) || !_controller.value.isInitialized) {
       // TODO! loading...
       return Container();
@@ -235,7 +256,7 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
                 RawMaterialButton(
                   onPressed: () =>
                       (_controller != null) && _controller.value.isInitialized
-                          ? _tapTakePicture(viewModel)
+                          ? _tapTakePicture()
                           : null,
                   child: Container(
                     width: 60.0,
@@ -263,7 +284,7 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
                   padding: const EdgeInsets.all(2.0),
                 ),
                 RawMaterialButton(
-                  onPressed: () => _tapSelectPhoto(viewModel),
+                  onPressed: () => _tapSelectPhoto(),
                   child: Icon(
                     Icons.add_a_photo,
                     color: Colors.white,
@@ -281,6 +302,7 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
     );
   }
 
+  /// Builds a 'rule of thirds' cell
   Widget _buildRuleOfThirdsCell(
     int index,
   ) =>
@@ -302,6 +324,7 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
         ),
       );
 
+  /// Handles a 'select camera' tap
   void _tapSelectCamera(
     context,
   ) {
@@ -330,34 +353,32 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
     );
   }
 
-  void _tapSelectPhoto(
-    DeviceViewModel viewModel,
-  ) async {
+  /// Handles a 'select photo' tap
+  void _tapSelectPhoto() async {
     try {
       final PickedFile image = await _picker.getImage(
         source: ImageSource.gallery,
       );
 
       if (mounted) {
-        _uploadImage(viewModel, image.path);
+        _uploadImage(image.path);
       }
     } catch (e) {
       // TODO!
     }
   }
 
-  void _tapTakePicture(
-    DeviceViewModel viewModel,
-  ) async {
+  /// Handles a 'take picture' tap
+  void _tapTakePicture() async {
     String filePath = await _takePicture('/dispatcher/photos');
 
     if (mounted) {
-      _uploadImage(viewModel, filePath);
+      _uploadImage(filePath);
     }
   }
 
+  /// Starts the image upload
   void _uploadImage(
-    DeviceViewModel viewModel,
     String filePath,
   ) async {
     if (widget.saveCallback != null) {
@@ -365,6 +386,7 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
     }
   }
 
+  /// Takes a picture
   Future<String> _takePicture(
     String folder,
   ) async {
@@ -391,6 +413,7 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
     return filePath;
   }
 
+  /// Handles the camera selection
   void _onNewCameraSelected(
     CameraDescription camera, {
     bool popNav = false,
@@ -434,6 +457,7 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
     // showInSnackBar('Error: ${e.code}\n${e.description}');
   }
 
+  /// Builds the 'camera lens' icon
   IconData _getCameraLensIcon(
     CameraDescription camera,
   ) {
@@ -451,6 +475,7 @@ class _CameraViewState extends State<CameraView> with TickerProviderStateMixin {
     throw ArgumentError('Unknown lens direction');
   }
 
+  /// Gets the select camera name
   String _getCameraName(
     CameraDescription camera,
   ) {

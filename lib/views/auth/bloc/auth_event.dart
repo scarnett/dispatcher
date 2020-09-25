@@ -31,3 +31,10 @@ class SetAuthFormMode extends AuthEvent {
   @override
   List<Object> get props => [mode];
 }
+
+class LoadUser extends AuthEvent {
+  const LoadUser();
+
+  @override
+  List<Object> get props => [];
+}

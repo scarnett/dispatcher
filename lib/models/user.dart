@@ -8,6 +8,7 @@ class User extends Equatable {
   final String email;
   final UserPhoneNumber phone;
   final UserInviteCode inviteCode;
+  final UserAvatar avatar;
 
   User({
     this.identifier,
@@ -15,6 +16,7 @@ class User extends Equatable {
     this.email,
     this.phone,
     this.inviteCode,
+    this.avatar,
   });
 
   User copyWith({
@@ -23,6 +25,7 @@ class User extends Equatable {
     String email,
     UserPhoneNumber phone,
     UserInviteCode inviteCode,
+    UserAvatar avatar,
   }) =>
       User(
         identifier: identifier ?? this.identifier,
@@ -30,6 +33,7 @@ class User extends Equatable {
         email: email ?? this.email,
         phone: phone ?? this.phone,
         inviteCode: inviteCode ?? this.inviteCode,
+        avatar: avatar ?? this.avatar,
       );
 
   static User fromJson(
@@ -41,6 +45,7 @@ class User extends Equatable {
         email: json['email'],
         phone: UserPhoneNumber.fromJson(json['user_phone_number']),
         inviteCode: UserInviteCode.fromJson(json['user_invite_code']),
+        avatar: UserAvatar.fromJson(json['user_avatar']),
       );
 
   dynamic toJson() => {
@@ -49,14 +54,16 @@ class User extends Equatable {
         'email': email,
         'phone': phone.toJson(),
         'inviteCode': inviteCode.toJson(),
+        'avatar': avatar.toJson(),
       };
 
   @override
-  List<Object> get props => [identifier, name, email, phone, inviteCode];
+  List<Object> get props =>
+      [identifier, name, email, phone, inviteCode, avatar];
 
   @override
   String toString() =>
-      'User{identifier: $identifier, name: $name, email: $email, phone: $phone, inviteCode: $inviteCode}';
+      'User{identifier: $identifier, name: $name, email: $email, phone: $phone, inviteCode: $inviteCode, avatar: $avatar}';
 }
 
 class UserPhoneNumber extends Equatable {
@@ -112,7 +119,7 @@ class UserPhoneNumber extends Equatable {
       'UserPhoneNumber{dial_code: $dialCode, iso_code: $isoCode, phone_number: $phoneNumber}';
 }
 
-class UserInviteCode {
+class UserInviteCode extends Equatable {
   final String code;
   final DateTime expireDate;
 
@@ -144,7 +151,44 @@ class UserInviteCode {
       };
 
   @override
+  List<Object> get props => [code, expireDate];
+
+  @override
   String toString() => 'UserInviteCode{code: $code, expire_date: $expireDate}';
+}
+
+class UserAvatar extends Equatable {
+  final String url;
+
+  UserAvatar({
+    this.url,
+  });
+
+  UserAvatar copyWith({
+    String url,
+  }) =>
+      UserAvatar(
+        url: url ?? this.url,
+      );
+
+  static UserAvatar fromJson(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? UserAvatar()
+          : UserAvatar(
+              url: json['url'],
+            );
+
+  dynamic toJson() => {
+        'url': url,
+      };
+
+  @override
+  List<Object> get props => [url];
+
+  @override
+  String toString() => 'UserAvatar{url: $url}';
 }
 
 class UserPIN extends Equatable {

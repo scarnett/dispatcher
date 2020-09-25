@@ -215,6 +215,7 @@ class _HomePageViewState extends State<HomePageView> {
         ],
       );
 
+  /// Gets the tab containers
   List<Widget> _getTabContainers() => <Widget>[
         DashboardView(),
         ConnectionsView(),

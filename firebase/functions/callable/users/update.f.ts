@@ -37,6 +37,6 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
 
     return response
   } catch (e) {
-    throw new functions.https.HttpsError('aborted', 'signup-failed', JSON.stringify(e, undefined, 2))
+    throw new functions.https.HttpsError('aborted', 'user-update-failed', JSON.stringify(e, undefined, 2))
   }
 })

@@ -58,6 +58,6 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
     await admin.auth().setCustomUserClaims(userId, customClaims)
     return authRecord.toJSON()
   } catch (e) {
-    throw new functions.https.HttpsError('aborted', 'signup-failed', JSON.stringify(e, undefined, 2))
+    throw new functions.https.HttpsError('aborted', 'user-create-failed', JSON.stringify(e, undefined, 2))
   }
 })

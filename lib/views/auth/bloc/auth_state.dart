@@ -34,7 +34,9 @@ class AuthState extends Equatable {
         );
 
   const AuthState.unauthenticated()
-      : this._(status: AuthStatus.UNAUTHENTICATED);
+      : this._(
+          status: AuthStatus.UNAUTHENTICATED,
+        );
 
   const AuthState.loadUserFail() : this._();
 
@@ -48,7 +50,9 @@ class AuthState extends Equatable {
 
   const AuthState.formMode(
     AuthFormMode mode,
-  ) : this._(mode: mode);
+  ) : this._(
+          mode: mode,
+        );
 
   AuthState copyWith({
     AuthStatus status,
@@ -66,7 +70,7 @@ class AuthState extends Equatable {
       );
 
   @override
-  List<Object> get props => [status, mode, firebaseUser, token];
+  List<Object> get props => [status, mode, firebaseUser, user, token];
 
   @override
   String toString() =>

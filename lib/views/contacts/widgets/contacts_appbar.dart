@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ContactsAppBar extends StatefulWidget implements PreferredSizeWidget {
   // The contact list tab controller
-  TabController tabController;
+  final TabController tabController;
 
   // The height of the AppBar
   final double height;

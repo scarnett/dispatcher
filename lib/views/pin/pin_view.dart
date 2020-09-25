@@ -271,7 +271,6 @@ class _PINViewState extends State<PINView> {
               top: 10.0,
             ),
             child: FormButton(
-              color: AppTheme.primary,
               text: AppLocalizations.of(context).verifyCode,
               onPressed: (!_verificationCode.isNullEmptyOrWhitespace &&
                       (_verificationCode.length ==

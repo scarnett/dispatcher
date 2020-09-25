@@ -35,19 +35,30 @@ class SpinnerState extends State<Spinner> {
       children..add(_buildMessage());
     }
 
-    return Container(
-      color: (widget.fillColor == null)
-          ? AppTheme.loadingBackground
-          : widget.fillColor,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: children,
-        ),
-      ),
-    );
+    if (widget.fill) {
+      return Positioned.fill(
+        child: _buildContainer(children),
+      );
+    }
+
+    return _buildContainer(children);
   }
+
+  Widget _buildContainer(
+    List<Widget> children,
+  ) =>
+      Container(
+        color: (widget.fillColor == null)
+            ? AppTheme.loadingBackground
+            : widget.fillColor,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: children,
+          ),
+        ),
+      );
 
   /// Builds the 'loading' spinner
   Widget _buildSpinner() => CircularProgressIndicator();

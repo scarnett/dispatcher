@@ -13,6 +13,9 @@ const String fetchUserQueryStr = r'''
           code
           expire_date
         }
+        user_avatar {
+          url
+        }
       }
     }
     ''';
