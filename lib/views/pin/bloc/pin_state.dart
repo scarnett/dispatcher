@@ -10,12 +10,6 @@ class PINState extends Equatable {
     this.pin,
   });
 
-  const PINState.loadInProgress() : this._();
-
-  const PINState.loadSuccess(UserPIN pin) : this._(pin: pin);
-
-  const PINState.loadFail() : this._();
-
   PINState copyWith({
     UserPIN pin,
   }) {

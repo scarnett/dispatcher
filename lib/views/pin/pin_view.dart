@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'package:dispatcher/device/device_viewmodel.dart';
 import 'package:dispatcher/extensions/string_extensions.dart';
 import 'package:dispatcher/hive.dart';
 import 'package:dispatcher/localization.dart';
@@ -12,6 +11,9 @@ import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/date_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
+import 'package:dispatcher/views/auth/bloc/bloc.dart';
+import 'package:dispatcher/views/pin/bloc/pin_bloc.dart';
+import 'package:dispatcher/views/pin/bloc/pin_state.dart';
 import 'package:dispatcher/views/pin/pin_config.dart';
 import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/pin_code.dart';
@@ -19,21 +21,39 @@ import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pointycastle/export.dart' as rsa;
 
 // Displays the 'PIN' view
-class PINView extends StatefulWidget {
-  PINView({
+class PINView extends StatelessWidget {
+  static Route route() => MaterialPageRoute<void>(builder: (_) => PINView());
+
+  const PINView({
     Key key,
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _PINViewState();
+  Widget build(
+    BuildContext context,
+  ) =>
+      BlocProvider<PINBloc>(
+        create: (BuildContext context) => PINBloc(),
+        child: PINPageView(),
+      );
 }
 
-class _PINViewState extends State<PINView> {
+class PINPageView extends StatefulWidget {
+  PINPageView({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _PINPageViewState();
+}
+
+class _PINPageViewState extends State<PINPageView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _phoneNumberFormKey = GlobalKey<FormState>();
   TextEditingController _phoneController = TextEditingController();
@@ -47,19 +67,25 @@ class _PINViewState extends State<PINView> {
   Widget build(
     BuildContext context,
   ) =>
-      Scaffold(
-        key: _scaffoldKey,
-        appBar: SimpleAppBar(
-          height: 100.0,
-        ),
-        body: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Align(
-            alignment: Alignment.center,
-            child: Column(
-              children: <Widget>[
-                _buildBody(null),
-              ],
+      BlocBuilder<PINBloc, PINState>(
+        builder: (
+          BuildContext context,
+          PINState state,
+        ) =>
+            Scaffold(
+          key: _scaffoldKey,
+          appBar: SimpleAppBar(
+            height: 100.0,
+          ),
+          body: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Align(
+              alignment: Alignment.center,
+              child: Column(
+                children: <Widget>[
+                  _buildBody(),
+                ],
+              ),
             ),
           ),
         ),
@@ -75,40 +101,35 @@ class _PINViewState extends State<PINView> {
   }
 
   /// Builds the pin body
-  Widget _buildBody(
-    DeviceViewModel viewModel,
-  ) {
+  Widget _buildBody() {
     DateTime now = getNow();
+    User user = context.bloc<AuthBloc>().state.user;
 
     if (_verified) {
-      return _buildPINCodeForm(viewModel);
+      return _buildPINCodeForm();
     } else if (_saved) {
-      return _buildPINCodeConfirmation(viewModel);
-    } else if (viewModel
-        .device.user.phone.phoneNumber.isNullEmptyOrWhitespace) {
-      return _buildPhoneNumberMessage(viewModel);
-    } else if ((viewModel.device.user.pin == null) ||
-        viewModel.device.user.pin.verificationCode.isNullEmptyOrWhitespace ||
-        now.isAfter(viewModel.device.user.pin.verificationExpireDate)) {
-      if (!viewModel.device.user.pin.verificationCode.isNullEmptyOrWhitespace) {
+      return _buildPINCodeConfirmation();
+    } else if (user.phone.phoneNumber.isNullEmptyOrWhitespace) {
+      return _buildPhoneNumberMessage();
+    } else if ((user.pin?.pinCode == null) ||
+        user.pin.verificationCode.isNullEmptyOrWhitespace ||
+        now.isAfter(user.pin.verificationExpireDate)) {
+      if (!user.pin.verificationCode.isNullEmptyOrWhitespace) {
         // viewModel.clearPINVerificationCode(viewModel.device.id);
       }
 
-      return _buildSendVerificationCodeForm(viewModel);
-    } else if ((viewModel.device.user.pin != null) &&
-        !viewModel.device.user.pin.verificationCode.isNullEmptyOrWhitespace &&
-        now.isBefore(viewModel.device.user.pin.verificationExpireDate)) {
-      return _buildCodeVerificationForm(viewModel);
+      return _buildSendVerificationCodeForm();
+    } else if ((user.pin != null) &&
+        !user.pin.verificationCode.isNullEmptyOrWhitespace &&
+        now.isBefore(user.pin.verificationExpireDate)) {
+      return _buildCodeVerificationForm();
     }
 
     return Spinner();
   }
 
   /// Builds the 'phone number' message
-  Widget _buildPhoneNumberMessage(
-    DeviceViewModel viewModel,
-  ) =>
-      Column(
+  Widget _buildPhoneNumberMessage() => Column(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(
@@ -121,32 +142,29 @@ class _PINViewState extends State<PINView> {
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ),
-          _buildPhoneNumberForm(viewModel),
+          _buildPhoneNumberForm(),
           Padding(
             padding: const EdgeInsets.only(
               top: 10.0,
             ),
             child: FormButton(
               text: AppLocalizations.of(context).updatePhoneNumber,
-              onPressed: () => _tapSavePhoneNumber(viewModel),
+              onPressed: () => _tapSavePhoneNumber(),
             ),
           ),
           FormButton(
             color: Colors.transparent,
             text: AppLocalizations.of(context).cancel,
-            onPressed: () => _tapCancel(viewModel),
+            onPressed: () => _tapCancel(),
             textColor: AppTheme.accent,
           ),
         ],
       );
 
   /// Builds the 'phone number' form
-  Widget _buildPhoneNumberForm(
-    DeviceViewModel viewModel,
-  ) {
-    List<Widget> tiles = [];
-    tiles
-      ..add(
+  Widget _buildPhoneNumberForm() {
+    User user = context.bloc<AuthBloc>().state.user;
+    List<Widget> tiles = []..add(
         Padding(
           padding: const EdgeInsets.only(
             left: 20.0,
@@ -158,10 +176,9 @@ class _PINViewState extends State<PINView> {
             selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
             ignoreBlank: true,
             autoValidate: false,
-            initialValue:
-                viewModel.device.user.phone.phoneNumber.isNullEmptyOrWhitespace
-                    ? PhoneNumber(isoCode: 'US') // TODO!
-                    : viewModel.device.user.phone.toPhoneNumber(),
+            initialValue: user.phone.phoneNumber.isNullEmptyOrWhitespace
+                ? PhoneNumber(isoCode: 'US') // TODO!
+                : user.phone.toPhoneNumber(),
             selectorTextStyle: Theme.of(context).textTheme.bodyText1,
             textFieldController: _phoneController,
             inputDecoration: InputDecoration(
@@ -182,10 +199,7 @@ class _PINViewState extends State<PINView> {
   }
 
   /// Builds the 'send verification code' form
-  Widget _buildSendVerificationCodeForm(
-    DeviceViewModel viewModel,
-  ) =>
-      Column(
+  Widget _buildSendVerificationCodeForm() => Column(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(
@@ -201,7 +215,13 @@ class _PINViewState extends State<PINView> {
             ),
           ),
           Text(
-            viewModel.device.user.phone.toPhoneNumber().phoneNumber,
+            context
+                .bloc<AuthBloc>()
+                .state
+                .user
+                .phone
+                .toPhoneNumber()
+                .phoneNumber,
             style: Theme.of(context).textTheme.headline6,
           ),
           Padding(
@@ -220,14 +240,13 @@ class _PINViewState extends State<PINView> {
             ),
             child: FormButton(
               text: AppLocalizations.of(context).sendCode,
-              onPressed: () => _tapSaveVerificationCode(viewModel),
+              onPressed: () => _tapSaveVerificationCode(),
             ),
           ),
           FormButton(
             color: Colors.transparent,
             text: AppLocalizations.of(context).cancel,
             onPressed: () => _tapCancel(
-              viewModel,
               clearVerificationCode: true,
             ),
             textColor: AppTheme.accent,
@@ -236,10 +255,7 @@ class _PINViewState extends State<PINView> {
       );
 
   /// Builds the 'code verification' form
-  Widget _buildCodeVerificationForm(
-    DeviceViewModel viewModel,
-  ) =>
-      Column(
+  Widget _buildCodeVerificationForm() => Column(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(
@@ -275,7 +291,7 @@ class _PINViewState extends State<PINView> {
               onPressed: (!_verificationCode.isNullEmptyOrWhitespace &&
                       (_verificationCode.length ==
                           PINConfig.VERIFICATION_CODE_LENGTH))
-                  ? () => _tapVerifyVerificationCode(viewModel)
+                  ? () => _tapVerifyVerificationCode()
                   : null,
             ),
           ),
@@ -283,7 +299,6 @@ class _PINViewState extends State<PINView> {
             color: Colors.transparent,
             text: AppLocalizations.of(context).resendCode,
             onPressed: () => _tapCancel(
-              viewModel,
               clearVerificationCode: true,
             ),
             textColor: AppTheme.accent,
@@ -292,7 +307,6 @@ class _PINViewState extends State<PINView> {
             color: Colors.transparent,
             text: AppLocalizations.of(context).cancel,
             onPressed: () => _tapCancel(
-              viewModel,
               clearVerificationCode: true,
             ),
             textColor: AppTheme.accent,
@@ -301,10 +315,7 @@ class _PINViewState extends State<PINView> {
       );
 
   /// Builds the 'pin code' form
-  Widget _buildPINCodeForm(
-    DeviceViewModel viewModel,
-  ) =>
-      Column(
+  Widget _buildPINCodeForm() => Column(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(
@@ -336,7 +347,7 @@ class _PINViewState extends State<PINView> {
               text: AppLocalizations.of(context).save,
               onPressed: (!_pinCode.isNullEmptyOrWhitespace &&
                       (_pinCode.length == PINConfig.PIN_CODE_LENGTH))
-                  ? () => _tapSavePIN(viewModel)
+                  ? () => _tapSavePIN()
                   : null,
             ),
           ),
@@ -344,7 +355,6 @@ class _PINViewState extends State<PINView> {
             color: Colors.transparent,
             text: AppLocalizations.of(context).cancel,
             onPressed: () => _tapCancel(
-              viewModel,
               clearVerificationCode: true,
             ),
             textColor: AppTheme.accent,
@@ -353,10 +363,7 @@ class _PINViewState extends State<PINView> {
       );
 
   /// Builds the 'pin code confirmation' form
-  Widget _buildPINCodeConfirmation(
-    DeviceViewModel viewModel,
-  ) =>
-      Column(
+  Widget _buildPINCodeConfirmation() => Column(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(
@@ -374,16 +381,14 @@ class _PINViewState extends State<PINView> {
             ),
             child: FormButton(
               text: AppLocalizations.of(context).ok,
-              onPressed: () => _tapCancel(viewModel),
+              onPressed: () => _tapCancel(),
             ),
           ),
         ],
       );
 
   /// Handles the 'save phone number' tap
-  void _tapSavePhoneNumber(
-    DeviceViewModel viewModel,
-  ) async {
+  void _tapSavePhoneNumber() async {
     if (_phoneNumberFormKey.currentState.validate()) {
       _phoneNumberFormKey.currentState.save();
 
@@ -418,21 +423,20 @@ class _PINViewState extends State<PINView> {
   }
 
   /// Handles the 'save verification code' tap
-  void _tapSaveVerificationCode(
-    DeviceViewModel viewModel,
-  ) async {
+  void _tapSaveVerificationCode() async {
+    User user = context.bloc<AuthBloc>().state.user;
     String verificationCode =
         getRandomNumber(length: PINConfig.VERIFICATION_CODE_LENGTH);
 
     Uint8List cipheredVerificationCode = encryptString(
-      RsaKeyHelper().parsePublicKeyFromPem(viewModel.device.publicKey),
+      RsaKeyHelper().parsePublicKeyFromPem(user.key.publicKey),
       verificationCode,
     );
 
     DateTime now = getNow();
     SMS sms = SMS(
-      device: viewModel.device.id,
-      inboundPhone: viewModel.device.user.phone.phoneNumber,
+      user: user.identifier,
+      inboundPhone: user.phone.phoneNumber,
       body: AppLocalizations.of(context).pinVerificationCodeSMSText(
         AppLocalizations.appTitle,
         verificationCode,
@@ -451,9 +455,8 @@ class _PINViewState extends State<PINView> {
   }
 
   /// Handles the 'verify verification code' tap
-  void _tapVerifyVerificationCode(
-    DeviceViewModel viewModel,
-  ) async {
+  void _tapVerifyVerificationCode() async {
+    User user = context.bloc<AuthBloc>().state.user;
     Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX);
 
     rsa.RSAPrivateKey privateKey =
@@ -461,7 +464,7 @@ class _PINViewState extends State<PINView> {
 
     String decipheredVerificationCode = decryptString(
       privateKey,
-      Uint8List.fromList(viewModel.device.user.pin.verificationCode.codeUnits),
+      Uint8List.fromList(user.pin.verificationCode.codeUnits),
     );
 
     if (decipheredVerificationCode == _verificationCode) {
@@ -480,11 +483,10 @@ class _PINViewState extends State<PINView> {
   }
 
   /// Handles the 'save pin' tap
-  void _tapSavePIN(
-    DeviceViewModel viewModel,
-  ) {
+  void _tapSavePIN() {
+    User user = context.bloc<AuthBloc>().state.user;
     Uint8List cipheredPIN = encryptString(
-      RsaKeyHelper().parsePublicKeyFromPem(viewModel.device.publicKey),
+      RsaKeyHelper().parsePublicKeyFromPem(user.key.publicKey),
       _pinCode,
     );
 
@@ -507,8 +509,7 @@ class _PINViewState extends State<PINView> {
   }
 
   /// Handles the 'cancel' tap
-  void _tapCancel(
-    DeviceViewModel viewModel, {
+  void _tapCancel({
     bool clearVerificationCode = false,
   }) {
     if (clearVerificationCode) {

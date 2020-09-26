@@ -1,6 +1,7 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/theme.dart';
+import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/text_utils.dart';
 import 'package:dispatcher/views/contacts/bloc/contacts_bloc.dart';
 import 'package:dispatcher/views/contacts/bloc/contacts_events.dart';
@@ -200,8 +201,28 @@ class _ContactsPageViewState extends State<ContactsPageView>
     return pages;
   }
 
-  /// Builds the 'contacts' page
+  /// Builds the content
   Widget _getContacts(
+    ContactsState state,
+  ) {
+    List<Widget> children = <Widget>[]..add(_buildContacts(state));
+
+    if (state.contacts == null) {
+      children.add(
+        Spinner(
+          message: AppLocalizations.of(context).contactsLoading,
+        ),
+      );
+    }
+
+    return Container(
+      child: Stack(
+        children: filterNullWidgets(children),
+      ),
+    );
+  }
+
+  Widget _buildContacts(
     ContactsState state,
   ) =>
       Scaffold(
@@ -214,19 +235,15 @@ class _ContactsPageViewState extends State<ContactsPageView>
         body: Column(
           children: <Widget>[
             _buildSearch(state),
-            _buildContacts(state),
+            _buildContactList(state),
           ],
         ),
       );
 
   /// Builds a list of contact widgets.
-  Widget _buildContacts(
+  Widget _buildContactList(
     ContactsState state,
   ) {
-    if (state.contacts == null) {
-      return Spinner();
-    }
-
     List<Contact> _contacts = (state.filteredContacts != null)
         ? state.filteredContacts
         : state.contacts;

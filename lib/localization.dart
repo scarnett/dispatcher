@@ -32,11 +32,17 @@ class AppLocalizations {
   String get dashboard => addMessage('Dashboard');
   String get contacts => addMessage('Contacts');
   String get contactsNone => addMessage('No contacts found');
+  String get contactsLoading =>
+      addMessage('Loading your contacts. Please wait...');
+
   String get connections => addMessage('Connections');
   String get settings => addMessage('Settings');
   String get menu => addMessage('Menu');
   String get photo => addMessage('Photo');
   String get takePhoto => addMessage('Take Photo');
+  String get uploadingPhoto =>
+      addMessage('Uploading your photo. Please wait...');
+
   String get selectPhoto => addMessage('Select Photo');
   String get search => addMessage('Search');
   String get all => addMessage('All');

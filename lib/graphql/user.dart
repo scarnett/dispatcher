@@ -16,16 +16,14 @@ const String fetchUserQueryStr = r'''
         user_avatar {
           url
         }
-      }
-    }
-    ''';
-
-const String fetchUserPINQueryStr = r'''
-    query UserPINQuery($identifier: String!) {
-      user_pins(where: {user: {_eq: $identifier}}) {
-        pin_code
-        verification_code
-        verification_expire_code
+        user_pin {
+          pin_code
+          verification_code
+          verification_expire_date
+        }
+        user_key {
+          pubkey
+        }
       }
     }
     ''';

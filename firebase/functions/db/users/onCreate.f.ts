@@ -46,6 +46,14 @@ exports = module.exports = functions.firestore
             user
           }
           
+          insert_user_pins_one(
+            object: {
+              user: $identifier,
+            }
+          ) {
+            user
+          }
+          
           insert_users_one(
             object: {
               identifier: $identifier,

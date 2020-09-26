@@ -1,13 +1,13 @@
 import 'package:dispatcher/camera/camera_view.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/model.dart';
-import 'package:dispatcher/theme.dart';
+import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/avatar/bloc/avatar_bloc.dart';
 import 'package:dispatcher/views/avatar/widgets/avatar_display.dart';
 import 'package:dispatcher/widgets/form_button.dart';
-import 'package:dispatcher/widgets/progress.dart';
+import 'package:dispatcher/widgets/spinner.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -100,7 +100,18 @@ class _AvatarPageViewState extends State<AvatarPageView> {
     AvatarState state,
   ) {
     if (state.filePath != null) {
-      return _buildAvatarConfirmation();
+      List<Widget> children = <Widget>[]..add(_buildAvatarConfirmation());
+
+      if (isSubmissionInProgress) {
+        children.add(
+          Spinner(
+            fill: true,
+            message: AppLocalizations.of(context).uploadingPhoto,
+          ),
+        );
+      }
+
+      return Stack(children: filterNullWidgets(children));
     }
 
     return _buildCameraView();
@@ -151,30 +162,28 @@ class _AvatarPageViewState extends State<AvatarPageView> {
                 avatarRadius: 48.0,
               ),
             ),
-            isSubmissionInProgress
-                ? Progress()
-                : Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 5.0),
-                          child: FormButton(
-                            text: AppLocalizations.of(context).avatarReTake,
-                            onPressed: _tapRetake,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 5.0),
-                          child: FormButton(
-                            text: AppLocalizations.of(context).avatarLikeIt,
-                            onPressed: _tapDone,
-                          ),
-                        ),
-                      ),
-                    ],
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 5.0),
+                    child: FormButton(
+                      text: AppLocalizations.of(context).avatarReTake,
+                      onPressed: _tapRetake,
+                    ),
                   ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 5.0),
+                    child: FormButton(
+                      text: AppLocalizations.of(context).avatarLikeIt,
+                      onPressed: _tapDone,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       );

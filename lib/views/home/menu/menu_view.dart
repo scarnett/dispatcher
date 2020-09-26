@@ -5,6 +5,7 @@ import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/home/bloc/home.dart';
 import 'package:dispatcher/views/home/bloc/home_bloc.dart';
 import 'package:dispatcher/views/home/bloc/home_events.dart';
+import 'package:dispatcher/views/pin/pin_view.dart';
 import 'package:dispatcher/widgets/list_select_item.dart';
 import 'package:dispatcher/widgets/section_header.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
@@ -174,8 +175,7 @@ class _MenuViewState extends State<MenuView> {
   }
 
   /// Handles the 'change pin' tap
-  void _tapChangePIN() =>
-      Navigator.pushNamed(context, AppRoutes.changePIN.name);
+  void _tapChangePIN() => Navigator.push(context, PINView.route());
 
   /// Handles the 'change email' tap
   void _tapUpdateEmail() => this._tapSettings();

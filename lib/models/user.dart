@@ -9,6 +9,8 @@ class User extends Equatable {
   final UserPhoneNumber phone;
   final UserInviteCode inviteCode;
   final UserAvatar avatar;
+  final UserPIN pin;
+  final UserKey key;
 
   User({
     this.identifier,
@@ -17,6 +19,8 @@ class User extends Equatable {
     this.phone,
     this.inviteCode,
     this.avatar,
+    this.pin,
+    this.key,
   });
 
   User copyWith({
@@ -26,6 +30,8 @@ class User extends Equatable {
     UserPhoneNumber phone,
     UserInviteCode inviteCode,
     UserAvatar avatar,
+    UserPIN pin,
+    UserKey key,
   }) =>
       User(
         identifier: identifier ?? this.identifier,
@@ -34,6 +40,8 @@ class User extends Equatable {
         phone: phone ?? this.phone,
         inviteCode: inviteCode ?? this.inviteCode,
         avatar: avatar ?? this.avatar,
+        pin: pin ?? this.pin,
+        key: key ?? this.key,
       );
 
   static User fromJson(
@@ -46,6 +54,8 @@ class User extends Equatable {
         phone: UserPhoneNumber.fromJson(json['user_phone_number']),
         inviteCode: UserInviteCode.fromJson(json['user_invite_code']),
         avatar: UserAvatar.fromJson(json['user_avatar']),
+        pin: UserPIN.fromJson(json['user_pin']),
+        key: UserKey.fromJson(json['user_key']),
       );
 
   dynamic toJson() => {
@@ -55,15 +65,17 @@ class User extends Equatable {
         'phone': phone.toJson(),
         'inviteCode': inviteCode.toJson(),
         'avatar': avatar.toJson(),
+        'pin': pin.toJson(),
+        'key': key.toJson(),
       };
 
   @override
   List<Object> get props =>
-      [identifier, name, email, phone, inviteCode, avatar];
+      [identifier, name, email, phone, inviteCode, avatar, pin, key];
 
   @override
   String toString() =>
-      'User{identifier: $identifier, name: $name, email: $email, phone: $phone, inviteCode: $inviteCode, avatar: $avatar}';
+      'User{identifier: $identifier, name: $name, email: $email, phone: $phone, inviteCode: $inviteCode, avatar: $avatar, pin: $pin, key: $key}';
 }
 
 class UserPhoneNumber extends Equatable {
@@ -238,4 +250,38 @@ class UserPIN extends Equatable {
   @override
   String toString() =>
       'UserPIN{pin_code: $pinCode, verification_code: $verificationCode, verification_expire_date: $verificationExpireDate}';
+}
+
+class UserKey extends Equatable {
+  final String publicKey;
+
+  UserKey({
+    this.publicKey,
+  });
+
+  UserKey copyWith({
+    String publicKey,
+  }) =>
+      UserKey(
+        publicKey: publicKey ?? this.publicKey,
+      );
+
+  static UserKey fromJson(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? UserKey()
+          : UserKey(
+              publicKey: json['pubkey'],
+            );
+
+  dynamic toJson() => {
+        'pubkey': publicKey,
+      };
+
+  @override
+  List<Object> get props => [publicKey];
+
+  @override
+  String toString() => 'UserKey{publicKey: $publicKey}';
 }

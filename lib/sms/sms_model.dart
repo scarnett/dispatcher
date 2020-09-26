@@ -2,13 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dispatcher/utils/date_utils.dart';
 
 class SMS {
-  final String device;
+  final String user;
   final String inboundPhone;
   final String body;
   final DateTime sentDate;
 
   SMS({
-    this.device,
+    this.user,
     this.inboundPhone,
     this.body,
     this.sentDate,
@@ -22,7 +22,7 @@ class SMS {
     }
 
     return SMS(
-      device: snapshot.get('device'),
+      user: snapshot.get('user'),
       inboundPhone: snapshot.get('inbound_phone'),
       body: snapshot.get('body'),
       sentDate: toDate(snapshot.get('sent_date')),
@@ -30,13 +30,13 @@ class SMS {
   }
 
   SMS copyWith({
-    String device,
+    String user,
     String inboundPhone,
     String body,
     DateTime sentDate,
   }) =>
       SMS(
-        device: device ?? this.device,
+        user: user ?? this.user,
         inboundPhone: inboundPhone ?? this.inboundPhone,
         body: body ?? this.body,
         sentDate: sentDate ?? this.sentDate,
@@ -46,14 +46,14 @@ class SMS {
     dynamic json,
   ) =>
       SMS(
-        device: json['device'],
+        user: json['user'],
         inboundPhone: json['inbound_phone'],
         body: json['body'],
         sentDate: fromIso8601String(json['sent_date']),
       );
 
   dynamic toJson() => {
-        'device': device,
+        'user': user,
         'inbound_phone': inboundPhone,
         'body': body,
         'sent_date': toIso8601String(sentDate),
@@ -61,5 +61,5 @@ class SMS {
 
   @override
   String toString() =>
-      'SMS{device: $device, inbound_phone: $inboundPhone, body: $body, sent_date: $sentDate}';
+      'SMS{user: $user, inbound_phone: $inboundPhone, body: $body, sent_date: $sentDate}';
 }
