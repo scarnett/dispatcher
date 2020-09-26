@@ -1,7 +1,9 @@
 import 'dart:async';
-import 'package:dispatcher/services/shared_preference_service.dart';
+import 'package:dispatcher/keys.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
 
 class AuthRepository {
@@ -28,9 +30,12 @@ class AuthRepository {
     );
 
     // Store the auth token
-    await sharedPreferenceService.getSharedPreferencesInstance();
-    await sharedPreferenceService
-        .setToken(await _firebaseAuth.currentUser.getIdToken(true));
+    Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX);
+    appBox.add(
+      appBox.get(0).copyWith(
+            token: await _firebaseAuth.currentUser.getIdToken(true),
+          ),
+    );
 
     _controller.add(AuthStatus.AUTHENTICATED);
   }
@@ -39,8 +44,8 @@ class AuthRepository {
     firebase.FirebaseAuth.instance.signOut();
 
     // Remove the auth token
-    await sharedPreferenceService.getSharedPreferencesInstance();
-    await sharedPreferenceService.clearToken();
+    Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX);
+    appBox.delete('token');
 
     _controller.add(AuthStatus.LOGOUT);
   }

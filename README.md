@@ -33,23 +33,12 @@ Add the firebase admin sdk config to the following location:
 /firebase/functions/keys/dispatcher-firebase-adminsdk.json
 ```
 
-# Development
+# Hive
 
-## Enable the remote dev server
-Right now this needs to be turned on in the source code: lib/store.dart#41
+## Generate type adapters
 
----
-
-## Install the remote dev server
 ```bash
-npm install -g remotedev-server
-```
-
----
-
-## Start the remote dev server
-```bash
-remotedev --port 8000
+flutter packages pub run build_runner build --delete-conflicting-outputs
 ```
 
 # Docker

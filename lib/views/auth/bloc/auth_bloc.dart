@@ -128,7 +128,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _logger.e(result.exception.graphqlErrors.toString());
         _logger.e(result.exception.clientException.toString());
       } else {
-        return User.fromJson(result.data['users'][0]);
+        dynamic users = result.data['users'];
+        if ((users != null) && (users.length > 0)) {
+          return User.fromJson(users[0]);
+        }
+
+        return null;
       }
     } catch (e) {
       _logger.e(e.toString());

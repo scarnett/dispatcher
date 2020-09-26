@@ -1,10 +1,11 @@
 import 'dart:typed_data';
 import 'package:dispatcher/device/device_viewmodel.dart';
 import 'package:dispatcher/extensions/string_extensions.dart';
+import 'package:dispatcher/keys.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/model.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/rsa/rsa_key_helper.dart';
-import 'package:dispatcher/rsa/rsa_keys.dart';
 import 'package:dispatcher/rsa/rsa_utils.dart';
 import 'package:dispatcher/sms/sms_model.dart';
 import 'package:dispatcher/theme.dart';
@@ -18,9 +19,9 @@ import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pointycastle/export.dart' as rsa;
-import 'package:shared_preferences/shared_preferences.dart';
 
 // Displays the 'PIN' view
 class PINView extends StatefulWidget {
@@ -41,7 +42,6 @@ class _PINViewState extends State<PINView> {
   bool _saved = false;
   String _verificationCode;
   String _pinCode;
-  SharedPreferences _prefs;
 
   @override
   Widget build(
@@ -423,6 +423,7 @@ class _PINViewState extends State<PINView> {
   ) async {
     String verificationCode =
         getRandomNumber(length: PINConfig.VERIFICATION_CODE_LENGTH);
+
     Uint8List cipheredVerificationCode = encryptString(
       RsaKeyHelper().parsePublicKeyFromPem(viewModel.device.publicKey),
       verificationCode,
@@ -453,8 +454,10 @@ class _PINViewState extends State<PINView> {
   void _tapVerifyVerificationCode(
     DeviceViewModel viewModel,
   ) async {
-    rsa.RSAPrivateKey privateKey = RsaKeyHelper()
-        .parsePrivateKeyFromPem(_prefs.getString(RSAKeys.APP_RSA_KEY));
+    Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX);
+
+    rsa.RSAPrivateKey privateKey =
+        RsaKeyHelper().parsePrivateKeyFromPem(appBox.getAt(0).privateKey);
 
     String decipheredVerificationCode = decryptString(
       privateKey,

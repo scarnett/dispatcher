@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:dispatcher/keys.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/repository/auth_repository.dart';
 import 'package:dispatcher/rsa/rsa_key_helper.dart';
 import 'package:dispatcher/rsa/rsa_utils.dart';
-import 'package:dispatcher/services/shared_preference_service.dart';
 import 'package:dispatcher/views/auth/create/create.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
+import 'package:hive/hive.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:meta/meta.dart';
 import 'package:pointycastle/export.dart' as rsa;
@@ -102,9 +104,12 @@ class CreateAccountBloc extends Bloc<CreateAccountEvent, CreateAccountState> {
             getKeyPair();
 
         // Store the private key
-        await sharedPreferenceService.getSharedPreferencesInstance();
-        await sharedPreferenceService
-            .setPrivateKey(encodePrivatePem(keyPair.privateKey));
+        Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX);
+        appBox.add(
+          Dispatcher(
+            privateKey: encodePrivatePem(keyPair.privateKey),
+          ),
+        );
 
         // Gets the phone number data
         PhoneNumber phoneNumber =

@@ -5,7 +5,7 @@ class AppTheme {
   static const Color background = Color.fromRGBO(252, 253, 255, 1);
   static const Color primary = Color.fromRGBO(131, 100, 251, 1.0);
   static const Color accent = Color.fromRGBO(157, 168, 253, 1.0);
-  static const Color avatar = AppTheme.primary;
+  static const Color avatar = AppTheme.accent;
   static const Color text = Color.fromRGBO(77, 74, 86, 1.0);
   static const Color hint = Color.fromRGBO(201, 202, 214, 1.0);
   static const Color success = AppTheme.primary;

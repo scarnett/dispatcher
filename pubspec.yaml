@@ -34,7 +34,8 @@ dependencies:
   uni_links: '^0.4.0'
   pointycastle: '^1.0.2'
   encrypt: '^4.0.2'
-  shared_preferences: '^0.5.8'
+  hive: '^1.4.4'
+  hive_flutter: '^0.3.1'
   barcode_scan: '^3.0.1'
   intl_phone_number_input: '^0.4.6+2'
   camera: '^0.5.8+5'
@@ -48,6 +49,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  hive_generator: '^0.7.2+1'
+  build_runner: '^1.10.0'
 
 flutter:
   uses-material-design: true
