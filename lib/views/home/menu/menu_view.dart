@@ -194,7 +194,6 @@ class _MenuViewState extends State<MenuView> {
 
   /// Handles the 'logout' tap
   void _tapLogout() {
-    // context.bloc<HomeBloc>().add(SelectedTabIndex(0));
     context.bloc<AuthBloc>().add(AuthLogoutRequested());
     Navigator.pushReplacement(context, AuthView.route());
   }

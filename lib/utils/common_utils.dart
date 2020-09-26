@@ -76,6 +76,13 @@ String getRandomNumber({
   return randomNumber;
 }
 
+void closeKeyboard(
+  BuildContext context,
+) {
+  // Close the keyboard if it's open
+  FocusScope.of(context).unfocus();
+}
+
 class Nullable<T> {
   T _value;
 

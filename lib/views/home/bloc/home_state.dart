@@ -5,6 +5,10 @@ import 'package:meta/meta.dart';
 class HomeState extends Equatable {
   final int selectedTabIndex;
 
+  HomeState({
+    this.selectedTabIndex,
+  });
+
   const HomeState._({
     this.selectedTabIndex = 0,
   });

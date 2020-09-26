@@ -1,5 +1,5 @@
 import 'package:dispatcher/models/models.dart';
-import 'package:dispatcher/services/graphql_service.dart';
+import 'package:dispatcher/graphql/service.dart';
 import 'package:dispatcher/views/pin/bloc/pin.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql/client.dart';

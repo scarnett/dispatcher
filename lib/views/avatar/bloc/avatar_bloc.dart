@@ -83,7 +83,9 @@ class AvatarBloc extends Bloc<AvatarEvent, AvatarState> {
 
     // Post the user data to Firebase
     await callable.call(userData);
-    return state;
+    return state.copyWith(
+      filePath: Nullable<String>(null),
+    );
   }
 
   AvatarState _mapStorageTaskEventTypeToState(

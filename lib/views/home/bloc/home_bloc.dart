@@ -1,8 +1,8 @@
 import 'package:dispatcher/views/home/bloc/home_events.dart';
 import 'package:dispatcher/views/home/bloc/home_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-class HomeBloc extends Bloc<HomeEvent, HomeState> {
+class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeState.initial());
 
   HomeState get initialState => HomeState.initial();
@@ -22,4 +22,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       state.copyWith(
         selectedTabIndex: event.index,
       );
+
+  @override
+  HomeState fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      HomeState(
+        selectedTabIndex: json['selectedTabIndex'],
+      );
+
+  @override
+  Map<String, dynamic> toJson(
+    HomeState state,
+  ) =>
+      {
+        'selectedTabIndex': state.selectedTabIndex,
+      };
 }

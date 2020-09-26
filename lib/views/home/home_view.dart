@@ -46,7 +46,7 @@ class HomePageView extends StatefulWidget {
 }
 
 class _HomePageViewState extends State<HomePageView> {
-  final GlobalKey<CircularMenuState> bottomMenuKey =
+  final GlobalKey<CircularMenuState> _bottomMenuKey =
       GlobalKey<CircularMenuState>();
 
   PageController _pageController;
@@ -54,7 +54,9 @@ class _HomePageViewState extends State<HomePageView> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
+    _pageController = PageController(
+      initialPage: context.bloc<HomeBloc>().state.selectedTabIndex,
+    );
   }
 
   @override
@@ -162,7 +164,7 @@ class _HomePageViewState extends State<HomePageView> {
     Widget child,
   }) =>
       CircularMenu(
-        key: bottomMenuKey,
+        key: _bottomMenuKey,
         alignment: Alignment.bottomCenter,
         toggleButtonAnimatedIconData: AnimatedIcons.menu_close,
         toggleButtonMargin: 10.0,
@@ -226,24 +228,28 @@ class _HomePageViewState extends State<HomePageView> {
   /// Handles a selected tab event
   void _selectedTab(
     int index,
-  ) =>
-      _pageController.jumpToPage(index);
+  ) {
+    _bottomMenuKey.currentState.reverseAnimation();
+    _pageController.jumpToPage(index);
+  }
 
   /// Handles the 'page tab' tap
   _tapPageTab(
     int index,
-  ) =>
-      context.bloc<HomeBloc>().add(SelectedTabIndex(index));
+  ) {
+    _bottomMenuKey.currentState.reverseAnimation();
+    context.bloc<HomeBloc>().add(SelectedTabIndex(index));
+  }
 
   /// Handles the 'connect' tap
   _tapConnect() {
-    bottomMenuKey.currentState.reverseAnimation();
+    _bottomMenuKey.currentState.reverseAnimation();
     Navigator.pushNamed(context, AppRoutes.connect.name);
   }
 
   /// Handles the 'contacts' tap
   _tapContacts() {
-    bottomMenuKey.currentState.reverseAnimation();
+    _bottomMenuKey.currentState.reverseAnimation();
     Navigator.push(context, ContactsView.route());
   }
 }

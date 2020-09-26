@@ -3,7 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:dispatcher/graphql/user.dart';
 import 'package:dispatcher/models/user.dart';
 import 'package:dispatcher/repository/repository.dart';
-import 'package:dispatcher/services/graphql_service.dart';
+import 'package:dispatcher/graphql/service.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
 import 'package:dispatcher/views/auth/bloc/auth_event.dart';
 import 'package:dispatcher/views/auth/bloc/auth_state.dart';
