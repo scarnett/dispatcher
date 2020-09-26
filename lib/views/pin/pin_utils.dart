@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:dispatcher/device/device_model.dart';
-import 'package:dispatcher/keys.dart';
+import 'package:dispatcher/hive.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/rsa/rsa_key_helper.dart';
 import 'package:dispatcher/rsa/rsa_utils.dart';

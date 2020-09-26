@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:dispatcher/device/device_viewmodel.dart';
 import 'package:dispatcher/extensions/string_extensions.dart';
-import 'package:dispatcher/keys.dart';
+import 'package:dispatcher/hive.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/model.dart';
 import 'package:dispatcher/models/models.dart';

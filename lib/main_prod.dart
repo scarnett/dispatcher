@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:dispatcher/app.dart';
 import 'package:dispatcher/bloc/bloc_observer.dart';
 import 'package:dispatcher/config.dart';
-import 'package:dispatcher/keys.dart';
+import 'package:dispatcher/hive.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/repository/repository.dart';
 import 'package:firebase_core/firebase_core.dart';
