@@ -7,9 +7,6 @@ Create this file in __./android/__
 
 ```bash
 app.id=io.dispatcher.app
-sdk.dir=<path/to/your/android/sdk>
-flutter.sdk=<path/to/your/flutter/dsk>
-flutter.buildMode=debug
 flutter.versionName=1.0.0
 flutter.versionCode=1
 ```
