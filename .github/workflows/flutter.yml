@@ -20,6 +20,6 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: '1.20.4'
-      - run: flutter pub get -t lib/main_dev.dart --flavor development
+      - run: flutter pub get
       # - run: flutter test
       - run: flutter build appbundle -t lib/main_dev.dart --flavor development
