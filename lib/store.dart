@@ -1,5 +1,4 @@
 import 'package:dispatcher/reducers.dart';
-import 'package:dispatcher/sms/sms_middleware.dart';
 import 'package:dispatcher/state.dart';
 import 'package:dispatcher/views/connect/connect_middleware.dart';
 import 'package:redux/redux.dart';
@@ -34,7 +33,6 @@ Future<Store<AppState>> createDevStore() async {
       EpicMiddleware(
         combineEpics<AppState>([
           ...connectMiddleware,
-          ...smsMiddleware,
         ]),
       ),
     ]);
@@ -53,7 +51,6 @@ Future<Store<AppState>> _getDefaultStoreConfiguration({
             EpicMiddleware(
               combineEpics<AppState>([
                 ...connectMiddleware,
-                ...smsMiddleware,
               ]),
             ),
           ]

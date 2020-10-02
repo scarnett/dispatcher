@@ -6,7 +6,7 @@ import 'package:dispatcher/graphql/user.dart';
 import 'package:dispatcher/hive.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
-import 'package:dispatcher/sms/sms_model.dart';
+import 'package:dispatcher/models/sms.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/date_utils.dart';
 import 'package:dispatcher/views/pin/pin_config.dart';
