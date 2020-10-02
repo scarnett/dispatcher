@@ -19,7 +19,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
-          flutter-version: '1.20.4'
+          flutter-version: '1.22.0'
       - name: Decode google-services.json
         env:
           DISPATCHER_DEV_FIREBASE_SECRET: ${{ secrets.DISPATCHER_DEV_FIREBASE_SECRET }}
@@ -27,7 +27,7 @@ jobs:
       - name: Decode local.properties
         env:
           DISPATCHER_DEV_FIREBASE_SECRET: ${{ secrets.DISPATCHER_DEV_LOCAL_PROPERTIES }}
-        run: echo $DISPATCHER_DEV_FIREBASE_SECRET > android/local.properties
+        run: echo $DISPATCHER_DEV_LOCAL_PROPERTIES > android/local.properties
       - name: Flutter get
         run: flutter pub get
       # - name: Flutter test
