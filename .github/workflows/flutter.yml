@@ -20,6 +20,13 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: '1.20.4'
-      - run: flutter pub get
-      # - run: flutter test
-      - run: flutter build appbundle -t lib/main_dev.dart --flavor development
+      - name: Decode google-services.json
+        env:
+          DISPATCHER_DEV_FIREBASE_SECRET: ${{ secrets.DISPATCHER_DEV_FIREBASE_SECRET }}
+        run: echo $DISPATCHER_DEV_FIREBASE_SECRET > android/app/src/development/google-services.json
+      - name: Flutter get
+        run: flutter pub get
+      # - name: Flutter test
+      #   run: flutter test
+      - name: Flutter build
+        run: flutter build appbundle -t lib/main_dev.dart --flavor development
