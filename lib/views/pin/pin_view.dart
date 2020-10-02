@@ -6,6 +6,7 @@ import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/pin/bloc/pin_bloc.dart';
 import 'package:dispatcher/views/pin/pin_config.dart';
+import 'package:dispatcher/views/pin/pin_enums.dart';
 import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/pin_code.dart';
 import 'package:dispatcher/widgets/progress.dart';
@@ -55,11 +56,17 @@ class _PINPageViewState extends State<PINPageView> {
           BuildContext context,
           PINState state,
         ) {
-          if (state.resendingVerificationCode) {
-            _scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
-              text: AppLocalizations.of(context).resentVerificationCode,
-              type: MessageType.SUCCESS,
-            )));
+          switch (state.eventType) {
+            case PINEventType.RESENDING_VERIFICATION_CODE:
+              _scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
+                text: AppLocalizations.of(context).resentVerificationCode,
+                type: MessageType.SUCCESS,
+              )));
+
+              break;
+
+            default:
+              break;
           }
 
           if ((state.verificationCode != null) &&
@@ -200,7 +207,7 @@ class _PINPageViewState extends State<PINPageView> {
               bottom: 10.0,
               top: 10.0,
             ),
-            child: state.sendingVerificationCode
+            child: (state.eventType == PINEventType.SENDING_VERIFICATION_CODE)
                 ? Progress()
                 : FormButton(
                     text: AppLocalizations.of(context).sendCode,
@@ -215,7 +222,10 @@ class _PINPageViewState extends State<PINPageView> {
           FormButton(
             color: Colors.transparent,
             text: AppLocalizations.of(context).cancel,
-            onPressed: state.sendingVerificationCode ? null : _tapCancel,
+            onPressed:
+                (state.eventType == PINEventType.SENDING_VERIFICATION_CODE)
+                    ? null
+                    : _tapCancel,
             textColor: AppTheme.accent,
             textButton: true,
           ),
@@ -257,7 +267,7 @@ class _PINPageViewState extends State<PINPageView> {
               bottom: 10.0,
               top: 10.0,
             ),
-            child: state.verifyingVerificationCode
+            child: (state.eventType == PINEventType.VERIFYING_VERIFICATION_CODE)
                 ? Progress()
                 : FormButton(
                     text: AppLocalizations.of(context).verifyCode,
@@ -270,12 +280,13 @@ class _PINPageViewState extends State<PINPageView> {
                         : null,
                   ),
           ),
-          state.resendingVerificationCode
+          (state.eventType == PINEventType.RESENDING_VERIFICATION_CODE)
               ? Progress()
               : FormButton(
                   color: Colors.transparent,
                   text: AppLocalizations.of(context).resendCode,
-                  onPressed: state.verifyingVerificationCode
+                  onPressed: (state.eventType ==
+                          PINEventType.VERIFYING_VERIFICATION_CODE)
                       ? null
                       : () => context.bloc<PINBloc>().add(
                             ResendVerificationCode(
@@ -289,7 +300,10 @@ class _PINPageViewState extends State<PINPageView> {
           FormButton(
             color: Colors.transparent,
             text: AppLocalizations.of(context).cancel,
-            onPressed: state.verifyingVerificationCode ? null : _tapCancel,
+            onPressed:
+                (state.eventType == PINEventType.VERIFYING_VERIFICATION_CODE)
+                    ? null
+                    : _tapCancel,
             textColor: AppTheme.accent,
             textButton: true,
           ),
@@ -330,7 +344,7 @@ class _PINPageViewState extends State<PINPageView> {
               bottom: 10.0,
               top: 10.0,
             ),
-            child: state.savingPinCode
+            child: (state.eventType == PINEventType.SAVING_PINCODE)
                 ? Progress()
                 : FormButton(
                     text: AppLocalizations.of(context).save,
@@ -343,7 +357,9 @@ class _PINPageViewState extends State<PINPageView> {
           FormButton(
             color: Colors.transparent,
             text: AppLocalizations.of(context).cancel,
-            onPressed: state.savingPinCode ? null : _tapCancel,
+            onPressed: (state.eventType == PINEventType.SAVING_PINCODE)
+                ? null
+                : _tapCancel,
             textColor: AppTheme.accent,
             textButton: true,
           ),

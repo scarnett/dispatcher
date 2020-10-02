@@ -10,6 +10,7 @@ import 'package:dispatcher/sms/sms_model.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/date_utils.dart';
 import 'package:dispatcher/views/pin/pin_config.dart';
+import 'package:dispatcher/views/pin/pin_enums.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:graphql/client.dart';
@@ -96,7 +97,7 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     SendVerificationCode event,
     PINState state,
   ) async* {
-    yield state.copyWith(sendingVerificationCode: true);
+    yield PINState.eventType(PINEventType.SENDING_VERIFICATION_CODE);
 
     String verificationCode =
         getRandomNumber(length: PINConfig.VERIFICATION_CODE_LENGTH);
@@ -133,8 +134,8 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     await callable.call(pinData);
 
     // Update the state
+    yield PINState.clearEventType();
     yield state.copyWith(
-      sendingVerificationCode: false,
       pin: UserPIN(
         verificationCode: encryptedVerificationCode,
         verificationExpireDate: verificationExpireDate,
@@ -146,7 +147,7 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     ResendVerificationCode event,
     PINState state,
   ) async* {
-    yield state.copyWith(resendingVerificationCode: true);
+    yield PINState.eventType(PINEventType.RESENDING_VERIFICATION_CODE);
 
     SMS sms = SMS(
       user: event.user.identifier,
@@ -170,7 +171,7 @@ class PINBloc extends Bloc<PINEvent, PINState> {
 
     // Post the sms data to Firebase
     await callable.call(smsData);
-    yield state.copyWith(resendingVerificationCode: false);
+    yield PINState.clearEventType();
   }
 
   PINState _mapVerificationCodeChangedToState(
@@ -190,7 +191,7 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     VerifyVerificationCodeSubmitted event,
     PINState state,
   ) async* {
-    yield state.copyWith(verifyingVerificationCode: true);
+    yield PINState.eventType(PINEventType.VERIFYING_VERIFICATION_CODE);
 
     Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX);
     String decryptedVerificationCode = await OpenPGP.decrypt(
@@ -202,14 +203,14 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     if (decryptedVerificationCode == state.verificationCode) {
       yield state.copyWith(
         verificationCodeVerified: Nullable<bool>(true),
-        verifyingVerificationCode: false,
       );
     } else {
       yield state.copyWith(
         verificationCodeVerified: Nullable<bool>(false),
-        verifyingVerificationCode: false,
       );
     }
+
+    yield PINState.clearEventType();
   }
 
   PINState _mapPINCodeChangedToState(
@@ -222,7 +223,7 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     PINSubmitted event,
     PINState state,
   ) async* {
-    yield state.copyWith(savingPinCode: true);
+    yield PINState.eventType(PINEventType.SAVING_PINCODE);
 
     String encryptedPINCode =
         await OpenPGP.encrypt(state.pinCode, event.user.key.publicKey);
@@ -245,8 +246,8 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     // Post the user pin data to Firebase
     await callable.call(pinData);
 
+    yield PINState.clearEventType();
     yield state.copyWith(
-      savingPinCode: false,
       verificationCodeVerified: Nullable<bool>(false),
       pinCodeSaved: Nullable<bool>(true),
     );
