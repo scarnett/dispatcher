@@ -8,6 +8,7 @@ class FormButton extends StatelessWidget {
   final Color color;
   final Color disabledColor;
   final Color textColor;
+  final bool textButton;
 
   FormButton({
     Key key,
@@ -16,6 +17,7 @@ class FormButton extends StatelessWidget {
     this.color,
     this.disabledColor,
     this.textColor,
+    this.textButton = false,
   }) : super(key: key);
 
   @override
@@ -24,7 +26,13 @@ class FormButton extends StatelessWidget {
   ) =>
       FlatButton(
         color: (color == null) ? AppTheme.primary : color,
-        disabledColor: (disabledColor == null) ? AppTheme.hint : disabledColor,
+        disabledTextColor:
+            textButton ? AppTheme.hint : Colors.white.withOpacity(0.5),
+        disabledColor: (disabledColor == null)
+            ? textButton
+                ? Colors.white.withOpacity(0.5)
+                : AppTheme.primary.withOpacity(0.5)
+            : disabledColor,
         textColor: textColor,
         child: Text(text),
         onPressed: onPressed,

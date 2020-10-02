@@ -75,7 +75,8 @@ class User extends Equatable {
 
   @override
   String toString() =>
-      'User{identifier: $identifier, name: $name, email: $email, phone: $phone, inviteCode: $inviteCode, avatar: $avatar, pin: $pin, key: $key}';
+      'User{identifier: $identifier, name: $name, email: $email, phone: $phone, ' +
+      'inviteCode: $inviteCode, avatar: $avatar, pin: $pin, key: $key}';
 }
 
 class UserPhoneNumber extends Equatable {
@@ -249,7 +250,9 @@ class UserPIN extends Equatable {
 
   @override
   String toString() =>
-      'UserPIN{pin_code: $pinCode, verification_code: $verificationCode, verification_expire_date: $verificationExpireDate}';
+      'UserPIN{pin_code: ${(pinCode == null) ? null : '<pinCode>'}, ' +
+      'verification_code: ${(verificationCode == null) ? null : '<verificationCode>'}, ' +
+      'verification_expire_date: $verificationExpireDate}';
 }
 
 class UserKey extends Equatable {
@@ -283,5 +286,6 @@ class UserKey extends Equatable {
   List<Object> get props => [publicKey];
 
   @override
-  String toString() => 'UserKey{publicKey: $publicKey}';
+  String toString() =>
+      'UserKey{publicKey: ${(publicKey == null) ? null : '<publicKey>'}}';
 }

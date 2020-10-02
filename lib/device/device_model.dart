@@ -275,7 +275,8 @@ class DevicePIN {
 
   @override
   String toString() =>
-      'DevicePIN{pin_code: $pinCode, verification_code: $verificationCode, verification_expire_date: $verificationExpireDate}';
+      'DevicePIN{pin_code: $pinCode, verification_code: $verificationCode, ' +
+      'verification_expire_date: $verificationExpireDate}';
 }
 
 class DeviceConnection {

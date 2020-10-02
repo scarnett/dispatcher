@@ -141,6 +141,7 @@ class _ConnectViewState extends State<ConnectView> {
             text: AppLocalizations.of(context).cancel,
             onPressed: () => Navigator.pop(context),
             textColor: AppTheme.accent,
+            textButton: true,
           ),
         ],
       );
@@ -201,6 +202,7 @@ class _ConnectViewState extends State<ConnectView> {
               text: AppLocalizations.of(context).cancel,
               onPressed: () => viewModel.cancelConnectDevice(),
               textColor: AppTheme.accent,
+              textButton: true,
             ),
           ],
         ),

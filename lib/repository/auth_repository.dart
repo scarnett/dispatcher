@@ -29,14 +29,6 @@ class AuthRepository {
       password: password,
     );
 
-    // Store the auth token
-    Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX);
-    appBox.add(
-      appBox.get(0).copyWith(
-            token: await _firebaseAuth.currentUser.getIdToken(true),
-          ),
-    );
-
     _controller.add(AuthStatus.AUTHENTICATED);
   }
 

@@ -7,12 +7,8 @@ class Dispatcher extends HiveObject {
   @HiveField(0)
   String privateKey;
 
-  @HiveField(1)
-  String token;
-
   Dispatcher({
     this.privateKey,
-    this.token,
   });
 
   Dispatcher copyWith({
@@ -21,6 +17,5 @@ class Dispatcher extends HiveObject {
   }) =>
       Dispatcher(
         privateKey: privateKey ?? this.privateKey,
-        token: token ?? this.token,
       );
 }

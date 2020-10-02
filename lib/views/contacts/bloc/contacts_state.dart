@@ -60,5 +60,7 @@ class ContactsState extends Equatable {
 
   @override
   String toString() =>
-      'ContactsState{contacts: ${contacts?.length}, filteredContacts: ${filteredContacts?.length}, contactLabels: $contactLabels, activeContact: $activeContact, search: $search, searching: $searching, activeContactTabIndex: $activeContactTabIndex}';
+      'ContactsState{contacts: ${contacts?.length}, filteredContacts: ${filteredContacts?.length}, ' +
+      'contactLabels: $contactLabels, activeContact: $activeContact, search: $search, ' +
+      'searching: $searching, activeContactTabIndex: $activeContactTabIndex}';
 }

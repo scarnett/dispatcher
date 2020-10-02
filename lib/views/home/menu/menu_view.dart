@@ -1,5 +1,4 @@
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/routes.dart';
 import 'package:dispatcher/views/auth/auth_view.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/home/bloc/home.dart';

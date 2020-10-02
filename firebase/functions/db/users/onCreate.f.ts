@@ -12,11 +12,12 @@ exports = module.exports = functions.firestore
       const userIdentifier: string = userDocument.id
 
       try {
-        const endpoint: string = functions.config().graphql.endpoint
-        const adminSecret: string = functions.config().hasura.admin.secret
+        const config: functions.config.Config = functions.config()
+        const endpoint: string = config.graphql.endpoint
+        const adminSecret: string = config.hasura.admin.secret
 
         // GraphQL mutation for inserting the new user
-        const mutation: string = `mutation ($identifier: String!, $name: String!, $email: String!, $phone: user_phone_numbers_insert_input!, $invite_code: user_invite_codes_insert_input!, $key: user_keys_insert_input!) {
+        const mutation: string = `mutation ($identifier: String!, $name: String!, $email: String!, $phone: user_phone_numbers_insert_input!, $invite_code: user_invite_codes_insert_input!) {
           insert_user_phone_numbers_one(
             object: $phone
           ) {
@@ -33,7 +34,9 @@ exports = module.exports = functions.firestore
           }
           
           insert_user_keys_one(
-            object: $key
+            object: {
+              user: $identifier
+            }
           ) {
             user
           }
@@ -79,13 +82,13 @@ exports = module.exports = functions.firestore
         // Deletes the user document from Firestore
         await admin.firestore().collection('users').doc(userIdentifier).delete()
       } catch (e) {
-        console.error(e)
+        functions.logger.error(e)
         return Promise.resolve('error')
       }
 
       return Promise.resolve('ok')
     } catch (error) {
-      console.error(error)
+      functions.logger.error(error)
       return Promise.resolve('error')
     }
   })

@@ -70,7 +70,7 @@ class AppLocalizations {
   String get saved => addMessage('Saved');
   String get ok => addMessage('OK');
   String get security => addMessage('Security');
-  String get enterPin => addMessage('Enter your PIN');
+  String get enterPin => addMessage('Please enter your new PIN');
   String get changePin => addMessage('Change PIN');
   String get updateEmail => addMessage('Update Email');
   String get updatePhoneNumber => addMessage('Update Phone Number');
@@ -85,6 +85,8 @@ class AppLocalizations {
       addMessage('Your verification code was successfully verified!');
   String get invalidVerificationCode =>
       addMessage('Invalid verification code. Please try again.');
+  String get resentVerificationCode =>
+      addMessage('The verification code was re-sent.');
   String get application => addMessage('Application');
   String get permissions => addMessage('Permissions');
   String get privacyPolicy => addMessage('Privacy Policy');

@@ -48,6 +48,7 @@ class _AuthLoginViewState extends State<AuthLoginView> {
         text: AppLocalizations.of(context).dontHaveAccount,
         onPressed: _tapCreate,
         textColor: AppTheme.accent,
+        textButton: true,
       );
 
   /// Handles the 'create' tap

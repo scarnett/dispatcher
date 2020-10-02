@@ -64,9 +64,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else {
       final firebase.User firebaseUser = await _tryGetFirebaseUser();
       if ((firebaseUser != null) && !firebaseUser.isAnonymous) {
-        final String token = await firebaseUser.getIdToken();
-        final User user = await _tryGetUser(firebaseUser.uid, token);
-        return AuthState.authenticated(firebaseUser, user, token);
+        final User user = await _tryGetUser(firebaseUser);
+        return AuthState.authenticated(firebaseUser, user);
       }
     }
 
@@ -76,9 +75,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       case AuthStatus.AUTHENTICATED:
         final firebase.User firebaseUser = await _tryGetFirebaseUser();
-        final String token = await firebaseUser.getIdToken();
-        final User user = await _tryGetUser(firebaseUser.uid, token);
-        return AuthState.authenticated(firebaseUser, user, token);
+        final User user = await _tryGetUser(firebaseUser);
+        return AuthState.authenticated(firebaseUser, user);
 
       case AuthStatus.UNKNOWN:
       default:
@@ -96,7 +94,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<AuthState> _mapLoadUserToState(
     LoadUser event,
   ) async {
-    User user = await _tryGetUser(state.firebaseUser.uid, state.token);
+    User user = await _tryGetUser(state.firebaseUser);
     return state.copyWith(
       user: user,
     );
@@ -111,22 +109,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<User> _tryGetUser(
-    String identifier,
-    String token,
+    firebase.User firebaseUser,
   ) async {
     try {
-      _service = GraphQLService(token);
-
+      _service = GraphQLService(await firebaseUser.getIdToken());
       final QueryResult result = await _service.performMutation(
         fetchUserQueryStr,
         variables: {
-          'identifier': identifier,
+          'identifier': firebaseUser.uid,
         },
       );
 
       if (result.hasException) {
-        _logger.e(result.exception.graphqlErrors.toString());
-        _logger.e(result.exception.clientException.toString());
+        _logger.e({
+          'graphql': result.exception.graphqlErrors.toString(),
+          'client': result.exception.clientException.toString(),
+        });
       } else {
         dynamic users = result.data['users'];
         if ((users != null) && (users.length > 0)) {

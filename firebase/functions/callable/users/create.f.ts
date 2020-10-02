@@ -8,9 +8,8 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
   const password: string = data.password
   const email: string = data.email
   const phone: any = data.phone
-  const pubkey: string = data.pubkey
 
-  if (!displayName || !password || !email || !phone || !pubkey) {
+  if (!displayName || !password || !email || !phone) {
     throw new functions.https.HttpsError('cancelled', 'user-create-failed', 'missing information')
   }
 
@@ -39,10 +38,6 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
         'user': userId,
         'code': generateInviteCode(),
         'expire_date': inviteCodeDateExpire.toUTCString()
-      },
-      'key': {
-        'user': userId,
-        'pubkey': pubkey
       }
     })
 

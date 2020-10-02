@@ -18,18 +18,15 @@ class DispatcherAdapter extends TypeAdapter<Dispatcher> {
     };
     return Dispatcher(
       privateKey: fields[0] as String,
-      token: fields[1] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Dispatcher obj) {
     writer
-      ..writeByte(2)
-      ..writeByte(0)
-      ..write(obj.privateKey)
       ..writeByte(1)
-      ..write(obj.token);
+      ..writeByte(0)
+      ..write(obj.privateKey);
   }
 
   @override

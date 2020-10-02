@@ -6,7 +6,7 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
   const avatarUrl: string = data.avatarUrl
 
   if (!identifier || !avatarUrl) {
-    throw new functions.https.HttpsError('cancelled', 'user-avatar-update-failed', 'missing information')
+    throw new functions.https.HttpsError('cancelled', 'user-avatar-upsert-failed', 'missing information')
   }
 
   // GraphQL mutation for inserting or updating (upserting) a user avatar
@@ -28,8 +28,9 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
   }`
 
   try {
-    const endpoint: string = functions.config().graphql.endpoint
-    const adminSecret: string = functions.config().hasura.admin.secret
+    const config: functions.config.Config = functions.config()
+    const endpoint: string = config.graphql.endpoint
+    const adminSecret: string = config.hasura.admin.secret
     const response: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
       identifier: identifier,
       url: avatarUrl
@@ -37,6 +38,6 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
 
     return response
   } catch (e) {
-    throw new functions.https.HttpsError('aborted', 'user-avatar-update-failed', JSON.stringify(e, undefined, 2))
+    throw new functions.https.HttpsError('aborted', 'user-avatar-upsert-failed', JSON.stringify(e, undefined, 2))
   }
 })

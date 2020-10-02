@@ -75,7 +75,7 @@ ThemeData appThemeData = ThemeData(
   ),
   buttonTheme: ButtonThemeData(
     buttonColor: AppTheme.primary,
-    disabledColor: AppTheme.hint,
+    disabledColor: Colors.white.withOpacity(0.5),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(30.0),
     ),

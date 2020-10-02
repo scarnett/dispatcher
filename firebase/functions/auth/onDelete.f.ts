@@ -10,23 +10,32 @@ exports = module.exports = functions.auth.user().onDelete(async (user: functions
     delete_user_keys(where: {user: {_eq: $identifier}}) {
       affected_rows
     }
-    
+
     delete_user_phone_numbers(where: {user: {_eq: $identifier}}) {
       affected_rows
     }
-    
+
     delete_user_invite_codes(where: {user: {_eq: $identifier}}) {
       affected_rows
     }
-    
+
+    delete_user_avatars(where: {user: {_eq: $identifier}}) {
+      affected_rows
+    }
+
+    delete_user_pins(where: {user: {_eq: $identifier}}) {
+      affected_rows
+    }
+
     delete_users(where: {identifier: {_eq: $identifier}}) {
       affected_rows
     }
   }`
 
   try {
-    const endpoint: string = functions.config().graphql.endpoint
-    const adminSecret: string = functions.config().hasura.admin.secret
+    const config: functions.config.Config = functions.config()
+    const endpoint: string = config.graphql.endpoint
+    const adminSecret: string = config.hasura.admin.secret
     const response: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
       identifier: user.uid,
     })

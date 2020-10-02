@@ -10,14 +10,12 @@ class AuthState extends Equatable {
   final AuthFormMode mode;
   final firebase.User firebaseUser;
   final User user;
-  final String token;
 
   const AuthState._({
     this.status = AuthStatus.UNKNOWN,
     this.mode = AuthFormMode.LOGIN,
     this.firebaseUser,
     this.user,
-    this.token,
   });
 
   const AuthState.unknown() : this._();
@@ -25,12 +23,10 @@ class AuthState extends Equatable {
   const AuthState.authenticated(
     firebase.User firebaseUser,
     User user,
-    String token,
   ) : this._(
           status: AuthStatus.AUTHENTICATED,
           firebaseUser: firebaseUser,
           user: user,
-          token: token,
         );
 
   const AuthState.unauthenticated()
@@ -44,7 +40,6 @@ class AuthState extends Equatable {
       : this._(
           firebaseUser: null,
           user: null,
-          token: null,
           status: AuthStatus.UNAUTHENTICATED,
         );
 
@@ -59,20 +54,19 @@ class AuthState extends Equatable {
     AuthFormMode mode,
     firebase.User firebaseUser,
     User user,
-    String token,
   }) =>
       AuthState._(
         status: status ?? this.status,
         mode: mode ?? this.mode,
         firebaseUser: firebaseUser ?? this.firebaseUser,
         user: user ?? this.user,
-        token: token ?? this.token,
       );
 
   @override
-  List<Object> get props => [status, mode, firebaseUser, user, token];
+  List<Object> get props => [status, mode, firebaseUser, user];
 
   @override
   String toString() =>
-      'AuthState{status: $status, mode: $mode, firebaseUser: ${firebaseUser?.displayName}, user: $user, token: ${token?.substring(0, 50)}...}';
+      'AuthState{status: $status, mode: $mode, firebaseUser: ${firebaseUser?.displayName}, ' +
+      'user: $user}';
 }

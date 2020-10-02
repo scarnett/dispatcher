@@ -26,8 +26,9 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
   }`
 
   try {
-    const endpoint: string = functions.config().graphql.endpoint
-    const adminSecret: string = functions.config().hasura.admin.secret
+    const config: functions.config.Config = functions.config()
+    const endpoint: string = config.graphql.endpoint
+    const adminSecret: string = config.hasura.admin.secret
     const response: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
       identifier: identifier,
       name: name,

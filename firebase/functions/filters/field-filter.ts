@@ -50,7 +50,7 @@ const field = (
  *   .document('devices/{documentId}')
  *   .onUpdate(
  *     field('connections', 'CHANGED', (change: functions.Change<FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>>, context: functions.EventContext) => {
- *       console.log('Will get here only if connections was changed')
+ *       functions.logger.log('Will get here only if connections was changed')
  *     })
  *   )
  */
