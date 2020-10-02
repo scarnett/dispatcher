@@ -4,6 +4,5 @@ gradle-wrapper.jar
 /gradlew
 /gradlew.bat
 /local.properties
-/app/src/development/google-services.json
-/app/src/production/google-services.json
+google-services.json
 GeneratedPluginRegistrant.java
