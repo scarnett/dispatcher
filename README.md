@@ -6,7 +6,6 @@
 Create this file in __./android/__
 
 ```bash
-app.id=io.dispatcher.app
 flutter.versionName=1.0.0
 flutter.versionCode=1
 ```

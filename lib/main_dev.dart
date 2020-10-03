@@ -23,7 +23,7 @@ void main() async {
 
   // DEV Environment Specific Configuration
   AppConfig config = AppConfig(
-    flavor: Flavor.DEV,
+    flavor: Flavor.dev,
     child: DispatcherApp(
       authRepository: AuthRepository(),
       userRepository: UserRepository(),

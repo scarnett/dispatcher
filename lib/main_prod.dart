@@ -23,7 +23,7 @@ void main() async {
 
   // PROD Environment Specific Configuration
   AppConfig config = AppConfig(
-    flavor: Flavor.RELEASE,
+    flavor: Flavor.prod,
     child: DispatcherApp(
       authRepository: AuthRepository(),
       userRepository: UserRepository(),

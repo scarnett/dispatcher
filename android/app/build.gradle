@@ -37,16 +37,14 @@ android {
     }
 
     defaultConfig {
-        applicationId localProperties.getProperty('app.id')
+        applicationId 'io.dispatcher.app'
         minSdkVersion 21
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
     }
 
     defaultConfig {
         manifestPlaceholders = [
-            appId: localProperties.getProperty('app.id')
+            appId: 'io.dispatcher.app'
         ]
     }
 
@@ -63,8 +61,16 @@ android {
     productFlavors {
         dev {
             dimension 'flavor-type'
-            applicationIdSuffix '.dev'
-            versionNameSuffix '_dev'
+            applicationId 'io.dispatcher.app.dev'
+            versionCode flutterVersionCode.toInteger()
+            versionName flutterVersionName
+        }
+
+        prod {
+            dimension 'flavor-type'
+            applicationId 'io.dispatcher.app.prod'
+            versionCode flutterVersionCode.toInteger()
+            versionName flutterVersionName
         }
     }
 }

@@ -26,8 +26,8 @@ jobs:
         run: echo $DISPATCHER_DEV_FIREBASE_SECRET > android/app/src/dev/google-services.json
       - name: Decode local.properties
         env:
-          DISPATCHER_DEV_LOCAL_PROPERTIES: ${{ secrets.DISPATCHER_DEV_LOCAL_PROPERTIES }}
-        run: echo $DISPATCHER_DEV_LOCAL_PROPERTIES > android/local.properties
+          DISPATCHER_DEV_LOCAL_SECRET: ${{ secrets.DISPATCHER_DEV_LOCAL_SECRET }}
+        run: echo $DISPATCHER_DEV_LOCAL_SECRET > android/local.properties
       - name: Flutter get
         run: flutter pub get
       # - name: Flutter test
