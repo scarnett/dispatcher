@@ -66,10 +66,6 @@ android {
             applicationIdSuffix '.dev'
             versionNameSuffix '_dev'
         }
-
-        production {
-            dimension 'flavor-type'
-        }
     }
 }
 
