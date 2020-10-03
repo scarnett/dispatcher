@@ -8,7 +8,7 @@
       "program": "lib/main_dev.dart",
       "args": [
         "--flavor",
-        "development"
+        "dev"
       ]
     },
     {

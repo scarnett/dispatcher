@@ -11,4 +11,4 @@ services:
     privileged: true
     stdin_open: true
     tty: true
-    command: flutter run -t lib/main_dev.dart --flavor development
+    command: flutter run -t lib/main_dev.dart --flavor dev

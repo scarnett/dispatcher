@@ -2,8 +2,12 @@ import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
 enum Flavor {
-  DEVELOPMENT,
+  DEV,
   RELEASE,
+}
+
+enum HiveBoxes {
+  APP_BOX,
 }
 
 class AppConfig extends InheritedWidget {
@@ -24,7 +28,7 @@ class AppConfig extends InheritedWidget {
   ) {
     Flavor flavor = AppConfig.of(context).flavor;
     switch (flavor) {
-      case Flavor.DEVELOPMENT:
+      case Flavor.DEV:
         return true;
 
       case Flavor.RELEASE:
@@ -41,7 +45,7 @@ class AppConfig extends InheritedWidget {
       case Flavor.RELEASE:
         return true;
 
-      case Flavor.DEVELOPMENT:
+      case Flavor.DEV:
       default:
         return false;
     }

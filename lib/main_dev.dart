@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:dispatcher/app.dart';
 import 'package:dispatcher/bloc/bloc_observer.dart';
 import 'package:dispatcher/config.dart';
-import 'package:dispatcher/hive.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/repository/repository.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,12 +18,12 @@ void main() async {
 
   await Hive.initFlutter();
   Hive.registerAdapter(DispatcherAdapter());
-  await Hive.openBox<Dispatcher>(HiveBoxes.APP_BOX);
+  await Hive.openBox<Dispatcher>(HiveBoxes.APP_BOX.toString());
   await Firebase.initializeApp();
 
   // DEV Environment Specific Configuration
   AppConfig config = AppConfig(
-    flavor: Flavor.DEVELOPMENT,
+    flavor: Flavor.DEV,
     child: DispatcherApp(
       authRepository: AuthRepository(),
       userRepository: UserRepository(),
