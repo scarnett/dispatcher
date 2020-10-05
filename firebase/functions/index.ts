@@ -1,4 +1,3 @@
-import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 
 admin.initializeApp({
@@ -7,12 +6,12 @@ admin.initializeApp({
 
 import * as glob from 'glob'
 import camelcase from 'camelcase'
-import * as httpUtils from './utils/http_utils'
 
 const paths: string[] = [
   './auth/*.f.js',         // Auth
   './callable/**/*.f.js',  // HTTP Callables
   './db/**/*.f.js',        // Database
+  './endpoint/**/*.f.js',  // HTTP Endpoints
   './schedule/*.f.js'      // Cron
 ]
 
@@ -22,9 +21,6 @@ for (const path of paths) {
     processExport(file)
   }
 }
-
-// Set up the http endpoints
-exports.endpoints = functions.https.onRequest(httpUtils.appEndpoints)
 
 function processExport(file: string) {
   const functionName: string = camelcase(file.slice(0, -5).split('/').join('_')) // Strip off '.f.ts'

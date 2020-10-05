@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
-import { generateInviteCode } from '../../utils/device_utils'
+import { generateInviteCode } from '../../utils/user_utils'
 import moment = require('moment')
 
 exports = module.exports = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {

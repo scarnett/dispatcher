@@ -10,14 +10,12 @@ flutter.versionName=1.0.0
 flutter.versionCode=1
 ```
 
----
-
 ## google-services.json
 Add the firebase configs to the following locations:
 
 ```bash
-/android/app/src/development/google-services.json
-/android/app/src/production/google-services.json
+/android/app/src/dev/google-services.json
+/android/app/src/prod/google-services.json
 ```
 
 # Firebase
@@ -64,3 +62,10 @@ docker-compose up
 
 ## Run on a physical device
 Press F5
+
+# Token Generation
+
+```bash
+npm install -g crypto
+node -e "console.log(require('crypto').randomBytes(20).toString('hex'))"
+```
