@@ -91,17 +91,13 @@ class _AppViewState extends State<DispatcherAppView> {
             switch (state.status) {
               case AuthStatus.AUTHENTICATED:
                 _navigator.pushAndRemoveUntil<void>(
-                  HomeView.route(),
-                  (route) => false,
-                );
+                    HomeView.route(), (route) => false);
 
                 break;
 
               case AuthStatus.UNAUTHENTICATED:
                 _navigator.pushAndRemoveUntil<void>(
-                  AuthView.route(),
-                  (route) => false,
-                );
+                    AuthView.route(), (route) => false);
 
                 break;
 

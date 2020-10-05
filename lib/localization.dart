@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:dispatcher/device/device_model.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -225,7 +225,7 @@ class AppLocalizations {
       );
 
   String connectSuccessText(
-    DeviceUser user,
+    User user,
   ) =>
       addMessage(
         'You successfully connected with ${user.name}!',
@@ -236,7 +236,7 @@ class AppLocalizations {
       );
 
   String alreadyConnectedText(
-    DeviceUser user,
+    User user,
   ) =>
       addMessage(
         'You\'re already connected with ${user.name}!',

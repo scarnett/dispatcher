@@ -1,6 +1,6 @@
-import 'package:dispatcher/extensions/string_extensions.dart';
+import 'package:dispatcher/extensions/extensions.dart';
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/model.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';

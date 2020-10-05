@@ -1,6 +1,6 @@
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/theme.dart';
-import 'package:dispatcher/views/contacts/bloc/contacts.dart';
+import 'package:dispatcher/views/contacts/bloc/bloc.dart';
 import 'package:dispatcher/views/contacts/bloc/contacts_bloc.dart';
 import 'package:dispatcher/views/contacts/bloc/contacts_state.dart';
 import 'package:dispatcher/views/contacts/widgets/contacts_tabs.dart';

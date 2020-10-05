@@ -142,6 +142,7 @@ class _MenuViewState extends State<MenuView> {
         ListSelectItem(
           title: AppLocalizations.of(context).updatePhoneNumber,
           icon: Icons.phone,
+          borderBottom: false,
           onTap: _tapUpdatePhoneNumber,
         ),
       );

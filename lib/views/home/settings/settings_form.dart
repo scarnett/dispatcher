@@ -1,5 +1,4 @@
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/model.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';

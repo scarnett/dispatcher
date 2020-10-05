@@ -1,5 +1,5 @@
 import 'package:contacts_service/contacts_service.dart';
-import 'package:dispatcher/views/contacts/bloc/contacts.dart';
+import 'package:dispatcher/views/contacts/bloc/bloc.dart';
 import 'package:dispatcher/views/contacts/models/search.dart';
 
 /// Filters the contact list by label

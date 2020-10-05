@@ -1,26 +1,48 @@
-import 'package:dispatcher/extensions/string_extensions.dart';
+import 'package:dispatcher/extensions/extensions.dart';
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/state.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/theme.dart';
-import 'package:dispatcher/views/connect/connect_viewmodel.dart';
+import 'package:dispatcher/utils/snackbar_utils.dart';
+import 'package:dispatcher/views/auth/bloc/bloc.dart';
+import 'package:dispatcher/views/avatar/widgets/avatar_display.dart';
+import 'package:dispatcher/views/connect/bloc/connect_bloc.dart';
+import 'package:dispatcher/views/connect/connect_enums.dart';
 import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/pin_code.dart';
+import 'package:dispatcher/widgets/progress.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
-import 'package:dispatcher/views/avatar/widgets/avatar_display.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ConnectView extends StatefulWidget {
-  ConnectView({
+class ConnectView extends StatelessWidget {
+  static Route route() =>
+      MaterialPageRoute<void>(builder: (_) => ConnectView());
+
+  const ConnectView({
     Key key,
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ConnectViewState();
+  Widget build(
+    BuildContext context,
+  ) =>
+      BlocProvider<ConnectBloc>(
+        create: (BuildContext context) => ConnectBloc(),
+        child: ConnectPageView(),
+      );
 }
 
-class _ConnectViewState extends State<ConnectView> {
+class ConnectPageView extends StatefulWidget {
+  ConnectPageView({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _ConnectPageViewState();
+}
+
+class _ConnectPageViewState extends State<ConnectPageView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String inviteCode;
@@ -29,23 +51,70 @@ class _ConnectViewState extends State<ConnectView> {
   Widget build(
     BuildContext context,
   ) =>
-      StoreConnector<AppState, ConnectViewModel>(
-        converter: (store) => ConnectViewModel.fromStore(store),
-        builder: (_, viewModel) => WillPopScope(
-          onWillPop: () => _willPopCallback(viewModel),
-          child: Scaffold(
-            key: _scaffoldKey,
-            appBar: SimpleAppBar(
-              height: 100.0,
-            ),
-            body: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Align(
-                alignment: Alignment.center,
-                child: Column(
-                  children: <Widget>[
-                    _createContent(viewModel),
-                  ],
+      BlocListener<ConnectBloc, ConnectState>(
+        listener: (
+          BuildContext context,
+          ConnectState state,
+        ) {
+          switch (state.status) {
+            case ConnectStatus.CONNECTION_FOUND:
+              _scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
+                text: AppLocalizations.of(context).connectionFoundText,
+                type: MessageType.SUCCESS,
+              )));
+
+              break;
+
+            case ConnectStatus.CONNECTION_NOT_FOUND:
+              _scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
+                text: AppLocalizations.of(context).connectionNotFoundText,
+                type: MessageType.ERROR,
+              )));
+
+              break;
+
+            case ConnectStatus.CONNECTED:
+              _scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
+                text: AppLocalizations.of(context).connectSuccess,
+                type: MessageType.SUCCESS,
+              )));
+
+              break;
+
+            case ConnectStatus.ALREADY_CONNECTED:
+              _scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
+                text: AppLocalizations.of(context)
+                    .alreadyConnectedText(state.lookupUser),
+                type: MessageType.SUCCESS,
+              )));
+
+              break;
+
+            default:
+              break;
+          }
+        },
+        child: BlocBuilder<ConnectBloc, ConnectState>(
+          builder: (
+            BuildContext context,
+            ConnectState state,
+          ) =>
+              WillPopScope(
+            onWillPop: () => _willPopCallback(),
+            child: Scaffold(
+              key: _scaffoldKey,
+              appBar: SimpleAppBar(
+                height: 100.0,
+              ),
+              body: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                    children: <Widget>[
+                      _createContent(state),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -55,38 +124,36 @@ class _ConnectViewState extends State<ConnectView> {
 
   @override
   void dispose() {
-    _scaffoldKey.currentState.dispose();
+    _scaffoldKey.currentState?.dispose();
     super.dispose();
   }
 
   /// Handles the android back button
-  Future<bool> _willPopCallback(
-    ConnectViewModel viewModel,
-  ) async {
-    viewModel.cancelConnectDevice();
+  Future<bool> _willPopCallback() async {
+    context.bloc<ConnectBloc>().add(ClearConnect());
     return Future.value(true);
   }
 
-  // TODO! update 'connections' of other device
   Widget _createContent(
-    ConnectViewModel viewModel,
+    ConnectState state,
   ) {
-    if (viewModel.cantConnect) {
-      return _buildCantConnect(viewModel);
-    } else if ((viewModel.lookupResult) == null &&
-        !viewModel.alreadyConnected) {
-      return _buildInviteCodeForm(viewModel);
-    } else if (viewModel.alreadyConnected) {
-      return _buildAlreadyConnected(viewModel);
-    } else if ((viewModel.lookupResult != null) && !viewModel.connected) {
-      return _buildConfirmForm(viewModel);
+    if (state.status == ConnectStatus.CANT_CONNECT) {
+      return _buildCantConnect(state);
+    } else if ((state.lookupUser == null) &&
+        (state.status != ConnectStatus.ALREADY_CONNECTED)) {
+      return _buildInviteCodeForm(state);
+    } else if (state.status == ConnectStatus.ALREADY_CONNECTED) {
+      return _buildAlreadyConnected(state);
+    } else if ((state.lookupUser != null) &&
+        (state.status != ConnectStatus.CONNECTED)) {
+      return _buildConfirmForm(state);
     }
 
-    return _buildSuccessContent(viewModel);
+    return _buildSuccessContent(state);
   }
 
   Widget _buildInviteCodeForm(
-    ConnectViewModel viewModel,
+    ConnectState state,
   ) =>
       Column(
         children: <Widget>[
@@ -128,14 +195,20 @@ class _ConnectViewState extends State<ConnectView> {
               ),
             ),
           ),
-          FormButton(
-            text: AppLocalizations.of(context).lookup,
-            onPressed: (!inviteCode.isNullEmptyOrWhitespace &&
-                    (inviteCode.length == INVITE_CODE_LENGTH))
-                ? () => viewModel.lookupDeviceByInviteCode(
-                    inviteCode, context, _scaffoldKey)
-                : null,
-          ),
+          (state.eventType == ConnectEventType.LOOKING_UP)
+              ? Progress()
+              : FormButton(
+                  text: AppLocalizations.of(context).lookup,
+                  onPressed: (!inviteCode.isNullEmptyOrWhitespace &&
+                          (inviteCode.length == INVITE_CODE_LENGTH))
+                      ? () => context.bloc<ConnectBloc>().add(
+                            LookupUser(
+                              context.bloc<AuthBloc>().state.firebaseUser,
+                              inviteCode,
+                            ),
+                          )
+                      : null,
+                ),
           FormButton(
             color: Colors.transparent,
             text: AppLocalizations.of(context).cancel,
@@ -147,7 +220,7 @@ class _ConnectViewState extends State<ConnectView> {
       );
 
   Widget _buildConfirmForm(
-    ConnectViewModel viewModel,
+    ConnectState state,
   ) =>
       Container(
         width: double.infinity,
@@ -171,36 +244,38 @@ class _ConnectViewState extends State<ConnectView> {
             Padding(
               padding: const EdgeInsets.only(bottom: 10.0),
               child: AvatarDisplay(
-                user: null, // TODO!
+                user: state.lookupUser,
                 avatarRadius: 48.0,
               ),
             ),
             Text(
-              viewModel.lookupResult.user.name,
+              state.lookupUser.name,
               style: Theme.of(context).textTheme.headline5,
             ),
-            viewModel.lookupResult.user.email.isNullEmptyOrWhitespace
+            state.lookupUser.email.isNullEmptyOrWhitespace
                 ? Container()
                 : Text(
-                    viewModel.lookupResult.user.email,
+                    state.lookupUser.email,
                     style: Theme.of(context).textTheme.subtitle2,
                   ),
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
-              child: FormButton(
-                text: AppLocalizations.of(context).connect,
-                onPressed: () => viewModel.connectDevice(
-                  viewModel.deviceId,
-                  viewModel.lookupResult.id,
-                  context,
-                  _scaffoldKey,
-                ),
-              ),
+              child: (state.eventType == ConnectEventType.CONNECTING)
+                  ? Progress()
+                  : FormButton(
+                      text: AppLocalizations.of(context).connect,
+                      onPressed: () => context.bloc<ConnectBloc>().add(
+                            ConnectUser(
+                              context.bloc<AuthBloc>().state.firebaseUser.uid,
+                              state.lookupUser.identifier,
+                            ),
+                          ),
+                    ),
             ),
             FormButton(
               color: Colors.transparent,
               text: AppLocalizations.of(context).cancel,
-              onPressed: () => viewModel.cancelConnectDevice(),
+              onPressed: () => _tapOK(),
               textColor: AppTheme.accent,
               textButton: true,
             ),
@@ -209,7 +284,7 @@ class _ConnectViewState extends State<ConnectView> {
       );
 
   Widget _buildSuccessContent(
-    ConnectViewModel viewModel,
+    ConnectState state,
   ) =>
       Container(
         padding: const EdgeInsets.only(top: 100.0),
@@ -223,7 +298,7 @@ class _ConnectViewState extends State<ConnectView> {
               ),
               child: Text(
                 AppLocalizations.of(context)
-                    .connectSuccessText(viewModel.lookupResult.user),
+                    .connectSuccessText(state.lookupUser),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 18.0,
@@ -235,7 +310,7 @@ class _ConnectViewState extends State<ConnectView> {
             Padding(
               padding: const EdgeInsets.only(bottom: 10.0),
               child: AvatarDisplay(
-                user: null, // TODO!
+                user: state.lookupUser,
                 avatarRadius: 48.0,
               ),
             ),
@@ -243,7 +318,7 @@ class _ConnectViewState extends State<ConnectView> {
               padding: const EdgeInsets.only(right: 5.0),
               child: FormButton(
                 text: AppLocalizations.of(context).ok,
-                onPressed: () => _tapOK(viewModel),
+                onPressed: () => _tapOK(),
               ),
             ),
           ],
@@ -251,7 +326,7 @@ class _ConnectViewState extends State<ConnectView> {
       );
 
   Widget _buildAlreadyConnected(
-    ConnectViewModel viewModel,
+    ConnectState state,
   ) =>
       Container(
         padding: const EdgeInsets.only(top: 100.0),
@@ -265,7 +340,7 @@ class _ConnectViewState extends State<ConnectView> {
               ),
               child: Text(
                 AppLocalizations.of(context)
-                    .alreadyConnectedText(viewModel.lookupResult.user),
+                    .alreadyConnectedText(state.lookupUser),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 18.0,
@@ -277,7 +352,7 @@ class _ConnectViewState extends State<ConnectView> {
             Padding(
               padding: const EdgeInsets.only(bottom: 10.0),
               child: AvatarDisplay(
-                user: null, // TODO!
+                user: state.lookupUser,
                 avatarRadius: 48.0,
               ),
             ),
@@ -285,7 +360,7 @@ class _ConnectViewState extends State<ConnectView> {
               padding: const EdgeInsets.only(right: 5.0),
               child: FormButton(
                 text: AppLocalizations.of(context).ok,
-                onPressed: () => _tapOK(viewModel),
+                onPressed: () => _tapOK(),
               ),
             ),
           ],
@@ -293,7 +368,7 @@ class _ConnectViewState extends State<ConnectView> {
       );
 
   Widget _buildCantConnect(
-    ConnectViewModel viewModel,
+    ConnectState state,
   ) =>
       Container(
         padding: const EdgeInsets.only(top: 100.0),
@@ -319,21 +394,17 @@ class _ConnectViewState extends State<ConnectView> {
               padding: const EdgeInsets.only(right: 5.0),
               child: FormButton(
                 text: AppLocalizations.of(context).ok,
-                onPressed: () => _tapOK(
-                  viewModel,
-                  redirect: false,
-                ),
+                onPressed: () => _tapOK(redirect: false),
               ),
             ),
           ],
         ),
       );
 
-  void _tapOK(
-    ConnectViewModel viewModel, {
+  void _tapOK({
     bool redirect: true,
   }) {
-    viewModel.cancelConnectDevice();
+    context.bloc<ConnectBloc>().add(ClearConnect());
 
     if (redirect) {
       Navigator.pop(context);

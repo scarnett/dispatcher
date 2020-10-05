@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:dispatcher/hive.dart';
+import 'package:dispatcher/config.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/repository/auth_repository.dart';
 import 'package:dispatcher/views/auth/create/create.dart';
@@ -101,7 +101,8 @@ class CreateAccountBloc extends Bloc<CreateAccountEvent, CreateAccountState> {
       yield state.copyWith(status: FormzStatus.submissionInProgress);
 
       try {
-        Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX);
+        Box<Dispatcher> appBox =
+            Hive.box<Dispatcher>(HiveBoxes.APP_BOX.toString());
         appBox.deleteAll(appBox.keys);
         appBox.add(Dispatcher());
 

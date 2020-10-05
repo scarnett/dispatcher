@@ -1,5 +1,5 @@
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/model.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/views/auth/create/bloc/bloc.dart';
 import 'package:dispatcher/widgets/form_button.dart';

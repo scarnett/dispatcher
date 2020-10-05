@@ -21,6 +21,9 @@ const String fetchUserQueryStr = r'''
           verification_code
           verification_expire_date
         }
+        user_connections {
+          connect_user_id
+        }
         user_key {
           pubkey
         }
@@ -34,6 +37,25 @@ const String fetchPINQueryStr = r'''
         pin_code
         verification_code
         verification_expire_date
+      }
+    }
+    ''';
+
+const String fetchUserByInviteCodeQueryStr = r'''
+    query UserInviteCodeQuery($inviteCode: String!) {
+      user_invite_codes(where: {code: {_eq: $inviteCode}}) {
+        user_fk {
+          identifier
+          name
+          email
+          user_avatar {
+            url
+          }
+          user_connections {
+            user_id,
+            connect_user_id
+          }
+        }
       }
     }
     ''';

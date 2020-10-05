@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:contacts_service/contacts_service.dart';
-import 'package:dispatcher/extensions/string_extensions.dart';
+import 'package:dispatcher/extensions/extensions.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/views/contacts/bloc/contacts_events.dart';
 import 'package:dispatcher/views/contacts/bloc/contacts_state.dart';

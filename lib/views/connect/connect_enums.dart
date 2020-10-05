@@ -1,0 +1,12 @@
+enum ConnectStatus {
+  CONNECTION_FOUND,
+  CONNECTION_NOT_FOUND,
+  ALREADY_CONNECTED,
+  CANT_CONNECT,
+  CONNECTED,
+}
+
+enum ConnectEventType {
+  LOOKING_UP,
+  CONNECTING,
+}

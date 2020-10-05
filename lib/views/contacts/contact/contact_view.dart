@@ -3,7 +3,7 @@ import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/text_utils.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
-import 'package:dispatcher/views/contacts/bloc/contacts.dart';
+import 'package:dispatcher/views/contacts/bloc/bloc.dart';
 import 'package:dispatcher/views/contacts/contact/widgets/contact_avatar.dart';
 import 'package:dispatcher/widgets/form_button.dart';
 import 'package:flutter/material.dart';

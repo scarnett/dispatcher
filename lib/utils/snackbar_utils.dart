@@ -1,4 +1,4 @@
-import 'package:dispatcher/model.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:flutter/material.dart';
 

@@ -9,15 +9,6 @@ class PINState extends Equatable {
   final String pinCode;
   final bool pinCodeSaved;
 
-  const PINState({
-    this.pin,
-    this.eventType,
-    this.verificationCode,
-    this.verificationCodeVerified,
-    this.pinCode,
-    this.pinCodeSaved,
-  });
-
   const PINState._({
     this.pin,
     this.eventType,
@@ -26,6 +17,8 @@ class PINState extends Equatable {
     this.pinCode,
     this.pinCodeSaved,
   });
+
+  const PINState.initial() : this._();
 
   const PINState.saved()
       : this._(
@@ -50,7 +43,7 @@ class PINState extends Equatable {
     String pinCode,
     Nullable<bool> pinCodeSaved,
   }) =>
-      PINState(
+      PINState._(
         pin: pin ?? this.pin,
         eventType: (eventType == null) ? this.eventType : eventType.value,
         verificationCode: (verificationCode == null)

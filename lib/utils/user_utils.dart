@@ -1,4 +1,4 @@
-import 'package:dispatcher/extensions/string_extensions.dart';
+import 'package:dispatcher/extensions/extensions.dart';
 import 'package:dispatcher/utils/text_utils.dart';
 
 /// Gets the initial from someones name.

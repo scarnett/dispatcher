@@ -11,6 +11,7 @@ class User extends Equatable {
   final UserAvatar avatar;
   final UserPIN pin;
   final UserKey key;
+  final List<UserConnection> connections;
 
   User({
     this.identifier,
@@ -21,6 +22,7 @@ class User extends Equatable {
     this.avatar,
     this.pin,
     this.key,
+    this.connections,
   });
 
   User copyWith({
@@ -32,6 +34,7 @@ class User extends Equatable {
     UserAvatar avatar,
     UserPIN pin,
     UserKey key,
+    List<UserConnection> connections,
   }) =>
       User(
         identifier: identifier ?? this.identifier,
@@ -42,6 +45,7 @@ class User extends Equatable {
         avatar: avatar ?? this.avatar,
         pin: pin ?? this.pin,
         key: key ?? this.key,
+        connections: connections ?? this.connections,
       );
 
   static User fromJson(
@@ -56,6 +60,7 @@ class User extends Equatable {
         avatar: UserAvatar.fromJson(json['user_avatar']),
         pin: UserPIN.fromJson(json['user_pin']),
         key: UserKey.fromJson(json['user_key']),
+        connections: UserConnection.fromJsonList(json['user_connections']),
       );
 
   dynamic toJson() => {
@@ -67,6 +72,7 @@ class User extends Equatable {
         'avatar': avatar.toJson(),
         'pin': pin.toJson(),
         'key': key.toJson(),
+        'connections': connections,
       };
 
   @override
@@ -153,10 +159,12 @@ class UserInviteCode extends Equatable {
   static UserInviteCode fromJson(
     dynamic json,
   ) =>
-      UserInviteCode(
-        code: json['code'],
-        expireDate: fromIso8601String(json['expire_date']),
-      );
+      (json == null)
+          ? UserInviteCode()
+          : UserInviteCode(
+              code: json['code'],
+              expireDate: fromIso8601String(json['expire_date']),
+            );
 
   dynamic toJson() => {
         'code': code,
@@ -288,4 +296,54 @@ class UserKey extends Equatable {
   @override
   String toString() =>
       'UserKey{publicKey: ${(publicKey == null) ? null : '<publicKey>'}}';
+}
+
+class UserConnection extends Equatable {
+  final String userId;
+  final String connectUserId;
+
+  UserConnection({
+    this.userId,
+    this.connectUserId,
+  });
+
+  UserConnection copyWith({
+    String userId,
+    String connectUserId,
+  }) =>
+      UserConnection(
+        userId: userId ?? this.userId,
+        connectUserId: connectUserId ?? this.connectUserId,
+      );
+
+  static UserConnection fromJson(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? UserConnection()
+          : UserConnection(
+              userId: json['user_id'],
+              connectUserId: json['connect_user_id'],
+            );
+
+  static List<UserConnection> fromJsonList(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? []
+          : List<dynamic>.from(json)
+              .map((dynamic userJson) => UserConnection.fromJson(userJson))
+              .toList();
+
+  dynamic toJson() => {
+        'user_id': userId,
+        'connect_user_id': connectUserId,
+      };
+
+  @override
+  List<Object> get props => [userId, connectUserId];
+
+  @override
+  String toString() =>
+      'UserConnection{user_id: $userId, connect_user_id: $connectUserId}';
 }

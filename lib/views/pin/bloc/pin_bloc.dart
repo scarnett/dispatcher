@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:dispatcher/config.dart';
 import 'package:dispatcher/graphql/service.dart';
 import 'package:dispatcher/graphql/user.dart';
-import 'package:dispatcher/hive.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/models/sms.dart';
@@ -26,7 +26,7 @@ class PINBloc extends Bloc<PINEvent, PINState> {
   GraphQLService _service;
   Logger _logger = Logger();
 
-  PINBloc() : super(const PINState());
+  PINBloc() : super(PINState.initial());
 
   @override
   Stream<PINState> mapEventToState(
@@ -193,7 +193,7 @@ class PINBloc extends Bloc<PINEvent, PINState> {
   ) async* {
     yield PINState.eventType(PINEventType.VERIFYING_VERIFICATION_CODE);
 
-    Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX);
+    Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX.toString());
     String decryptedVerificationCode = await OpenPGP.decrypt(
       state.pin.verificationCode,
       appBox.getAt(0).privateKey,

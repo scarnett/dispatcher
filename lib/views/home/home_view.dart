@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
+import 'package:dispatcher/views/connect/connect_view.dart';
 import 'package:dispatcher/views/contacts/contacts_view.dart';
 import 'package:dispatcher/views/home/bloc/home_bloc.dart';
 import 'package:dispatcher/views/home/bloc/home_events.dart';
 import 'package:dispatcher/views/home/bloc/home_state.dart';
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/routes.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/views/home/connections/connections_views.dart';
 import 'package:dispatcher/views/home/dashboard/dashboard_view.dart';
@@ -244,7 +244,7 @@ class _HomePageViewState extends State<HomePageView> {
   /// Handles the 'connect' tap
   _tapConnect() {
     _bottomMenuKey.currentState.reverseAnimation();
-    Navigator.pushNamed(context, AppRoutes.connect.name);
+    Navigator.push(context, ConnectView.route());
   }
 
   /// Handles the 'contacts' tap

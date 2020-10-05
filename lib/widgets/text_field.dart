@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatefulWidget {
   final Key key;
   final String label;
-  final bool autovalidate;
+  final AutovalidateMode autovalidateMode;
   final String initialValue;
   final String hintText;
   final String errorText;
@@ -25,7 +25,7 @@ class CustomTextField extends StatefulWidget {
   CustomTextField({
     this.key,
     this.label,
-    this.autovalidate = false,
+    this.autovalidateMode = AutovalidateMode.disabled,
     this.initialValue,
     this.hintText,
     this.errorText,
@@ -56,7 +56,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       TextFormField(
         key: widget.key,
         controller: widget.controller,
-        autovalidate: widget.autovalidate,
+        autovalidateMode: widget.autovalidateMode,
         initialValue: widget.initialValue,
         keyboardType: widget.keyboardType,
         obscureText: widget.obscureText,

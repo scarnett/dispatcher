@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:dispatcher/hive.dart';
+import 'package:dispatcher/config.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
@@ -36,7 +36,7 @@ class AuthRepository {
     firebase.FirebaseAuth.instance.signOut();
 
     // Remove the auth token
-    Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX);
+    Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX.toString());
     appBox.delete('token');
 
     _controller.add(AuthStatus.LOGOUT);
