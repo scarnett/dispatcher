@@ -186,9 +186,11 @@ class _SettingsFormState extends State<SettingsForm> {
           child: InternationalPhoneNumberInput(
             key: const Key('settingsForm_phoneInput_textField'),
             locale: 'en_US', // TODO!
-            selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+            selectorConfig: const SelectorConfig(
+              selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+            ),
             ignoreBlank: true,
-            autoValidate: false,
+            autoValidateMode: AutovalidateMode.disabled,
             initialValue:
                 context.bloc<AuthBloc>().state.user.phone.toPhoneNumber(),
             selectorTextStyle: Theme.of(context).textTheme.bodyText1,

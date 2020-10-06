@@ -140,9 +140,11 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
           child: InternationalPhoneNumberInput(
             key: const Key('createForm_phoneInput_textField'),
             locale: 'en_US', // TODO!
-            selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+            selectorConfig: const SelectorConfig(
+              selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+            ),
             ignoreBlank: true,
-            autoValidate: false,
+            autoValidateMode: AutovalidateMode.disabled,
             initialValue: PhoneNumber(isoCode: 'US'), // TODO!
             selectorTextStyle: Theme.of(context).textTheme.bodyText1,
             onInputChanged: (phone) => context
