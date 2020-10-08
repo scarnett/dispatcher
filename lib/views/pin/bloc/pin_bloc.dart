@@ -1,31 +1,24 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:dispatcher/config.dart';
-import 'package:dispatcher/graphql/service.dart';
-import 'package:dispatcher/graphql/user.dart';
+import 'package:dispatcher/extensions/extensions.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
-import 'package:dispatcher/models/sms.dart';
 import 'package:dispatcher/utils/common_utils.dart';
-import 'package:dispatcher/utils/date_utils.dart';
+import 'package:dispatcher/utils/config_utils.dart';
+import 'package:dispatcher/utils/crypt_utils.dart';
 import 'package:dispatcher/views/pin/pin_config.dart';
 import 'package:dispatcher/views/pin/pin_enums.dart';
+import 'package:dispatcher/views/pin/pin_extensions.dart';
+import 'package:dispatcher/views/pin/pin_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
-import 'package:graphql/client.dart';
-import 'package:hive/hive.dart';
-import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
-import 'package:openpgp/openpgp.dart';
+import 'package:tuple/tuple.dart';
 
 part 'pin_event.dart';
 part 'pin_state.dart';
 
 class PINBloc extends Bloc<PINEvent, PINState> {
-  GraphQLService _service;
-  Logger _logger = Logger();
-
   PINBloc() : super(PINState.initial());
 
   @override
@@ -57,89 +50,43 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     } else if (event is ResetPINCodeSaved) {
       yield* _mapResetPINCodeSavedToState(event);
     } else if (event is ClearPIN) {
-      yield* _mapClearPINToState(event);
+      yield* _mapClearPINToState(event, state);
     }
   }
 
   Stream<PINState> _mapLoadPINToState(
     LoadUserPIN event,
   ) async* {
-    UserPIN pin = await _tryGetPIN(event.firebaseUser);
-
     // Check to see if the expiration date has ellapsed
-    if ((pin != null) && (pin.verificationExpireDate != null)) {
-      final DateTime now = getNow();
-      if (now.isAfter(pin.verificationExpireDate)) {
-        // Builds the PIN data map
-        Map<dynamic, dynamic> pinData = Map<dynamic, dynamic>.from({
-          'identifier': event.firebaseUser.uid,
-          'pin': {
-            'verification_code': null,
-            'verification_expire_date': null,
-          },
-        });
-
-        // Runs the 'callableUserPinUpdate' Firebase callable function
-        final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-          functionName: 'callableUserPinUpdate',
-        );
-
-        // Post the user pin data to Firebase
-        await callable.call(pinData);
-        yield PINState.saved();
-      }
+    UserPIN pin = await tryGetPIN(event.firebaseUser);
+    if (pin.isExpired()) {
+      await resetVerificationCode(event.firebaseUser.uid);
+    } else {
+      yield state.copyWith(
+        pin: pin,
+        loaded: Nullable<bool>(true),
+      );
     }
-
-    yield state.copyWith(pin: pin);
   }
 
   Stream<PINState> _mapSendVerificationCodeToState(
     SendVerificationCode event,
     PINState state,
   ) async* {
-    yield PINState.eventType(PINEventType.SENDING_VERIFICATION_CODE);
+    yield state.copyWith(
+        eventType:
+            Nullable<PINEventType>(PINEventType.SENDING_VERIFICATION_CODE));
 
-    String verificationCode =
-        getRandomNumber(length: PINConfig.VERIFICATION_CODE_LENGTH);
-
-    String encryptedVerificationCode =
-        await OpenPGP.encrypt(verificationCode, event.user.key.publicKey);
-
-    DateTime now = getNow();
-    DateTime verificationExpireDate = now.add(Duration(minutes: 10));
-    SMS sms = SMS(
-      user: event.user.identifier,
-      inboundPhone: event.user.phone.phoneNumber,
-      body: event.i18n.pinVerificationCodeSMSText(
-        AppLocalizations.appTitle,
-        verificationCode,
-      ),
-      sentDate: now,
-    );
-
-    // Builds the PIN data map
-    Map<String, dynamic> pinData = Map<String, dynamic>.from({
-      'identifier': event.user.identifier,
-      'verificationCode': encryptedVerificationCode,
-      'verificationExpireDate': toIso8601String(verificationExpireDate),
-      'sms': sms.toJson(),
-    });
-
-    // Runs the 'callableUserPinUpsert' Firebase callable function
-    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-      functionName: 'callableUserPinUpsert',
-    );
-
-    // Post the user data to Firebase
-    await callable.call(pinData);
+    Tuple2<String, DateTime> data =
+        await sendVerification(event.user, event.i18n);
 
     // Update the state
-    yield PINState.clearEventType();
     yield state.copyWith(
       pin: UserPIN(
-        verificationCode: encryptedVerificationCode,
-        verificationExpireDate: verificationExpireDate,
+        verificationCode: data.item1,
+        verificationExpireDate: data.item2,
       ),
+      eventType: null,
     );
   }
 
@@ -147,31 +94,30 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     ResendVerificationCode event,
     PINState state,
   ) async* {
-    yield PINState.eventType(PINEventType.RESENDING_VERIFICATION_CODE);
+    yield state.copyWith(
+        eventType:
+            Nullable<PINEventType>(PINEventType.RESENDING_VERIFICATION_CODE));
 
-    SMS sms = SMS(
-      user: event.user.identifier,
-      inboundPhone: event.user.phone.phoneNumber,
-      body: event.i18n.pinVerificationCodeSMSText(
-        AppLocalizations.appTitle,
-        state.verificationCode,
-      ),
-      sentDate: getNow(),
-    );
+    String verificationCode;
+    if (state.verificationCode.isNullEmptyOrWhitespace) {
+      if (!state.pin.verificationCode.isNullEmptyOrWhitespace) {
+        Dispatcher appData = getAppConfig(event.user.identifier);
+        verificationCode = await decrypt(
+          state.pin.verificationCode,
+          decode(appData.privateKey),
+          event.user.identifier,
+        );
+      }
+    } else {
+      verificationCode = state.verificationCode;
+    }
 
-    // Builds the SMS data map
-    Map<String, dynamic> smsData = Map<String, dynamic>.from({
-      'sms': sms.toJson(),
-    });
-
-    // Runs the 'callableSmsSend' Firebase callable function
-    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-      functionName: 'callableSmsSend',
-    );
-
-    // Post the sms data to Firebase
-    await callable.call(smsData);
-    yield PINState.clearEventType();
+    if (verificationCode.isNullEmptyOrWhitespace) {
+      yield PINState.clear();
+    } else {
+      await resendVerification(event.user, event.i18n, verificationCode);
+      yield state.copyWith(eventType: null);
+    }
   }
 
   PINState _mapVerificationCodeChangedToState(
@@ -191,26 +137,28 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     VerifyVerificationCodeSubmitted event,
     PINState state,
   ) async* {
-    yield PINState.eventType(PINEventType.VERIFYING_VERIFICATION_CODE);
+    yield state.copyWith(
+        eventType:
+            Nullable<PINEventType>(PINEventType.VERIFYING_VERIFICATION_CODE));
 
-    Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX.toString());
-    String decryptedVerificationCode = await OpenPGP.decrypt(
+    Dispatcher appData = getAppConfig(event.user.identifier);
+    String decryptedVerificationCode = await decrypt(
       state.pin.verificationCode,
-      appBox.getAt(0).privateKey,
+      decode(appData.privateKey),
       event.user.identifier,
     );
 
     if (decryptedVerificationCode == state.verificationCode) {
       yield state.copyWith(
         verificationCodeVerified: Nullable<bool>(true),
+        eventType: null,
       );
     } else {
       yield state.copyWith(
         verificationCodeVerified: Nullable<bool>(false),
+        eventType: null,
       );
     }
-
-    yield PINState.clearEventType();
   }
 
   PINState _mapPINCodeChangedToState(
@@ -223,33 +171,14 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     PINSubmitted event,
     PINState state,
   ) async* {
-    yield PINState.eventType(PINEventType.SAVING_PINCODE);
+    yield state.copyWith(
+        eventType: Nullable<PINEventType>(PINEventType.SAVING_PINCODE));
 
-    String encryptedPINCode =
-        await OpenPGP.encrypt(state.pinCode, event.user.key.publicKey);
-
-    // Builds the PIN data map
-    Map<dynamic, dynamic> pinData = Map<dynamic, dynamic>.from({
-      'identifier': event.user.identifier,
-      'pin': {
-        'pin_code': encryptedPINCode,
-        'verification_code': null,
-        'verification_expire_date': null,
-      },
-    });
-
-    // Runs the 'callableUserPinUpdate' Firebase callable function
-    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-      functionName: 'callableUserPinUpdate',
-    );
-
-    // Post the user pin data to Firebase
-    await callable.call(pinData);
-
-    yield PINState.clearEventType();
+    await updatePIN(event.user, state.pinCode);
     yield state.copyWith(
       verificationCodeVerified: Nullable<bool>(false),
       pinCodeSaved: Nullable<bool>(true),
+      eventType: null,
     );
   }
 
@@ -271,39 +200,12 @@ class PINBloc extends Bloc<PINEvent, PINState> {
 
   Stream<PINState> _mapClearPINToState(
     ClearPIN event,
+    PINState state,
   ) async* {
-    yield PINState.clear();
-  }
-
-  Future<UserPIN> _tryGetPIN(
-    firebase.User firebaseUser,
-  ) async {
-    try {
-      _service = GraphQLService(await firebaseUser.getIdToken());
-      final QueryResult result = await _service.performMutation(
-        fetchPINQueryStr,
-        variables: {
-          'identifier': firebaseUser.uid,
-        },
-      );
-
-      if (result.hasException) {
-        _logger.e({
-          'graphql': result.exception.graphqlErrors.toString(),
-          'client': result.exception.clientException.toString(),
-        });
-      } else {
-        dynamic pins = result.data['user_pins'];
-        if ((pins != null) && (pins.length > 0)) {
-          return UserPIN.fromJson(pins[0]);
-        }
-
-        return null;
-      }
-    } catch (e) {
-      _logger.e(e.toString());
+    if (state.pin.isExpired()) {
+      await resetVerificationCode(event.user.identifier);
     }
 
-    return null;
+    yield PINState.clear();
   }
 }

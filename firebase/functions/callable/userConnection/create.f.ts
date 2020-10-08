@@ -2,24 +2,24 @@ import * as functions from 'firebase-functions'
 import { hasuraClient } from '../../graphql/graphql-client'
 
 exports = module.exports = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
-  const userId: string = data.userId
-  const connectUserId: any = data.connectUserId
+  const user: string = data.user
+  const connectUser: any = data.connectUser
 
-  if (!userId || !connectUserId) {
+  if (!user || !connectUser) {
     throw new functions.https.HttpsError('cancelled', 'user-connection-create-failed', 'missing information')
   }
 
   // GraphQL mutation for inserting a two-way user connection
-  const mutation: string = `mutation($userId: String!, $connectUserId: String!) {
+  const mutation: string = `mutation($user: String!, $connectUser: String!) {
     insert_user_connections(
       objects: [
         {
-          user_id: $userId,
-          connect_user_id: $connectUserId
+          user: $user,
+          connect_user: $connectUser
         },
         {
-          user_id: $connectUserId,
-          connect_user_id: $userId
+          user: $connectUser,
+          connect_user: $user
         }
       ]
     ) {
@@ -32,8 +32,8 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
     const endpoint: string = config.graphql.endpoint
     const adminSecret: string = config.hasura.admin.secret
     const response: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
-      userId: userId,
-      connectUserId: connectUserId
+      user: user,
+      connectUser: connectUser
     })
 
     return response

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 DateTime getNow() {
-  final DateTime now = DateTime.now();
+  final DateTime now = DateTime.now().toUtc();
   return now;
 }
 

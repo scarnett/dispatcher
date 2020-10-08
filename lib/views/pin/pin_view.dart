@@ -138,7 +138,7 @@ class _PINPageViewState extends State<PINPageView> {
 
   /// Handles the android back button
   Future<bool> _willPopCallback() {
-    context.bloc<PINBloc>().add(ClearPIN());
+    context.bloc<PINBloc>().add(ClearPIN(context.bloc<AuthBloc>().state.user));
     return Future.value(true);
   }
 
@@ -146,18 +146,20 @@ class _PINPageViewState extends State<PINPageView> {
   Widget _buildBody(
     PINState state,
   ) {
-    if ((state.verificationCodeVerified != null) &&
-        state.verificationCodeVerified) {
-      return _buildPINCodeForm(state);
-    } else if ((state.pinCodeSaved != null) && state.pinCodeSaved) {
-      return _buildPINCodeConfirmation();
-    } else if ((state.pin == null) ||
-        ((state.pin != null) &&
-            state.pin.verificationCode.isNullEmptyOrWhitespace)) {
-      return _buildSendVerificationCodeForm(state);
-    } else if ((state.pin != null) &&
-        !state.pin.verificationCode.isNullEmptyOrWhitespace) {
-      return _buildCodeVerificationForm(state);
+    if (state.loaded) {
+      if ((state.verificationCodeVerified != null) &&
+          state.verificationCodeVerified) {
+        return _buildPINCodeForm(state);
+      } else if ((state.pinCodeSaved != null) && state.pinCodeSaved) {
+        return _buildPINCodeConfirmation();
+      } else if ((state.pin == null) ||
+          ((state.pin != null) &&
+              state.pin.verificationCode.isNullEmptyOrWhitespace)) {
+        return _buildSendVerificationCodeForm(state);
+      } else if ((state.pin != null) &&
+          !state.pin.verificationCode.isNullEmptyOrWhitespace) {
+        return _buildCodeVerificationForm(state);
+      }
     }
 
     return Spinner();
@@ -392,7 +394,7 @@ class _PINPageViewState extends State<PINPageView> {
       );
 
   void _tapCancel() {
-    context.bloc<PINBloc>().add(ClearPIN());
+    context.bloc<PINBloc>().add(ClearPIN(context.bloc<AuthBloc>().state.user));
     Navigator.pop(context);
   }
 }

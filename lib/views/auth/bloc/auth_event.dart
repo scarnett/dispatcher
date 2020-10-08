@@ -21,17 +21,6 @@ class AuthStatusChanged extends AuthEvent {
 
 class AuthLogoutRequested extends AuthEvent {}
 
-class SetAuthFormMode extends AuthEvent {
-  final AuthFormMode mode;
-
-  const SetAuthFormMode(
-    this.mode,
-  );
-
-  @override
-  List<Object> get props => [mode];
-}
-
 class LoadUser extends AuthEvent {
   const LoadUser();
 

@@ -2,7 +2,6 @@ import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/repository/auth_repository.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
-import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/auth/create/bloc/bloc.dart';
 import 'package:dispatcher/views/auth/widgets/auth_wrapper.dart';
 import 'package:dispatcher/widgets/form_button.dart';
@@ -46,15 +45,8 @@ class _AuthCreateViewState extends State<AuthCreateView> {
   Widget _buildLoginButton() => FormButton(
         color: Colors.transparent,
         text: AppLocalizations.of(context).alreadyHaveAccount,
-        onPressed: _tapLogin,
+        onPressed: () => moveToPage(widget.pageController, AuthFormMode.LOGIN),
         textColor: AppTheme.accent,
         textButton: true,
       );
-
-  /// Handles the 'login' tap
-  void _tapLogin() {
-    AuthFormMode mode = AuthFormMode.LOGIN;
-    context.bloc<AuthBloc>().add(SetAuthFormMode(mode));
-    moveToPage(widget.pageController, AuthFormMode.LOGIN);
-  }
 }

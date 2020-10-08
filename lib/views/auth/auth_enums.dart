@@ -11,8 +11,8 @@ enum AuthStatus {
 }
 
 enum AuthFormMode {
-  CREATE,
   LOGIN,
+  CREATE,
 }
 
 extension AuthFormModeExtension on AuthFormMode {
@@ -31,11 +31,11 @@ extension AuthFormModeExtension on AuthFormMode {
 
   Widget getForm() {
     switch (this) {
-      case AuthFormMode.CREATE:
-        return AuthCreateForm();
-
       case AuthFormMode.LOGIN:
         return AuthLoginForm();
+
+      case AuthFormMode.CREATE:
+        return AuthCreateForm();
 
       default:
         return Container();

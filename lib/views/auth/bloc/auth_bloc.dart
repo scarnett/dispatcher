@@ -42,8 +42,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       yield await _mapAuthStatusChangedToState(event);
     } else if (event is AuthLogoutRequested) {
       _authRepository.logOut();
-    } else if (event is SetAuthFormMode) {
-      yield _mapAuthFormModeToState(event);
     } else if (event is LoadUser) {
       yield await _mapLoadUserToState(event);
     }
@@ -83,13 +81,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return const AuthState.unknown();
     }
   }
-
-  AuthState _mapAuthFormModeToState(
-    SetAuthFormMode event,
-  ) =>
-      state.copyWith(
-        mode: event.mode,
-      );
 
   Future<AuthState> _mapLoadUserToState(
     LoadUser event,

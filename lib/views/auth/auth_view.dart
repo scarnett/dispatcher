@@ -25,7 +25,7 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
   @override
   void initState() {
     _pageController = PageController(
-      initialPage: 0,
+      initialPage: AuthFormMode.LOGIN.pageIndex,
     );
 
     super.initState();

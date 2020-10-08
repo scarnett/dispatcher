@@ -57,7 +57,7 @@ class ConnectBloc extends Bloc<ConnectEvent, ConnectState> {
         );
       } else {
         UserConnection connection = user.connections.firstWhere(
-            (connection) => connection.connectUserId == event.firebaseUser.uid,
+            (connection) => connection.connectUser == event.firebaseUser.uid,
             orElse: () => null);
 
         if (connection == null) {
@@ -86,8 +86,8 @@ class ConnectBloc extends Bloc<ConnectEvent, ConnectState> {
 
     // Builds the PIN data map
     Map<String, dynamic> connectData = Map<String, dynamic>.from({
-      'userId': event.userId,
-      'connectUserId': event.connectUserId,
+      'user': event.user,
+      'connectUser': event.connectUser,
     });
 
     // Runs the 'callableUserConnectionCreate' Firebase callable function

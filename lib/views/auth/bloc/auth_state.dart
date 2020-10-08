@@ -43,21 +43,13 @@ class AuthState extends Equatable {
           status: AuthStatus.UNAUTHENTICATED,
         );
 
-  const AuthState.formMode(
-    AuthFormMode mode,
-  ) : this._(
-          mode: mode,
-        );
-
   AuthState copyWith({
     AuthStatus status,
-    AuthFormMode mode,
     firebase.User firebaseUser,
     User user,
   }) =>
       AuthState._(
         status: status ?? this.status,
-        mode: mode ?? this.mode,
         firebaseUser: firebaseUser ?? this.firebaseUser,
         user: user ?? this.user,
       );
@@ -67,6 +59,5 @@ class AuthState extends Equatable {
 
   @override
   String toString() =>
-      'AuthState{status: $status, mode: $mode, firebaseUser: ${firebaseUser?.displayName}, ' +
-      'user: $user}';
+      'AuthState{status: $status, firebaseUser: ${firebaseUser?.displayName}, user: $user}';
 }

@@ -17,15 +17,18 @@ class DispatcherAdapter extends TypeAdapter<Dispatcher> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Dispatcher(
-      privateKey: fields[0] as String,
+      identifier: fields[0] as String,
+      privateKey: fields[1] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Dispatcher obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(2)
       ..writeByte(0)
+      ..write(obj.identifier)
+      ..writeByte(1)
       ..write(obj.privateKey);
   }
 

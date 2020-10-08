@@ -6,7 +6,7 @@ import { hasuraClient } from '../../graphql/graphql-client'
  * This observes a user record being created in the system.
  */
 exports = module.exports = functions.firestore
-  .document('users/{userId}').onCreate(async (userDocument: functions.firestore.QueryDocumentSnapshot) => {
+  .document('users/{identifier}').onCreate(async (userDocument: functions.firestore.QueryDocumentSnapshot) => {
     try {
       const userData: FirebaseFirestore.DocumentData = userDocument.data()
       const userIdentifier: string = userDocument.id

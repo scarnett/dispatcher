@@ -22,7 +22,7 @@ const String fetchUserQueryStr = r'''
           verification_expire_date
         }
         user_connections {
-          connect_user_id
+          connect_user
         }
         user_key {
           pubkey
@@ -52,8 +52,8 @@ const String fetchUserByInviteCodeQueryStr = r'''
             url
           }
           user_connections {
-            user_id,
-            connect_user_id
+            user,
+            connect_user
           }
         }
       }

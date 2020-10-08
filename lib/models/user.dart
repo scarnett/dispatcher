@@ -299,21 +299,21 @@ class UserKey extends Equatable {
 }
 
 class UserConnection extends Equatable {
-  final String userId;
-  final String connectUserId;
+  final String user;
+  final String connectUser;
 
   UserConnection({
-    this.userId,
-    this.connectUserId,
+    this.user,
+    this.connectUser,
   });
 
   UserConnection copyWith({
-    String userId,
-    String connectUserId,
+    String user,
+    String connectUser,
   }) =>
       UserConnection(
-        userId: userId ?? this.userId,
-        connectUserId: connectUserId ?? this.connectUserId,
+        user: user ?? this.user,
+        connectUser: connectUser ?? this.connectUser,
       );
 
   static UserConnection fromJson(
@@ -322,8 +322,8 @@ class UserConnection extends Equatable {
       (json == null)
           ? UserConnection()
           : UserConnection(
-              userId: json['user_id'],
-              connectUserId: json['connect_user_id'],
+              user: json['user'],
+              connectUser: json['connect_user'],
             );
 
   static List<UserConnection> fromJsonList(
@@ -336,14 +336,14 @@ class UserConnection extends Equatable {
               .toList();
 
   dynamic toJson() => {
-        'user_id': userId,
-        'connect_user_id': connectUserId,
+        'user': user,
+        'connect_user': connectUser,
       };
 
   @override
-  List<Object> get props => [userId, connectUserId];
+  List<Object> get props => [user, connectUser];
 
   @override
   String toString() =>
-      'UserConnection{user_id: $userId, connect_user_id: $connectUserId}';
+      'UserConnection{user: $user, connect_user: $connectUser}';
 }

@@ -108,5 +108,12 @@ class ResetPINCodeSaved extends PINEvent {
 }
 
 class ClearPIN extends PINEvent {
-  const ClearPIN();
+  final User user;
+
+  const ClearPIN(
+    this.user,
+  );
+
+  @override
+  List<Object> get props => [user];
 }

@@ -2,6 +2,7 @@ part of 'pin_bloc.dart';
 
 @immutable
 class PINState extends Equatable {
+  final bool loaded;
   final UserPIN pin;
   final PINEventType eventType;
   final String verificationCode;
@@ -10,6 +11,7 @@ class PINState extends Equatable {
   final bool pinCodeSaved;
 
   const PINState._({
+    this.loaded = false,
     this.pin,
     this.eventType,
     this.verificationCode,
@@ -29,13 +31,8 @@ class PINState extends Equatable {
 
   const PINState.clear() : this._();
 
-  const PINState.eventType(
-    PINEventType eventType,
-  ) : this._(eventType: eventType);
-
-  const PINState.clearEventType() : this._(eventType: null);
-
   PINState copyWith({
+    Nullable<bool> loaded,
     UserPIN pin,
     Nullable<PINEventType> eventType,
     Nullable<String> verificationCode,
@@ -44,6 +41,7 @@ class PINState extends Equatable {
     Nullable<bool> pinCodeSaved,
   }) =>
       PINState._(
+        loaded: (loaded == null) ? this.loaded : loaded.value,
         pin: pin ?? this.pin,
         eventType: (eventType == null) ? this.eventType : eventType.value,
         verificationCode: (verificationCode == null)
@@ -59,6 +57,7 @@ class PINState extends Equatable {
 
   @override
   List<Object> get props => [
+        loaded,
         pin,
         eventType,
         verificationCode,
@@ -69,7 +68,8 @@ class PINState extends Equatable {
 
   @override
   String toString() =>
-      'PINState{pin: $pin, ' +
+      'PINState{loaded: $loaded, ' +
+      'pin: $pin, ' +
       'eventType: $eventType, ' +
       'verificationCode: ${(verificationCode == null) ? null : '<verificationCode>'}, ' +
       'verificationCodeVerified: $verificationCodeVerified, ' +

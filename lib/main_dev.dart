@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +21,8 @@ void main() async {
   Hive.registerAdapter(DispatcherAdapter());
   await Hive.openBox<Dispatcher>(HiveBoxes.APP_BOX.toString());
   await Firebase.initializeApp();
+
+  tz.initializeTimeZones();
 
   // DEV Environment Specific Configuration
   AppConfig config = AppConfig(

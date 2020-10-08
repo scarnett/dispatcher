@@ -4,6 +4,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/config.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/repository/auth_repository.dart';
+import 'package:dispatcher/utils/crypt_utils.dart';
 import 'package:dispatcher/views/auth/create/create.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
@@ -11,10 +12,7 @@ import 'package:formz/formz.dart';
 import 'package:hive/hive.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:meta/meta.dart';
-import 'package:openpgp/key_options.dart';
 import 'package:openpgp/key_pair.dart';
-import 'package:openpgp/openpgp.dart';
-import 'package:openpgp/options.dart';
 
 part 'create_event.dart';
 part 'create_state.dart';
@@ -101,11 +99,6 @@ class CreateAccountBloc extends Bloc<CreateAccountEvent, CreateAccountState> {
       yield state.copyWith(status: FormzStatus.submissionInProgress);
 
       try {
-        Box<Dispatcher> appBox =
-            Hive.box<Dispatcher>(HiveBoxes.APP_BOX.toString());
-        appBox.deleteAll(appBox.keys);
-        appBox.add(Dispatcher());
-
         // Gets the phone number data
         PhoneNumber phoneNumber =
             await PhoneNumber.getRegionInfoFromPhoneNumber(
@@ -141,29 +134,22 @@ class CreateAccountBloc extends Bloc<CreateAccountEvent, CreateAccountState> {
         final firebase.User _firebaseUser = _firebaseAuth.currentUser;
 
         // Generate the keys
-        KeyPair keyPair = await OpenPGP.generate(
-          options: Options(
-            name: _firebaseUser.displayName,
-            email: _firebaseUser.email,
-            passphrase: _firebaseUser.uid,
-            keyOptions: KeyOptions(
-              rsaBits: 2048,
-              cipher: Cypher.aes128,
-              compression: Compression.none,
-              hash: Hash.sha256,
-              compressionLevel: 0,
-            ),
-          ),
-        );
+        KeyPair keyPair = await generateKeyPair(_firebaseUser);
 
         // Store the private key
-        appBox.putAt(
-            0, appBox.getAt(0).copyWith(privateKey: keyPair.privateKey));
+        Box<Dispatcher> appBox =
+            Hive.box<Dispatcher>(HiveBoxes.APP_BOX.toString());
+        appBox.add(
+          Dispatcher(
+            identifier: _firebaseUser.uid,
+            privateKey: encode(keyPair.privateKey),
+          ),
+        );
 
         // Builds the user data map
         Map<String, dynamic> userKeyData = Map<String, dynamic>.from({
           'identifier': _firebaseUser.uid,
-          'pubkey': keyPair.publicKey,
+          'pubkey': encode(keyPair.publicKey),
         });
 
         // Runs the 'callableUserKeyUpdate' Firebase callable function

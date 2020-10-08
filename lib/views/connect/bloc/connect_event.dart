@@ -21,16 +21,16 @@ class LookupUser extends ConnectEvent {
 }
 
 class ConnectUser extends ConnectEvent {
-  final String userId;
-  final String connectUserId;
+  final String user;
+  final String connectUser;
 
   const ConnectUser(
-    this.userId,
-    this.connectUserId,
+    this.user,
+    this.connectUser,
   );
 
   @override
-  List<Object> get props => [userId, connectUserId];
+  List<Object> get props => [user, connectUser];
 }
 
 class ClearConnect extends ConnectEvent {

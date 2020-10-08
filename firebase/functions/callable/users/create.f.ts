@@ -22,20 +22,20 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
       phoneNumber: phone['phone_number']
     })
 
-    const userId: string = authRecord.uid
+    const user: string = authRecord.uid
     const dateNow: FirebaseFirestore.Timestamp = admin.firestore.Timestamp.now()
     const inviteCodeDateExpire: Date = moment(dateNow.toDate()).add(5, 'days').startOf('day').toDate()
 
     // Creates the user record
-    await admin.firestore().collection('users').doc(userId).set({
+    await admin.firestore().collection('users').doc(user).set({
       'name': displayName,
       'email': email,
       'phone': {
-        'user': userId,
+        'user': user,
         ...phone
       },
       'invite_code': {
-        'user': userId,
+        'user': user,
         'code': generateInviteCode(),
         'expire_date': inviteCodeDateExpire.toUTCString()
       }
@@ -46,11 +46,11 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
       'https://hasura.io/jwt/claims': {
         'x-hasura-default-role': 'user',
         'x-hasura-allowed-roles': ['user'],
-        'x-hasura-user-id': userId
+        'x-hasura-user-id': user
       }
     }
 
-    await admin.auth().setCustomUserClaims(userId, customClaims)
+    await admin.auth().setCustomUserClaims(user, customClaims)
     return authRecord.toJSON()
   } catch (e) {
     throw new functions.https.HttpsError('aborted', 'user-create-failed', JSON.stringify(e, undefined, 2))
