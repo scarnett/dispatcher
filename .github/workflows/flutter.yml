@@ -33,4 +33,4 @@ jobs:
       # - name: Flutter test
       #   run: flutter test
       - name: Flutter build
-        run: flutter build appbundle -t lib/main_dev.dart --flavor dev
+        run: flutter build appbundle -t lib/main_dev.dart --flavor dev --verbose
