@@ -76,4 +76,4 @@ jobs:
         run: "flutter pub get"
       - 
         name: "Flutter build dev appbundle"
-        run: "flutter build ios --no-codesign
+        run: "flutter build ios --no-codesign"
