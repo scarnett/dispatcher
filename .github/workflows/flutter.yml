@@ -44,8 +44,7 @@ jobs:
         run: "flutter pub get"
       - 
         name: "Flutter build env config"
-        run: |
-             flutter pub run environment_config:generate
+        run: "flutter pub run environment_config{{':'}}generate"'
       - 
         name: "Flutter build dev appbundle"
         run: "flutter build appbundle -t lib/main_dev.dart --flavor dev --verbose"
