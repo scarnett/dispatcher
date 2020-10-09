@@ -10,8 +10,37 @@ on:
       - master
 
 jobs: 
+  version:
+    name: "Generate Version Number"
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        uses: actions/checkout@v1
+      - 
+        name: "Fetch all history for all tags and branches"
+        run: git fetch --prune --depth=10000
+      - 
+        name: "Install GitVersion"
+        uses: gittools/actions/gitversion/setup@v0.9.2
+        with:
+            versionSpec: '5.2.x'
+      - 
+        name: "Use GitVersion"
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.2
+      - 
+        name: "Create version.txt with nuGetVersion"
+        run: echo ${{ steps.gitversion.outputs.nuGetVersion  }} > version.txt
+      - 
+        name: "Upload version.txt"
+        uses: actions/upload-artifact@v2
+        with:
+          name: gitversion
+          path: version.txt
+
   buildandroid: 
     name: "Build Android"
+    needs: [ version ]
     runs-on: ubuntu-latest
     steps: 
       - 
@@ -41,6 +70,17 @@ jobs:
         name: "Decode environment config"
         run: "echo $DISPATCHER_DEV_ENV_CONFIG_SECRET > lib/env_config.dart"
       - 
+        name: "Get version.txt"
+        uses: actions/download-artifact@v2
+        with:
+          name: gitversion
+      - 
+        name: "Read version"
+        id: version
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: version.txt
+      - 
         name: "Flutter get"
         run: "flutter pub get"
       - 
@@ -49,6 +89,7 @@ jobs:
 
   buildios:
     name: "Build iOS"
+    needs: [ version ]
     runs-on: macos-latest
     steps:
       - 
@@ -67,6 +108,17 @@ jobs:
           DISPATCHER_DEV_ENV_CONFIG_SECRET: "${{ secrets.DISPATCHER_DEV_ENV_CONFIG_SECRET }}"
         name: "Decode environment config"
         run: "echo $DISPATCHER_DEV_ENV_CONFIG_SECRET > lib/env_config.dart"
+      - 
+        name: "Get version.txt"
+        uses: actions/download-artifact@v2
+        with:
+          name: gitversion
+      - 
+        name: "Read version"
+        id: version
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: version.txt
       - 
         name: "Flutter get"
         run: "flutter pub get"
