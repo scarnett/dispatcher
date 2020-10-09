@@ -44,7 +44,7 @@ jobs:
         run: "flutter pub get"
       - 
         name: "Flutter build env config"
-        run: "sh ./github/scripts/env.sh"
+        run: "sh ../scripts/env.sh"
       - 
         name: "Flutter build dev appbundle"
         run: "flutter build appbundle -t lib/main_dev.dart --flavor dev --verbose"
