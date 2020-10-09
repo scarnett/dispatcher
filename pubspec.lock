@@ -268,7 +268,7 @@ packages:
     source: hosted
     version: "0.5.0"
   environment_config:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: environment_config
       url: "https://pub.dartlang.org"
