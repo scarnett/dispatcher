@@ -1,1 +1,1 @@
-flutter pub run environment_config:generate
+flutter pub run environment_config\:generate
