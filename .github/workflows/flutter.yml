@@ -10,8 +10,8 @@ on:
       - master
 
 jobs: 
-  name: Build Android
   buildandroid: 
+    name: "Build Android"
     runs-on: ubuntu-latest
     steps: 
       - 
@@ -50,7 +50,7 @@ jobs:
         run: "flutter build appbundle -t lib/main_dev.dart --flavor dev --verbose"
 
   buildios:
-    name: Build iOS
+    name: "Build iOS"
     runs-on: macos-latest
     steps:
       - 
