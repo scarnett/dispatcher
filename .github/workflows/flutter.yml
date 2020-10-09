@@ -35,16 +35,16 @@ jobs:
         name: "Decode android local.properties"
         run: "echo $DISPATCHER_DEV_LOCAL_SECRET > android/local.properties"
       - 
-        name: "Flutter get"
-        run: "flutter pub get"
-      - 
         env: 
           DISPATCHER_DEV_ENV_CONFIG_SECRET: "${{ secrets.DISPATCHER_DEV_ENV_CONFIG_SECRET }}"
         name: "Decode environment_config.yaml"
         run: "echo $DISPATCHER_DEV_ENV_CONFIG_SECRET > environment_config.yaml"
       - 
+        name: "Flutter get"
+        run: "flutter pub get"
+      - 
         name: "Flutter build env config"
-        run: "flutter pub run environment_config{{':'}}generate"
+        run: "flutter pub run environment_config::generate"
       - 
         name: "Flutter build dev appbundle"
         run: "flutter build appbundle -t lib/main_dev.dart --flavor dev --verbose"

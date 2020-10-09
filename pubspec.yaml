@@ -43,13 +43,13 @@ dependencies:
   formz: '^0.3.1'
   tuple: '^1.0.3'
   timezone: '^0.5.7'
-  environment_config: '^2.2.4'
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   hive_generator: '0.7.2+1'
   build_runner: '^1.10.0'
+  environment_config: '^2.2.4'
 
 flutter:
   uses-material-design: true
