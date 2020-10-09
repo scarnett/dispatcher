@@ -44,7 +44,7 @@ jobs:
         name: "Flutter get"
         run: "flutter pub get"
       - 
-        name: "Flutter build dev appbundle"
+        name: "Flutter build dev"
         run: "flutter build appbundle -t lib/main_dev.dart --flavor dev --verbose"
 
   buildios:
@@ -71,5 +71,5 @@ jobs:
         name: "Flutter get"
         run: "flutter pub get"
       - 
-        name: "Flutter build dev appbundle"
-        run: "flutter build ios -t lib/main_dev.dart --flavor dev --no-codesign --verbose"
+        name: "Flutter build dev"
+        run: "flutter build ios -t lib/main_dev.dart --no-codesign --verbose"
