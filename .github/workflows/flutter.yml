@@ -37,12 +37,9 @@ jobs:
         run: "echo $DISPATCHER_DEV_LOCAL_SECRET > android/local.properties"
       - 
         env: 
-          DISPATCHER_DEV_ENV_SECRET: "${{ secrets.DISPATCHER_DEV_ENV_SECRET }}"
           DISPATCHER_DEV_ENV_CONFIG_SECRET: "${{ secrets.DISPATCHER_DEV_ENV_CONFIG_SECRET }}"
         name: "Decode environment config"
-        run: |
-             "echo $DISPATCHER_DEV_ENV_SECRET > .env"
-             "echo $DISPATCHER_DEV_ENV_CONFIG_SECRET > lib/env_config.dart"
+        run: "echo $DISPATCHER_DEV_ENV_CONFIG_SECRET > lib/env_config.dart"
       - 
         name: "Flutter get"
         run: "flutter pub get"
@@ -67,12 +64,9 @@ jobs:
           flutter-version: "1.22.0"
       - 
         env: 
-          DISPATCHER_DEV_ENV_SECRET: "${{ secrets.DISPATCHER_DEV_ENV_SECRET }}"
           DISPATCHER_DEV_ENV_CONFIG_SECRET: "${{ secrets.DISPATCHER_DEV_ENV_CONFIG_SECRET }}"
         name: "Decode environment config"
-        run: |
-             "echo $DISPATCHER_DEV_ENV_SECRET > .env"
-             "echo $DISPATCHER_DEV_ENV_CONFIG_SECRET > lib/env_config.dart"
+        run: "echo $DISPATCHER_DEV_ENV_CONFIG_SECRET > lib/env_config.dart"
       - 
         name: "Flutter get"
         run: "flutter pub get"
