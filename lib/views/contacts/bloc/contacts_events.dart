@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/cupertino.dart';
 
 abstract class ContactsEvent extends Equatable {
@@ -6,6 +7,17 @@ abstract class ContactsEvent extends Equatable {
 
   @override
   List<Object> get props => [];
+}
+
+class FetchInviteCodeData extends ContactsEvent {
+  final firebase.User firebaseUser;
+
+  const FetchInviteCodeData(
+    this.firebaseUser,
+  );
+
+  @override
+  List<Object> get props => [firebaseUser];
 }
 
 class FetchContactsData extends ContactsEvent {

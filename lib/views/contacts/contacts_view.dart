@@ -3,6 +3,7 @@ import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/text_utils.dart';
+import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/contacts/bloc/contacts_bloc.dart';
 import 'package:dispatcher/views/contacts/bloc/contacts_events.dart';
 import 'package:dispatcher/views/contacts/bloc/contacts_state.dart';
@@ -31,6 +32,9 @@ class ContactsView extends StatelessWidget {
   ) =>
       BlocProvider<ContactsBloc>(
         create: (BuildContext context) => ContactsBloc()
+          ..add(
+            FetchInviteCodeData(context.bloc<AuthBloc>().state.firebaseUser),
+          )
           ..add(
             FetchContactsData(context),
           ),

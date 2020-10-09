@@ -8,7 +8,7 @@ import 'package:dispatcher/utils/config_utils.dart';
 import 'package:dispatcher/utils/crypt_utils.dart';
 import 'package:dispatcher/views/pin/pin_config.dart';
 import 'package:dispatcher/views/pin/pin_enums.dart';
-import 'package:dispatcher/views/pin/pin_extensions.dart';
+import 'package:dispatcher/extensions/user_extensions.dart';
 import 'package:dispatcher/views/pin/pin_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;

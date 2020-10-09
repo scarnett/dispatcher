@@ -9,17 +9,8 @@ const String fetchUserQueryStr = r'''
           iso_code
           phone_number
         }
-        user_invite_code {
-          code
-          expire_date
-        }
         user_avatar {
           url
-        }
-        user_pin {
-          pin_code
-          verification_code
-          verification_expire_date
         }
         user_connections {
           connect_user
@@ -37,6 +28,15 @@ const String fetchPINQueryStr = r'''
         pin_code
         verification_code
         verification_expire_date
+      }
+    }
+    ''';
+
+const String fetchInviteCodeQueryStr = r'''
+    query UserInviteCodeQuery($identifier: String!) {
+      user_invite_codes(where: {user: {_eq: $identifier}}) {
+        code
+        expire_date
       }
     }
     ''';

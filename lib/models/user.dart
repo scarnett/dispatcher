@@ -7,9 +7,7 @@ class User extends Equatable {
   final String name;
   final String email;
   final UserPhoneNumber phone;
-  final UserInviteCode inviteCode;
   final UserAvatar avatar;
-  final UserPIN pin;
   final UserKey key;
   final List<UserConnection> connections;
 
@@ -18,9 +16,7 @@ class User extends Equatable {
     this.name,
     this.email,
     this.phone,
-    this.inviteCode,
     this.avatar,
-    this.pin,
     this.key,
     this.connections,
   });
@@ -30,9 +26,7 @@ class User extends Equatable {
     String name,
     String email,
     UserPhoneNumber phone,
-    UserInviteCode inviteCode,
     UserAvatar avatar,
-    UserPIN pin,
     UserKey key,
     List<UserConnection> connections,
   }) =>
@@ -41,9 +35,7 @@ class User extends Equatable {
         name: name ?? this.name,
         email: email ?? this.email,
         phone: phone ?? this.phone,
-        inviteCode: inviteCode ?? this.inviteCode,
         avatar: avatar ?? this.avatar,
-        pin: pin ?? this.pin,
         key: key ?? this.key,
         connections: connections ?? this.connections,
       );
@@ -56,9 +48,7 @@ class User extends Equatable {
         name: json['name'],
         email: json['email'],
         phone: UserPhoneNumber.fromJson(json['user_phone_number']),
-        inviteCode: UserInviteCode.fromJson(json['user_invite_code']),
         avatar: UserAvatar.fromJson(json['user_avatar']),
-        pin: UserPIN.fromJson(json['user_pin']),
         key: UserKey.fromJson(json['user_key']),
         connections: UserConnection.fromJsonList(json['user_connections']),
       );
@@ -68,21 +58,18 @@ class User extends Equatable {
         'name': name,
         'email': email,
         'phone': phone.toJson(),
-        'inviteCode': inviteCode.toJson(),
         'avatar': avatar.toJson(),
-        'pin': pin.toJson(),
         'key': key.toJson(),
         'connections': connections,
       };
 
   @override
-  List<Object> get props =>
-      [identifier, name, email, phone, inviteCode, avatar, pin, key];
+  List<Object> get props => [identifier, name, email, phone, avatar, key];
 
   @override
   String toString() =>
-      'User{identifier: $identifier, name: $name, email: $email, phone: $phone, ' +
-      'inviteCode: $inviteCode, avatar: $avatar, pin: $pin, key: $key}';
+      'User{identifier: $identifier, name: $name, email: $email, ' +
+      'phone: $phone, avatar: $avatar, key: $key}';
 }
 
 class UserPhoneNumber extends Equatable {

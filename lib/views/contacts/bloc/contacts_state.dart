@@ -1,10 +1,12 @@
 import 'package:contacts_service/contacts_service.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/views/contacts/models/search.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 class ContactsState extends Equatable {
+  final UserInviteCode inviteCode;
   final List<Contact> contacts;
   final List<Contact> filteredContacts;
   final List<String> contactLabels;
@@ -14,6 +16,7 @@ class ContactsState extends Equatable {
   final int activeContactTabIndex;
 
   const ContactsState._({
+    this.inviteCode,
     this.contacts,
     this.filteredContacts,
     this.contactLabels,
@@ -28,6 +31,7 @@ class ContactsState extends Equatable {
   const ContactsState.loadFail() : this._();
 
   ContactsState copyWith({
+    UserInviteCode inviteCode,
     List<Contact> contacts,
     List<Contact> filteredContacts,
     List<String> contactLabels,
@@ -37,6 +41,7 @@ class ContactsState extends Equatable {
     int activeContactTabIndex,
   }) =>
       ContactsState._(
+        inviteCode: inviteCode ?? this.inviteCode,
         contacts: contacts ?? this.contacts,
         filteredContacts: filteredContacts ?? this.filteredContacts,
         contactLabels: contactLabels ?? this.contactLabels,
@@ -49,6 +54,7 @@ class ContactsState extends Equatable {
 
   @override
   List<Object> get props => [
+        inviteCode,
         contacts,
         filteredContacts,
         contactLabels,
@@ -60,7 +66,8 @@ class ContactsState extends Equatable {
 
   @override
   String toString() =>
-      'ContactsState{contacts: ${contacts?.length}, filteredContacts: ${filteredContacts?.length}, ' +
-      'contactLabels: $contactLabels, activeContact: $activeContact, search: $search, ' +
-      'searching: $searching, activeContactTabIndex: $activeContactTabIndex}';
+      'ContactsState{inviteCode: $inviteCode, contacts: ${contacts?.length}, ' +
+      'filteredContacts: ${filteredContacts?.length}, ' +
+      'contactLabels: $contactLabels, activeContact: $activeContact, ' +
+      'search: $search, searching: $searching, activeContactTabIndex: $activeContactTabIndex}';
 }

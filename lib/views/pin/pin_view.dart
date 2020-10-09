@@ -30,7 +30,9 @@ class PINView extends StatelessWidget {
   ) =>
       BlocProvider<PINBloc>(
         create: (BuildContext context) => PINBloc()
-          ..add(LoadUserPIN(context.bloc<AuthBloc>().state.firebaseUser)),
+          ..add(
+            LoadUserPIN(context.bloc<AuthBloc>().state.firebaseUser),
+          ),
         child: PINPageView(),
       );
 }

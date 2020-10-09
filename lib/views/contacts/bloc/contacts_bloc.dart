@@ -1,9 +1,12 @@
 import 'dart:typed_data';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:dispatcher/extensions/extensions.dart';
 import 'package:dispatcher/localization.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/views/contacts/bloc/contacts_events.dart';
 import 'package:dispatcher/views/contacts/bloc/contacts_state.dart';
+import 'package:dispatcher/views/contacts/contacts_service.dart';
 import 'package:dispatcher/views/contacts/contacts_utils.dart';
 import 'package:dispatcher/views/contacts/models/search.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +24,9 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
   Stream<ContactsState> mapEventToState(
     ContactsEvent event,
   ) async* {
-    if (event is FetchContactsData) {
+    if (event is FetchInviteCodeData) {
+      yield* _mapFetchInviteCodeData(event);
+    } else if (event is FetchContactsData) {
       yield* _mapFetchContactsDataToStates(event, state);
     } else if (event is ActiveContact) {
       yield _mapActiveContactToStates(event);
@@ -35,6 +40,41 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
       yield _mapSearchingToStates(event);
     } else if (event is ActiveContactTab) {
       yield _mapActiveContactTabToStates(event);
+    }
+  }
+
+  Stream<ContactsState> _mapFetchInviteCodeData(
+    FetchInviteCodeData event,
+  ) async* {
+    if (event.firebaseUser != null) {
+      if (state.inviteCode == null) {
+        UserInviteCode inviteCode = await tryGetInviteCode(event.firebaseUser);
+        if (inviteCode == null) {
+          yield* _generateInviteCode(event);
+        } else {
+          if (inviteCode.isExpired()) {
+            yield* _generateInviteCode(event);
+          } else {
+            yield state.copyWith(inviteCode: inviteCode);
+          }
+        }
+      } else if ((state.inviteCode != null) && state.inviteCode.isExpired()) {
+        yield* _generateInviteCode(event);
+      }
+    }
+  }
+
+  Stream<ContactsState> _generateInviteCode(
+    FetchInviteCodeData event,
+  ) async* {
+    HttpsCallableResult result = await generateCode(event.firebaseUser.uid);
+    if ((result != null) && (result.data != null)) {
+      yield state.copyWith(
+        inviteCode: UserInviteCode.fromJson(
+            result.data['insert_user_invite_codes']['returning'][0]),
+      );
+    } else {
+      yield state;
     }
   }
 
@@ -105,7 +145,6 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
     ContactsState state,
   ) {
     final Search search = Search.dirty(event.criteria);
-
     return state.copyWith(
       filteredContacts: getFilteredContacts(
         state,

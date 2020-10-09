@@ -24,7 +24,7 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
 
     const user: string = authRecord.uid
     const dateNow: FirebaseFirestore.Timestamp = admin.firestore.Timestamp.now()
-    const inviteCodeDateExpire: Date = moment(dateNow.toDate()).add(5, 'days').startOf('day').toDate()
+    const inviteCodeDateExpire: Date = moment(dateNow.toDate()).add(5, 'days').toDate()
 
     // Creates the user record
     await admin.firestore().collection('users').doc(user).set({

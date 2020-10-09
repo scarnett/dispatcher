@@ -2,7 +2,6 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/text_utils.dart';
-import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/contacts/bloc/bloc.dart';
 import 'package:dispatcher/views/contacts/contact/widgets/contact_avatar.dart';
 import 'package:dispatcher/widgets/form_button.dart';
@@ -48,8 +47,8 @@ class _ContactViewState extends State<ContactView> {
                   child: Column(
                     children: <Widget>[
                       _buildContact(state),
-                      _buildInviteCodeText(),
-                      _buildInviteButton(),
+                      _buildInviteCodeText(state),
+                      _buildInviteButton(state),
                     ],
                   ),
                 ),
@@ -110,7 +109,10 @@ class _ContactViewState extends State<ContactView> {
     );
   }
 
-  Widget _buildInviteCodeText() => Padding(
+  Widget _buildInviteCodeText(
+    ContactsState state,
+  ) =>
+      Padding(
         padding: const EdgeInsets.only(
           bottom: 20.0,
           top: 20.0,
@@ -118,7 +120,7 @@ class _ContactViewState extends State<ContactView> {
         child: Column(
           children: <Widget>[
             Text(
-              context.bloc<AuthBloc>().state.user.inviteCode.code,
+              state.inviteCode.code,
               style: Theme.of(context).textTheme.headline6.copyWith(
                     color: AppTheme.accent,
                   ),
@@ -131,12 +133,15 @@ class _ContactViewState extends State<ContactView> {
         ),
       );
 
-  Widget _buildInviteButton() => FormButton(
+  Widget _buildInviteButton(
+    ContactsState state,
+  ) =>
+      FormButton(
         text: AppLocalizations.of(context).sendInvite,
         onPressed: () => Share.share(
           AppLocalizations.of(context).inviteCodeText(
             AppLocalizations.appTitle,
-            context.bloc<AuthBloc>().state.user.inviteCode.code,
+            state.inviteCode.code,
           ),
         ),
       );
