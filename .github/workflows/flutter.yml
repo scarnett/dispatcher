@@ -28,7 +28,7 @@ jobs:
         env:
           DISPATCHER_DEV_LOCAL_SECRET: ${{ secrets.DISPATCHER_DEV_LOCAL_SECRET }}
         run: echo $DISPATCHER_DEV_LOCAL_SECRET > android/local.properties
-      - name: Decode environment configuration
+      - name: Decode environment_config.yaml
         env:
           DISPATCHER_DEV_ENV_CONFIG_SECRET: ${{ secrets.DISPATCHER_DEV_ENV_CONFIG_SECRET }}
         run: echo $DISPATCHER_DEV_ENV_CONFIG_SECRET > environment_config.yaml
@@ -36,7 +36,5 @@ jobs:
         run: flutter pub get
       - name: Flutter build env config
         run: flutter pub run environment_config:generate
-      # - name: Flutter test
-      #   run: flutter test
       - name: Flutter build
         run: flutter build appbundle -t lib/main_dev.dart --flavor dev --verbose
