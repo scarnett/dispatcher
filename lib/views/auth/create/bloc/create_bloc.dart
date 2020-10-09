@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/config.dart';
+import 'package:dispatcher/env_config.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/repository/auth_repository.dart';
 import 'package:dispatcher/utils/crypt_utils.dart';
@@ -102,7 +103,7 @@ class CreateAccountBloc extends Bloc<CreateAccountEvent, CreateAccountState> {
         // Gets the phone number data
         PhoneNumber phoneNumber =
             await PhoneNumber.getRegionInfoFromPhoneNumber(
-                state.phone.value.phoneNumber, 'US'); // TODO!
+                state.phone.value.phoneNumber, EnvConfig.DISPATCHER_ISO_CODE);
 
         // Builds the user data map
         Map<String, dynamic> userData = Map<String, dynamic>.from({

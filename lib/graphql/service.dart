@@ -1,3 +1,4 @@
+import 'package:dispatcher/env_config.dart';
 import 'package:graphql/client.dart';
 
 class GraphQLService {
@@ -7,7 +8,7 @@ class GraphQLService {
     String token,
   ) {
     HttpLink link = HttpLink(
-      uri: 'https://proper-molly-55.hasura.app/v1/graphql', // TODO! config
+      uri: EnvConfig.DISPATCHER_GRAPHQL_URL,
       headers: {
         'Authorization': 'Bearer $token',
       },

@@ -1,3 +1,4 @@
+import 'package:dispatcher/env_config.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:formz/formz.dart';
@@ -16,8 +17,9 @@ class Password extends FormzInput<String, PasswordValidationError> {
     String value,
   ) {
     if (value?.isNotEmpty == true) {
-      // TODO! config min password length
-      if (value.length < 6) {
+      int minPasswordLength =
+          int.parse(EnvConfig.DISPATCHER_MIN_PASSWORD_LENGTH);
+      if (value.length < minPasswordLength) {
         return PasswordValidationError.length;
       }
 
@@ -32,8 +34,9 @@ class Password extends FormzInput<String, PasswordValidationError> {
   ) {
     switch (error) {
       case PasswordValidationError.length:
-        // TODO! config min password length
-        return AppLocalizations.of(context).passwordLength(6);
+        int minPasswordLength =
+            int.parse(EnvConfig.DISPATCHER_MIN_PASSWORD_LENGTH);
+        return AppLocalizations.of(context).passwordLength(minPasswordLength);
 
       case PasswordValidationError.empty:
       default:

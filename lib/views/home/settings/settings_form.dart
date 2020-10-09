@@ -1,3 +1,4 @@
+import 'package:dispatcher/env_config.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/utils/common_utils.dart';
@@ -185,7 +186,7 @@ class _SettingsFormState extends State<SettingsForm> {
           ),
           child: InternationalPhoneNumberInput(
             key: const Key('settingsForm_phoneInput_textField'),
-            locale: 'en_US', // TODO!
+            locale: EnvConfig.DISPATCHER_LOCALE,
             selectorConfig: const SelectorConfig(
               selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
             ),

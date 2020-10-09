@@ -1,5 +1,3 @@
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:dispatcher/extensions/extensions.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/views/connect/connect_enums.dart';
 import 'package:dispatcher/utils/common_utils.dart';

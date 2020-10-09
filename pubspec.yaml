@@ -43,6 +43,7 @@ dependencies:
   formz: '^0.3.1'
   tuple: '^1.0.3'
   timezone: '^0.5.7'
+  environment_config: '^2.2.4'
 
 dev_dependencies:
   flutter_test:

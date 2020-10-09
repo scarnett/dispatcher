@@ -1,5 +1,11 @@
 # Dispatcher
 
+# Generate env configuration
+
+```bash
+flutter pub run environment_config:generate
+```
+
 # Android
 
 ## local.properties

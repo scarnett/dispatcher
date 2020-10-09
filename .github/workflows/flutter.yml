@@ -20,16 +20,22 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: '1.22.0'
-      - name: Decode google-services.json
+      - name: Decode android google-services.json
         env:
           DISPATCHER_DEV_FIREBASE_SECRET: ${{ secrets.DISPATCHER_DEV_FIREBASE_SECRET }}
         run: echo $DISPATCHER_DEV_FIREBASE_SECRET > android/app/src/dev/google-services.json
-      - name: Decode local.properties
+      - name: Decode android local.properties
         env:
           DISPATCHER_DEV_LOCAL_SECRET: ${{ secrets.DISPATCHER_DEV_LOCAL_SECRET }}
         run: echo $DISPATCHER_DEV_LOCAL_SECRET > android/local.properties
+      - name: Decode environment configuration
+        env:
+          DISPATCHER_DEV_ENV_CONFIG_SECRET: ${{ secrets.DISPATCHER_DEV_ENV_CONFIG_SECRET }}
+        run: echo $DISPATCHER_DEV_ENV_CONFIG_SECRET > environment_config.yaml
       - name: Flutter get
         run: flutter pub get
+      - name: Flutter build env config
+        run: flutter pub run environment_config:generate
       # - name: Flutter test
       #   run: flutter test
       - name: Flutter build

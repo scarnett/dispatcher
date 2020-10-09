@@ -1,3 +1,4 @@
+import 'package:dispatcher/env_config.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
@@ -139,13 +140,13 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
           ),
           child: InternationalPhoneNumberInput(
             key: const Key('createForm_phoneInput_textField'),
-            locale: 'en_US', // TODO!
+            locale: EnvConfig.DISPATCHER_LOCALE,
             selectorConfig: const SelectorConfig(
               selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
             ),
             ignoreBlank: true,
             autoValidateMode: AutovalidateMode.disabled,
-            initialValue: PhoneNumber(isoCode: 'US'), // TODO!
+            initialValue: PhoneNumber(isoCode: EnvConfig.DISPATCHER_ISO_CODE),
             selectorTextStyle: Theme.of(context).textTheme.bodyText1,
             onInputChanged: (phone) => context
                 .bloc<CreateAccountBloc>()
