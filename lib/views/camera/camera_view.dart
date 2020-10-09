@@ -2,11 +2,15 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:camera/camera.dart';
+import 'package:dispatcher/localization.dart';
+import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/date_utils.dart';
+import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CameraView extends StatelessWidget {
@@ -45,10 +49,12 @@ class CameraPageView extends StatefulWidget {
 
 class _CameraPageViewState extends State<CameraPageView>
     with TickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ImagePicker _picker = ImagePicker();
   CameraController _controller;
   List<CameraDescription> _cameras;
   int _selectedCamera = 0;
+  Logger _logger = Logger();
 
   double min = (pi * -2.0);
   double max = (pi * 2.0);
@@ -68,6 +74,7 @@ class _CameraPageViewState extends State<CameraPageView>
     BuildContext context,
   ) =>
       Scaffold(
+        key: _scaffoldKey,
         extendBody: true,
         body: FutureBuilder<List<CameraDescription>>(
           future: availableCameras(),
@@ -217,90 +224,99 @@ class _CameraPageViewState extends State<CameraPageView>
   /// Builds the controls
   Widget _buildControls() {
     if ((_controller == null) || !_controller.value.isInitialized) {
-      // TODO! loading...
-      return Container();
+      return _wrapControls(
+        Spinner(fillColor: Colors.transparent),
+      );
     }
 
     CameraDescription camera =
         (_controller == null) ? null : _controller.description;
 
-    return ClipRect(
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        color: Colors.black.withOpacity(0.1),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: 5.0,
-            sigmaY: 5.0,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 20.0,
-              horizontal: 20.0,
+    return _wrapControls(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          RawMaterialButton(
+            onPressed: () => _tapSelectCamera(context),
+            child: Icon(
+              _getCameraLensIcon(camera),
+              color: Colors.white,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                RawMaterialButton(
-                  onPressed: () => _tapSelectCamera(context),
-                  child: Icon(
-                    _getCameraLensIcon(camera),
+            shape: CircleBorder(),
+            elevation: 0.0,
+            fillColor: Colors.black87,
+            padding: const EdgeInsets.all(10.0),
+          ),
+          RawMaterialButton(
+            onPressed: () =>
+                (_controller != null) && _controller.value.isInitialized
+                    ? _tapTakePicture()
+                    : null,
+            child: Container(
+              width: 60.0,
+              height: 60.0,
+              child: Stack(
+                children: <Widget>[
+                  Icon(
+                    Icons.brightness_1,
                     color: Colors.white,
+                    size: 60.0,
                   ),
-                  shape: CircleBorder(),
-                  elevation: 0.0,
-                  fillColor: Colors.black87,
-                  padding: const EdgeInsets.all(10.0),
-                ),
-                RawMaterialButton(
-                  onPressed: () =>
-                      (_controller != null) && _controller.value.isInitialized
-                          ? _tapTakePicture()
-                          : null,
-                  child: Container(
-                    width: 60.0,
-                    height: 60.0,
-                    child: Stack(
-                      children: <Widget>[
-                        Icon(
-                          Icons.brightness_1,
-                          color: Colors.white,
-                          size: 60.0,
-                        ),
-                        Center(
-                          child: Icon(
-                            Icons.camera,
-                            color: AppTheme.primary,
-                            size: 50.0,
-                          ),
-                        ),
-                      ],
+                  Center(
+                    child: Icon(
+                      Icons.camera,
+                      color: AppTheme.primary,
+                      size: 50.0,
                     ),
                   ),
-                  shape: CircleBorder(),
-                  elevation: 0.0,
-                  fillColor: Colors.black.withOpacity(0.3),
-                  padding: const EdgeInsets.all(2.0),
-                ),
-                RawMaterialButton(
-                  onPressed: () => _tapSelectPhoto(),
-                  child: Icon(
-                    Icons.add_a_photo,
-                    color: Colors.white,
-                  ),
-                  shape: CircleBorder(),
-                  elevation: 0.0,
-                  fillColor: Colors.black87,
-                  padding: const EdgeInsets.all(10.0),
-                ),
-              ],
+                ],
+              ),
             ),
+            shape: CircleBorder(),
+            elevation: 0.0,
+            fillColor: Colors.black.withOpacity(0.3),
+            padding: const EdgeInsets.all(2.0),
           ),
-        ),
+          RawMaterialButton(
+            onPressed: () => _tapSelectPhoto(),
+            child: Icon(
+              Icons.add_a_photo,
+              color: Colors.white,
+            ),
+            shape: CircleBorder(),
+            elevation: 0.0,
+            fillColor: Colors.black87,
+            padding: const EdgeInsets.all(10.0),
+          ),
+        ],
       ),
     );
   }
+
+  /// Wraps the camera controls
+  Widget _wrapControls(
+    Widget child,
+  ) =>
+      ClipRect(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          color: Colors.black.withOpacity(0.1),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 5.0,
+              sigmaY: 5.0,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 20.0,
+                horizontal: 20.0,
+              ),
+              child: child,
+            ),
+          ),
+        ),
+      );
 
   /// Builds a 'rule of thirds' cell
   Widget _buildRuleOfThirdsCell(
@@ -364,7 +380,7 @@ class _CameraPageViewState extends State<CameraPageView>
         _uploadImage(image.path);
       }
     } catch (e) {
-      // TODO!
+      _logger.e(e.toString());
     }
   }
 
@@ -436,8 +452,11 @@ class _CameraPageViewState extends State<CameraPageView>
       }
 
       if (_controller.value.hasError) {
-        // TODO! send message action
-        // showInSnackBar('Camera error ${_controller.value.errorDescription}');
+        _scaffoldKey.currentState.showSnackBar(buildSnackBar(Message(
+          text: AppLocalizations.of(context)
+              .cameraError(_controller.value.errorDescription),
+          type: MessageType.ERROR,
+        )));
       }
     });
 

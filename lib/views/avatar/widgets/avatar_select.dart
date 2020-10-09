@@ -12,6 +12,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:logger/logger.dart';
 
 /// Displays the avatar selector
 class UserSelectAvatar extends StatelessWidget {
@@ -59,6 +60,7 @@ class UserSelectAvatarDisplay extends StatefulWidget {
 
 class _UserSelectAvatarDisplayState extends State<UserSelectAvatarDisplay> {
   final ImagePicker _picker = ImagePicker();
+  Logger _logger = Logger();
 
   @override
   Widget build(
@@ -187,7 +189,7 @@ class _UserSelectAvatarDisplayState extends State<UserSelectAvatarDisplay> {
 
       _uploadImage(avatarFile);
     } catch (e) {
-      // TODO!
+      _logger.e(e.toString());
     }
   }
 

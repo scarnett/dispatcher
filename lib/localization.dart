@@ -261,6 +261,16 @@ class AppLocalizations {
         ],
       );
 
+  String cameraError(
+    String error,
+  ) =>
+      addMessage(
+        'Camera error $error',
+        args: [
+          error,
+        ],
+      );
+
   addMessage(
     String message, {
     String name,
