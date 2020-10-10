@@ -138,9 +138,7 @@ jobs:
         env: 
           DISPATCHER_DEV_FIREBASE_ADMIN_SDK: "${{ secrets.DISPATCHER_DEV_FIREBASE_ADMIN_SDK }}"
         name: "Decode firebase-adminsdk.json"
-        run: | 
-             "mkdir firebase/functions/keys"
-             "echo $DISPATCHER_DEV_FIREBASE_ADMIN_SDK > firebase/functions/keys/dispatcher-firebase-adminsdk.json"
+        run: "echo $DISPATCHER_DEV_FIREBASE_ADMIN_SDK > firebase/functions/keys/dispatcher-firebase-adminsdk.json"
       - 
         name: "Install Dependencies"
         working-directory: firebase/functions
