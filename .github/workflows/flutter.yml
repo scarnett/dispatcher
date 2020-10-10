@@ -142,8 +142,8 @@ jobs:
           path: dist
       - 
         name: "Deploy Functions to Firebase"
-        working-directory: ./firebase
         uses: w9jds/firebase-action@master
+        working-directory: ./firebase
         with:
           args: "firebase deploy --only functions --project dispatcher-dev"
         env:
