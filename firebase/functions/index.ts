@@ -6,6 +6,8 @@ admin.initializeApp({
 
 import * as glob from 'glob'
 import camelcase from 'camelcase'
+import path from 'path'
+import i18n from 'i18n'
 
 const paths: string[] = [
   './auth/*.f.js',         // Auth
@@ -15,8 +17,13 @@ const paths: string[] = [
   './schedule/*.f.js'      // Cron
 ]
 
-for (const path of paths) {
-  const files: string[] = glob.sync(path, { cwd: __dirname, ignore: `./node_modules/**` })
+i18n.configure({
+  locales: ['en'],
+  directory: path.join(__dirname, 'locales')
+})
+
+for (const _path of paths) {
+  const files: string[] = glob.sync(_path, { cwd: __dirname, ignore: `./node_modules/**` })
   for (const file of files) {
     processExport(file)
   }

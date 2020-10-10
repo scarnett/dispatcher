@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import { hasuraClient } from '../../graphql/graphql-client'
+import i18n from 'i18n'
 
 exports = module.exports = functions.https.onRequest(async (req: functions.https.Request, res: functions.Response<any>) => {
   if (req.method !== 'POST') {
@@ -61,7 +62,7 @@ exports = module.exports = functions.https.onRequest(async (req: functions.https
     await admin.firestore().collection('sms').add({
       'user': user.identifier,
       'inbound_phone': user.user_phone_number.phone_number,
-      'body': `You successfully connected with ${connectUser.name}!`, // TODO! i18n
+      'body': i18n.__('You successfully connected with {{name}}!', { name: connectUser.name }),
       'sent_date': dateNow
     })
 

@@ -32,7 +32,6 @@ dependencies:
   openpgp: '^0.9.9'
   hive: '^1.4.4'
   hive_flutter: '^0.3.1'
-  barcode_scan: '^3.0.1'
   intl_phone_number_input: '^0.5.2+2'
   camera: '^0.5.8+5'
   image_picker: '^0.6.7+4'
