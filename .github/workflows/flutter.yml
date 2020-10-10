@@ -132,7 +132,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: firebase
+        working-directory: firebase/functions
     steps:
       - 
         name: "Checkout Repo"
