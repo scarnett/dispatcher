@@ -130,7 +130,6 @@ jobs:
     name: "Deploy Firebase Functions"
     needs: [ version ]
     runs-on: ubuntu-latest
-    working-directory: ./firebase
     steps:
       - 
         name: Checkout Repo
@@ -143,6 +142,7 @@ jobs:
           path: dist
       - 
         name: "Deploy Functions to Firebase"
+        working-directory: ./firebase
         uses: w9jds/firebase-action@master
         with:
           args: "firebase deploy --only functions --project dispatcher-dev"
