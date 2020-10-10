@@ -30,6 +30,12 @@ firebase deploy --only functions --project dispatcher-dev
 firebase deploy --only firestore:rules --project dispatcher-dev
 ```
 
+# Firebase Token
+
+```bash
+firebase login:ci
+```
+
 # Environment configuration
 ```bash
 firebase functions:config:set graphql.endpoint="..."
@@ -63,7 +69,7 @@ functions/
       onUpdate.f.ts
       onDelete.f.ts
 
-  http/
+  endpoint/
     endpointName.f.ts
 
   schedule/
@@ -75,11 +81,3 @@ functions/
 # Notes
 When you deploy these functions a lib/ folder will be generated that contains the transpiled javascript files that get deployed to firebase.
 It is highly recommended to delete this folder if it exists prior to deploying the functions. This will ensure that a clean build is being deployed.
-
-# Database
-
-## device
-This observes devices being created in the system.
-
-## sms
-This observes sms messages being created in the system.
