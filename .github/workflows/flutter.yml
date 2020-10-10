@@ -130,40 +130,14 @@ jobs:
     name: "Build Firebase Functions"
     needs: [ version ]
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: firebase/functions
     steps:
       - 
         name: "Checkout Repo"
         uses: actions/checkout@master
       - 
         name: "Install Dependencies"
+        working-directory: firebase/functions
         run: npm install
-      - 
-        name: "Build"
-        run: npm run build
-      - 
-        name: "Archive Artifact"
-        uses: actions/upload-artifact@master
-        with:
-          name: lib
-          path: firebase/functions/lib
-
-  deployFirebase: 
-    name: "Deploy Firebase Functions"
-    needs: [ version, buildFirebase ]
-    runs-on: ubuntu-latest
-    steps:
-      - 
-        name: "Checkout Repo"
-        uses: actions/checkout@master
-      - 
-        name: "Download Artifact"
-        uses: actions/download-artifact@v2
-        with:
-          name: lib
-          path: firebase/functions/lib
       - 
         name: "Deploy Functions to Firebase"
         uses: w9jds/firebase-action@master
