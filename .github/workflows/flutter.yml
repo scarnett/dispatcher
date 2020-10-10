@@ -148,7 +148,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: lib
-          path: lib
+          path: firebase/functions/lib
 
   deployFirebase: 
     name: "Deploy Firebase Functions"
@@ -166,7 +166,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: lib
-          path: lib
+          path: firebase/functions/lib
       - 
         name: "Deploy Functions to Firebase"
         uses: w9jds/firebase-action@master
