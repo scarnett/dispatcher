@@ -144,11 +144,11 @@ jobs:
         name: "Build"
         run: npm run build
       - 
-        name: "Archive Production Artifact"
+        name: "Archive Artifact"
         uses: actions/upload-artifact@master
         with:
-          name: dist
-          path: dist
+          name: lib
+          path: lib
 
   deployFirebase: 
     name: "Deploy Firebase Functions"
@@ -162,8 +162,8 @@ jobs:
         name: "Download Artifact"
         uses: actions/download-artifact@v2
         with:
-          name: dist
-          path: dist
+          name: lib
+          path: lib
       - 
         name: "Deploy Functions to Firebase"
         uses: w9jds/firebase-action@master
