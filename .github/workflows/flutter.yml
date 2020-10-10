@@ -171,4 +171,4 @@ jobs:
           args: "deploy --only functions --project dispatcher-dev"
         env:
           FIREBASE_TOKEN: ${{ secrets.DISPATCHER_DEV_FIREBASE_TOKEN }}
-          PROJECT_PATH: ./dist
+          PROJECT_PATH: ./firebase
