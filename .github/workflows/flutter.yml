@@ -130,13 +130,12 @@ jobs:
     name: "Deploy Firebase Functions"
     needs: [ version ]
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./firebase
     steps:
       - 
         name: "Deploy Functions to Firebase"
         uses: w9jds/firebase-action@master
+        run:
+          working-directory: ./firebase
         with:
           args: "deploy --only functions --project dispatcher-dev"
         env:
