@@ -126,16 +126,30 @@ jobs:
         name: "Flutter build dev"
         run: "flutter build ios -t lib/main_dev.dart --no-codesign --verbose"
 
-  deployFirebaseFunctions:
+  buildFirebase:
     name: "Build Firebase Functions"
     needs: [ version ]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: firebase/functions
     steps:
       - 
         name: "Install Dependencies"
-        working-directory: firebase/functions
         run: npm install
       - 
         name: "Build"
-        working-directory: firebase
         run: npm deploy
+
+  deployFirebase: 
+    name: "Deploy Firebase Functions"
+    needs: [ version, buildFirebase ]
+    runs-on: ubuntu-latest
+    steps:
+        name: "Deploy Functions to Firebase"
+        uses: w9jds/firebase-action@master
+        with:
+          args: "deploy --only functions --project dispatcher-dev"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.DISPATCHER_DEV_FIREBASE_TOKEN }}
+          PROJECT_PATH: ./firebase
