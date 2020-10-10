@@ -127,13 +127,18 @@ jobs:
         run: "flutter build ios -t lib/main_dev.dart --no-codesign --verbose"
 
   buildFirebase:
-    name: "Build Firebase Functions"
+    name: "Deploy Firebase Functions"
     needs: [ version ]
     runs-on: ubuntu-latest
     steps:
       - 
         name: "Checkout Repo"
         uses: actions/checkout@master
+      - 
+        env: 
+          DISPATCHER_DEV_FIREBASE_ADMIN_SDK: "${{ secrets.DISPATCHER_DEV_FIREBASE_ADMIN_SDK }}"
+        name: "Decode firebase dispatcher-firebase-adminsdk.json"
+        run: "echo $DISPATCHER_DEV_FIREBASE_ADMIN_SDK > firebase/functions/keys/dispatcher-firebase-adminsdk.json"
       - 
         name: "Install Dependencies"
         working-directory: firebase/functions
