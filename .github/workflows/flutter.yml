@@ -130,10 +130,13 @@ jobs:
     name: "Deploy Firebase Functions"
     needs: [ version ]
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: firebase
     steps:
+      - 
+        name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: firebase
+          path: firebase
       - 
         name: "Deploy Functions to Firebase"
         uses: w9jds/firebase-action@master
