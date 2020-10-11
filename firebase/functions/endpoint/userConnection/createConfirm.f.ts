@@ -55,14 +55,14 @@ exports = module.exports = functions.https.onRequest(async (req: functions.https
       return
     }
 
-    const user: any = users[0]
-    const connectUser: any = users[1]
+    const user: any = users.find(_user => _user.identifier === newConnectionRecord.user)
+    const connectUser: any = users.find(_user => _user.identifier === newConnectionRecord.connect_user)
 
     // Creates the sms record
     await admin.firestore().collection('sms').add({
       'user': user.identifier,
       'inbound_phone': user.user_phone_number.phone_number,
-      'body': i18n.__('You successfully connected with {{name}}!', { name: connectUser.name }),
+      'body': i18n.__('You were successfully connected to {{name}} on Dispatcher!', { name: connectUser.name }),
       'sent_date': dateNow
     })
 

@@ -37,7 +37,7 @@ class _ContactViewState extends State<ContactView> {
             Scaffold(
           key: _scaffoldKey,
           resizeToAvoidBottomInset: true,
-          appBar: SimpleAppBar(showBackButton: true),
+          appBar: SimpleAppBar(showLeading: true),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

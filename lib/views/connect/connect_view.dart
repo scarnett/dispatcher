@@ -104,7 +104,8 @@ class _ConnectPageViewState extends State<ConnectPageView> {
             child: Scaffold(
               key: _scaffoldKey,
               appBar: SimpleAppBar(
-                showBackButton: true,
+                showLeading: true,
+                leadingIcon: (state.lookupUser == null) ? null : Icons.close,
                 height: 100.0,
               ),
               body: Container(
@@ -288,7 +289,6 @@ class _ConnectPageViewState extends State<ConnectPageView> {
     ConnectState state,
   ) =>
       Container(
-        padding: const EdgeInsets.only(top: 100.0),
         width: double.infinity,
         child: Column(
           children: <Widget>[
@@ -330,7 +330,6 @@ class _ConnectPageViewState extends State<ConnectPageView> {
     ConnectState state,
   ) =>
       Container(
-        padding: const EdgeInsets.only(top: 100.0),
         width: double.infinity,
         child: Column(
           children: <Widget>[
@@ -372,7 +371,6 @@ class _ConnectPageViewState extends State<ConnectPageView> {
     ConnectState state,
   ) =>
       Container(
-        padding: const EdgeInsets.only(top: 100.0),
         width: double.infinity,
         child: Column(
           children: <Widget>[
@@ -395,7 +393,10 @@ class _ConnectPageViewState extends State<ConnectPageView> {
               padding: const EdgeInsets.only(right: 5.0),
               child: FormButton(
                 text: AppLocalizations.of(context).ok,
-                onPressed: () => _tapOK(redirect: false),
+                onPressed: () => _tapOK(
+                  clear: true,
+                  redirect: false,
+                ),
               ),
             ),
           ],
@@ -403,9 +404,12 @@ class _ConnectPageViewState extends State<ConnectPageView> {
       );
 
   void _tapOK({
+    bool clear: false,
     bool redirect: true,
   }) {
-    context.bloc<ConnectBloc>().add(ClearConnect());
+    if (clear) {
+      context.bloc<ConnectBloc>().add(ClearConnect());
+    }
 
     if (redirect) {
       Navigator.pop(context);
