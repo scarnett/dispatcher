@@ -327,6 +327,15 @@ class UserConnection extends Equatable {
         'connect_user': connectUser,
       };
 
+  static List<dynamic> toJsonList(
+    List<UserConnection> connections,
+  ) =>
+      (connections == null)
+          ? []
+          : connections
+              .map((UserConnection connection) => connection.toJson())
+              .toList();
+
   @override
   List<Object> get props => [user, connectUser];
 

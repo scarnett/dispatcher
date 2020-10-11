@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:dispatcher/graphql/user.dart';
 import 'package:dispatcher/models/user.dart';
 import 'package:dispatcher/repository/repository.dart';
-import 'package:dispatcher/graphql/service.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
+import 'package:dispatcher/views/auth/auth_service.dart';
 import 'package:dispatcher/views/auth/bloc/auth_event.dart';
 import 'package:dispatcher/views/auth/bloc/auth_state.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
-import 'package:graphql/client.dart';
-import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -17,8 +14,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserRepository _userRepository;
 
   StreamSubscription<AuthStatus> _authStatusSubscription;
-  GraphQLService _service;
-  Logger _logger = Logger();
 
   AuthBloc({
     @required AuthRepository authRepository,
@@ -62,7 +57,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else {
       final firebase.User firebaseUser = await _tryGetFirebaseUser();
       if ((firebaseUser != null) && !firebaseUser.isAnonymous) {
-        final User user = await _tryGetUser(firebaseUser);
+        final User user = await tryGetUser(firebaseUser);
         return AuthState.authenticated(firebaseUser, user);
       }
     }
@@ -73,7 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       case AuthStatus.AUTHENTICATED:
         final firebase.User firebaseUser = await _tryGetFirebaseUser();
-        final User user = await _tryGetUser(firebaseUser);
+        final User user = await tryGetUser(firebaseUser);
         return AuthState.authenticated(firebaseUser, user);
 
       case AuthStatus.UNKNOWN:
@@ -85,7 +80,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<AuthState> _mapLoadUserToState(
     LoadUser event,
   ) async {
-    User user = await _tryGetUser(state.firebaseUser);
+    User user = await tryGetUser(state.firebaseUser);
     return state.copyWith(
       user: user,
     );
@@ -97,37 +92,5 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } on Exception {
       return null;
     }
-  }
-
-  Future<User> _tryGetUser(
-    firebase.User firebaseUser,
-  ) async {
-    try {
-      _service = GraphQLService(await firebaseUser.getIdToken());
-      final QueryResult result = await _service.performMutation(
-        fetchUserQueryStr,
-        variables: {
-          'identifier': firebaseUser.uid,
-        },
-      );
-
-      if (result.hasException) {
-        _logger.e({
-          'graphql': result.exception.graphqlErrors.toString(),
-          'client': result.exception.clientException.toString(),
-        });
-      } else {
-        dynamic users = result.data['users'];
-        if ((users != null) && (users.length > 0)) {
-          return User.fromJson(users[0]);
-        }
-
-        return null;
-      }
-    } catch (e) {
-      _logger.e(e.toString());
-    }
-
-    return null;
   }
 }

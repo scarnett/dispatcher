@@ -1,17 +1,29 @@
-import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
+part of 'connections_bloc.dart';
 
 @immutable
 class ConnectionsState extends Equatable {
-  ConnectionsState();
+  final List<UserConnection> connections;
 
-  const ConnectionsState._();
+  ConnectionsState({
+    this.connections,
+  });
+
+  const ConnectionsState._({
+    this.connections,
+  });
 
   const ConnectionsState.initial() : this._();
 
-  @override
-  List<Object> get props => [];
+  ConnectionsState copyWith({
+    List<UserConnection> connections,
+  }) =>
+      ConnectionsState._(
+        connections: connections ?? this.connections,
+      );
 
   @override
-  String toString() => 'ConnectionsState{}';
+  List<Object> get props => [connections];
+
+  @override
+  String toString() => 'ConnectionsState{connections: ${connections?.length}}';
 }

@@ -1,3 +1,4 @@
+import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/connections/bloc/bloc.dart';
 import 'package:dispatcher/views/connections/widgets/connections_appbar.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,7 +18,10 @@ class ConnectionsView extends StatelessWidget {
     BuildContext context,
   ) =>
       BlocProvider<ConnectionsBloc>(
-        create: (BuildContext context) => ConnectionsBloc(),
+        create: (BuildContext context) => ConnectionsBloc()
+          ..add(
+            FetchConnectionsData(context.bloc<AuthBloc>().state.firebaseUser),
+          ),
         child: ConnectionsPageView(),
       );
 }
@@ -43,9 +47,15 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
   Widget build(
     BuildContext context,
   ) =>
-      Scaffold(
-        appBar: ConnectionsAppBar(
-          height: 140,
+      BlocBuilder<ConnectionsBloc, ConnectionsState>(
+        builder: (
+          BuildContext context,
+          ConnectionsState state,
+        ) =>
+            Scaffold(
+          appBar: ConnectionsAppBar(
+            height: 140,
+          ),
         ),
       );
 }
