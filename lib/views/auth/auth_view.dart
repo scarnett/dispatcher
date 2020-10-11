@@ -111,10 +111,7 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
           shape: CircleBorder(),
           child: CircleAvatar(
             backgroundColor: Colors.grey[50],
-            // TODO!
-            child: FlutterLogo(
-              size: 50.0,
-            ),
+            child: FlutterLogo(size: 50.0), // TODO!
             radius: 50.0,
           ),
         ),

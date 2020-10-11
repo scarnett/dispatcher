@@ -59,3 +59,23 @@ const String fetchUserByInviteCodeQueryStr = r'''
       }
     }
     ''';
+
+const String fetchUserConnectionsQueryStr = r'''
+    query UserConnectionsQuery($identifier: String!) {
+      user_connections(where: {user: {_eq: $identifier}}) {
+        connection_user {
+          email
+          name
+          identifier
+          user_avatar {
+            url
+          }
+          user_phone_number {
+            phone_number
+            iso_code
+            dial_code
+          }
+        }
+      }
+    }
+    ''';

@@ -8,13 +8,16 @@ class SimpleAppBar extends StatefulWidget implements PreferredSizeWidget {
 
   final bool automaticallyImplyLeading;
 
+  final bool showBackButton;
+
   // The AppBar title
   final String title;
 
   SimpleAppBar({
     Key key,
-    @required this.height,
+    this.height,
     this.automaticallyImplyLeading = false,
+    this.showBackButton = false,
     this.title,
   }) : super(key: key);
 
@@ -22,7 +25,7 @@ class SimpleAppBar extends StatefulWidget implements PreferredSizeWidget {
   State<StatefulWidget> createState() => _SimpleAppBarState();
 
   @override
-  Size get preferredSize => Size.fromHeight(height);
+  Size get preferredSize => Size.fromHeight((height == null) ? 50.0 : height);
 }
 
 class _SimpleAppBarState extends State<SimpleAppBar> {
@@ -33,6 +36,12 @@ class _SimpleAppBarState extends State<SimpleAppBar> {
       AppBar(
         backgroundColor: AppTheme.background,
         automaticallyImplyLeading: widget.automaticallyImplyLeading,
+        leading: (widget.showBackButton)
+            ? IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context, false),
+              )
+            : null,
         flexibleSpace: (widget.title == null)
             ? Container()
             : Container(

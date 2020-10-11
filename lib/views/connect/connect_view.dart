@@ -104,6 +104,7 @@ class _ConnectPageViewState extends State<ConnectPageView> {
             child: Scaffold(
               key: _scaffoldKey,
               appBar: SimpleAppBar(
+                showBackButton: true,
                 height: 100.0,
               ),
               body: Container(

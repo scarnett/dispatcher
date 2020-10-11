@@ -5,7 +5,7 @@ import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/avatar/widgets/avatar_select.dart';
-import 'package:dispatcher/views/home/settings/bloc/settings_bloc.dart';
+import 'package:dispatcher/views/settings/bloc/settings_bloc.dart';
 import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/progress.dart';
 import 'package:dispatcher/widgets/section_header.dart';

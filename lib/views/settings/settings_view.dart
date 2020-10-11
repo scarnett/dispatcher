@@ -1,6 +1,6 @@
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/views/home/settings/bloc/settings_bloc.dart';
-import 'package:dispatcher/views/home/settings/settings_form.dart';
+import 'package:dispatcher/views/settings/bloc/settings_bloc.dart';
+import 'package:dispatcher/views/settings/settings_form.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

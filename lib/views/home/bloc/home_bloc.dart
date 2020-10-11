@@ -1,5 +1,4 @@
-import 'package:dispatcher/views/home/bloc/home_events.dart';
-import 'package:dispatcher/views/home/bloc/home_state.dart';
+import 'package:dispatcher/views/home/bloc/bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class HomeBloc extends HydratedBloc<HomeEvent, HomeState> {

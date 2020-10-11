@@ -5,6 +5,7 @@ import 'package:dispatcher/utils/text_utils.dart';
 import 'package:dispatcher/views/contacts/bloc/bloc.dart';
 import 'package:dispatcher/views/contacts/contact/widgets/contact_avatar.dart';
 import 'package:dispatcher/widgets/form_button.dart';
+import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share/share.dart';
@@ -36,6 +37,7 @@ class _ContactViewState extends State<ContactView> {
             Scaffold(
           key: _scaffoldKey,
           resizeToAvoidBottomInset: true,
+          appBar: SimpleAppBar(showBackButton: true),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

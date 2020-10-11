@@ -3,7 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/env_config.dart';
 import 'package:dispatcher/models/models.dart';
-import 'package:dispatcher/views/home/settings/models/models.dart';
+import 'package:dispatcher/views/settings/models/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';

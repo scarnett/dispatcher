@@ -1,7 +1,7 @@
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/views/auth/auth_view.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
-import 'package:dispatcher/views/home/bloc/home.dart';
+import 'package:dispatcher/views/home/bloc/bloc.dart';
 import 'package:dispatcher/views/home/bloc/home_bloc.dart';
 import 'package:dispatcher/views/home/bloc/home_events.dart';
 import 'package:dispatcher/views/pin/pin_view.dart';
