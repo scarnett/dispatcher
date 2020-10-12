@@ -36,6 +36,10 @@ class AppLocalizations {
       addMessage('Loading your contacts. Please wait...');
 
   String get connections => addMessage('Connections');
+  String get connectionsNone => addMessage('No connections found');
+  String get connectionsLoading =>
+      addMessage('Loading your connections. Please wait...');
+
   String get settings => addMessage('Settings');
   String get menu => addMessage('Menu');
   String get photo => addMessage('Photo');

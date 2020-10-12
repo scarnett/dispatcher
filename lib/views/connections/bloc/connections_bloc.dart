@@ -1,14 +1,14 @@
+import 'package:bloc/bloc.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/views/connections/connections_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 part 'connections_event.dart';
 part 'connections_state.dart';
 
-class ConnectionsBloc extends HydratedBloc<ConnectionsEvent, ConnectionsState> {
+class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
   ConnectionsBloc() : super(ConnectionsState.initial());
 
   ConnectionsState get initialState => ConnectionsState.initial();
@@ -19,6 +19,8 @@ class ConnectionsBloc extends HydratedBloc<ConnectionsEvent, ConnectionsState> {
   ) async* {
     if (event is FetchConnectionsData) {
       yield* _mapFetchConnectionsData(event);
+    } else if (event is ActiveConnection) {
+      yield* _mapActiveConnectionData(event);
     }
   }
 
@@ -35,19 +37,9 @@ class ConnectionsBloc extends HydratedBloc<ConnectionsEvent, ConnectionsState> {
     }
   }
 
-  @override
-  ConnectionsState fromJson(
-    Map<String, dynamic> json,
-  ) =>
-      ConnectionsState(
-        connections: UserConnection.fromJsonList(json['connections']),
-      );
-
-  @override
-  Map<String, dynamic> toJson(
-    ConnectionsState state,
-  ) =>
-      {
-        'connections': UserConnection.toJsonList(state.connections),
-      };
+  Stream<ConnectionsState> _mapActiveConnectionData(
+    ActiveConnection event,
+  ) async* {
+    yield state.copyWith(activeConnection: event.activeConnection);
+  }
 }

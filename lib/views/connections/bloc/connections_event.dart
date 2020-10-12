@@ -17,3 +17,12 @@ class FetchConnectionsData extends ConnectionsEvent {
   @override
   List<Object> get props => [firebaseUser];
 }
+
+class ActiveConnection extends ConnectionsEvent {
+  final UserConnection activeConnection;
+
+  const ActiveConnection(this.activeConnection);
+
+  @override
+  List<Object> get props => [activeConnection];
+}

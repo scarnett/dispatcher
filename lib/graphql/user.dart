@@ -12,9 +12,6 @@ const String fetchUserQueryStr = r'''
         user_avatar {
           url
         }
-        user_connections {
-          connect_user
-        }
         user_key {
           pubkey
         }

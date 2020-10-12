@@ -43,15 +43,18 @@ class User extends Equatable {
   static User fromJson(
     dynamic json,
   ) =>
-      User(
-        identifier: json['identifier'],
-        name: json['name'],
-        email: json['email'],
-        phone: UserPhoneNumber.fromJson(json['user_phone_number']),
-        avatar: UserAvatar.fromJson(json['user_avatar']),
-        key: UserKey.fromJson(json['user_key']),
-        connections: UserConnection.fromJsonList(json['user_connections']),
-      );
+      (json == null)
+          ? User()
+          : User(
+              identifier: json['identifier'],
+              name: json['name'],
+              email: json['email'],
+              phone: UserPhoneNumber.fromJson(json['user_phone_number']),
+              avatar: UserAvatar.fromJson(json['user_avatar']),
+              key: UserKey.fromJson(json['user_key']),
+              connections:
+                  UserConnection.fromJsonList(json['user_connections']),
+            );
 
   dynamic toJson() => {
         'identifier': identifier,
@@ -64,12 +67,13 @@ class User extends Equatable {
       };
 
   @override
-  List<Object> get props => [identifier, name, email, phone, avatar, key];
+  List<Object> get props =>
+      [identifier, name, email, phone, avatar, key, connections];
 
   @override
   String toString() =>
       'User{identifier: $identifier, name: $name, email: $email, ' +
-      'phone: $phone, avatar: $avatar, key: $key}';
+      'phone: $phone, avatar: $avatar, key: $key, connections: ${connections?.length}}';
 }
 
 class UserPhoneNumber extends Equatable {
@@ -286,20 +290,16 @@ class UserKey extends Equatable {
 }
 
 class UserConnection extends Equatable {
-  final String user;
-  final String connectUser;
+  final User connectUser;
 
   UserConnection({
-    this.user,
     this.connectUser,
   });
 
   UserConnection copyWith({
-    String user,
     String connectUser,
   }) =>
       UserConnection(
-        user: user ?? this.user,
         connectUser: connectUser ?? this.connectUser,
       );
 
@@ -309,8 +309,7 @@ class UserConnection extends Equatable {
       (json == null)
           ? UserConnection()
           : UserConnection(
-              user: json['user'],
-              connectUser: json['connect_user'],
+              connectUser: User.fromJson(json['connection_user']),
             );
 
   static List<UserConnection> fromJsonList(
@@ -323,7 +322,6 @@ class UserConnection extends Equatable {
               .toList();
 
   dynamic toJson() => {
-        'user': user,
         'connect_user': connectUser,
       };
 
@@ -337,9 +335,8 @@ class UserConnection extends Equatable {
               .toList();
 
   @override
-  List<Object> get props => [user, connectUser];
+  List<Object> get props => [connectUser];
 
   @override
-  String toString() =>
-      'UserConnection{user: $user, connect_user: $connectUser}';
+  String toString() => 'UserConnection{connect_user: $connectUser}';
 }
