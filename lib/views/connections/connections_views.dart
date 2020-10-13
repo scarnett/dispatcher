@@ -6,6 +6,7 @@ import 'package:dispatcher/views/avatar/widgets/avatar_display.dart';
 import 'package:dispatcher/views/connections/bloc/bloc.dart';
 import 'package:dispatcher/views/connections/widgets/connections_appbar.dart';
 import 'package:dispatcher/widgets/none_found.dart';
+import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -76,19 +77,34 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
           key: _scaffoldKey,
           resizeToAvoidBottomInset: true,
           appBar: ConnectionsAppBar(height: 80.0),
-          body: Column(
-            children: <Widget>[
-              _buildConnectionsList(state),
-            ],
-          ),
+          body: _buildContent(state),
         ),
       );
+
+  /// Builds the content
+  Widget _buildContent(
+    ConnectionsState state,
+  ) {
+    if ((state == null) ||
+        (context.bloc<ConnectionsBloc>().state.connections == null)) {
+      return Spinner(
+        message: AppLocalizations.of(context).connectionsLoading,
+        centered: false,
+      );
+    }
+
+    return Column(
+      children: <Widget>[
+        _buildConnectionsList(state),
+      ],
+    );
+  }
 
   /// Builds a list of contact widgets.
   Widget _buildConnectionsList(
     ConnectionsState state,
   ) {
-    if (state.connections?.length == 0) {
+    if ((state.connections == null) || (state.connections.length == 0)) {
       return NoneFound(
         message: AppLocalizations.of(context).connectionsNone,
       );

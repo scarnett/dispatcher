@@ -30,7 +30,7 @@ Future<List<UserConnection>> tryGetConnections(
         return UserConnection.fromJsonList(connections);
       }
 
-      return null;
+      return [];
     }
   } catch (e) {
     _logger.e(e.toString());

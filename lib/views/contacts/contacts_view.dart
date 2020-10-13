@@ -252,7 +252,7 @@ class _ContactsPageViewState extends State<ContactsPageView>
         ? state.filteredContacts
         : state.contacts;
 
-    if (_contacts?.length == 0) {
+    if ((_contacts == null) || (_contacts.length == 0)) {
       return NoneFound(
         message: AppLocalizations.of(context).contactsNone,
       );

@@ -27,6 +27,14 @@ exports = module.exports = functions.auth.user().onDelete(async (user: functions
       affected_rows
     }
 
+    delete_user_connections(where: {_or: {user: {_eq: $identifier}, connect_user: {_eq: $identifier}}}) {
+      affected_rows
+    }
+
+    delete_user_fcms(where: {user: {_eq: $identifier}}) {
+      affected_rows
+    }
+
     delete_users(where: {identifier: {_eq: $identifier}}) {
       affected_rows
     }
