@@ -5,7 +5,6 @@ import i18n from 'i18n'
 
 exports = module.exports = functions.https.onRequest(async (req: functions.https.Request, res: functions.Response<any>) => {
   if (req.method !== 'POST') {
-    functions.logger.error(`Invalid method ${req.method}`)
     res.status(400).send(`Invalid method ${req.method}`)
     return
   }
@@ -13,7 +12,6 @@ exports = module.exports = functions.https.onRequest(async (req: functions.https
   const config: functions.config.Config = functions.config()
   const headers: any = req.headers
   if (headers.authorization !== config.hasura.auth.key) {
-    functions.logger.error('Unkonwn error')
     res.status(404).send('Unkonwn error')
     return
   }
@@ -49,16 +47,14 @@ exports = module.exports = functions.https.onRequest(async (req: functions.https
     })
 
     if (!response) {
-      functions.logger.error('Bad response')
       res.status(500).send('Bad response')
       return
     }
 
     const users: any[] = response.users
     if (users.length !== 2) {
-      //functions.logger.error(`Bad user size. Should be 2 but found ${users.length}`)
-      //res.status(500).send('Bad response')
-      //return
+      res.status(500).send('Bad response')
+      return
     }
 
     const user: any = users.find(_user => _user.identifier === newConnectionRecord.user)
@@ -80,10 +76,10 @@ exports = module.exports = functions.https.onRequest(async (req: functions.https
       .messaging()
       .sendToDevice(user.user_fcm.token, payload)
       .then((_res: admin.messaging.MessagingDevicesResponse) => {
-        functions.logger.log(`Successfully sent push message: ${JSON.stringify(_res)}`)
+        functions.logger.log(`Push message success: ${JSON.stringify(_res)}`)
       })
       .catch((error: any) => {
-        functions.logger.error(`Error sending push message: ${error}`)
+        functions.logger.error(`Push message error: ${error}`)
       })
 
     res.status(200).send('ok')
