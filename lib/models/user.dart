@@ -9,6 +9,7 @@ class User extends Equatable {
   final UserPhoneNumber phone;
   final UserAvatar avatar;
   final UserKey key;
+  final UserFCM fcm;
   final List<UserConnection> connections;
 
   User({
@@ -18,6 +19,7 @@ class User extends Equatable {
     this.phone,
     this.avatar,
     this.key,
+    this.fcm,
     this.connections,
   });
 
@@ -28,6 +30,7 @@ class User extends Equatable {
     UserPhoneNumber phone,
     UserAvatar avatar,
     UserKey key,
+    UserFCM fcm,
     List<UserConnection> connections,
   }) =>
       User(
@@ -37,6 +40,7 @@ class User extends Equatable {
         phone: phone ?? this.phone,
         avatar: avatar ?? this.avatar,
         key: key ?? this.key,
+        fcm: fcm ?? this.fcm,
         connections: connections ?? this.connections,
       );
 
@@ -52,6 +56,7 @@ class User extends Equatable {
               phone: UserPhoneNumber.fromJson(json['user_phone_number']),
               avatar: UserAvatar.fromJson(json['user_avatar']),
               key: UserKey.fromJson(json['user_key']),
+              fcm: UserFCM.fromJson(json['user_fcm']),
               connections:
                   UserConnection.fromJsonList(json['user_connections']),
             );
@@ -63,17 +68,19 @@ class User extends Equatable {
         'phone': phone.toJson(),
         'avatar': avatar.toJson(),
         'key': key.toJson(),
+        'fcm': fcm.toJson(),
         'connections': connections,
       };
 
   @override
   List<Object> get props =>
-      [identifier, name, email, phone, avatar, key, connections];
+      [identifier, name, email, phone, avatar, key, fcm, connections];
 
   @override
   String toString() =>
       'User{identifier: $identifier, name: $name, email: $email, ' +
-      'phone: $phone, avatar: $avatar, key: $key, connections: ${connections?.length}}';
+      'phone: $phone, avatar: $avatar, key: $key, fcm: $fcm, ' +
+      'connections: ${connections?.length}}';
 }
 
 class UserPhoneNumber extends Equatable {
@@ -287,6 +294,40 @@ class UserKey extends Equatable {
   @override
   String toString() =>
       'UserKey{publicKey: ${(publicKey == null) ? null : '<publicKey>'}}';
+}
+
+class UserFCM extends Equatable {
+  final String token;
+
+  UserFCM({
+    this.token,
+  });
+
+  UserFCM copyWith({
+    String token,
+  }) =>
+      UserFCM(
+        token: token ?? this.token,
+      );
+
+  static UserFCM fromJson(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? UserFCM()
+          : UserFCM(
+              token: json['token'],
+            );
+
+  dynamic toJson() => {
+        'token': token,
+      };
+
+  @override
+  List<Object> get props => [token];
+
+  @override
+  String toString() => 'UserFCM{token: $token}';
 }
 
 class UserConnection extends Equatable {

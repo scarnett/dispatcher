@@ -15,6 +15,9 @@ const String fetchUserQueryStr = r'''
         user_key {
           pubkey
         }
+        user_fcm {
+          token
+        }
       }
     }
     ''';

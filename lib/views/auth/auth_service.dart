@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/graphql/service.dart';
 import 'package:dispatcher/graphql/user.dart';
 import 'package:dispatcher/models/models.dart';
@@ -6,6 +7,24 @@ import 'package:graphql/client.dart';
 import 'package:logger/logger.dart';
 
 Logger _logger = Logger();
+
+Future<HttpsCallableResult> updateFcmToken(
+  String identifier,
+  String token,
+) async {
+  // Builds the fcm data map
+  Map<String, dynamic> fcmData = Map<String, dynamic>.from({
+    'identifier': identifier,
+    'token': token,
+  });
+
+  // Runs the 'callableUserFcmUpdate' Firebase callable function
+  final HttpsCallable userCreateCallable = CloudFunctions.instance
+      .getHttpsCallable(functionName: 'callableUserFcmUpdate');
+
+  // Post the fcm data to Firebase
+  return userCreateCallable.call(fcmData);
+}
 
 Future<User> tryGetUser(
   firebase.User firebaseUser,

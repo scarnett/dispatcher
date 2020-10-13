@@ -1,13 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="io.dispatcher.app">
 
-  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
   <uses-permission android:name="android.permission.READ_CONTACTS" />
   <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+  <uses-permission android:name="android.permission.VIBRATE" />
   <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
   <application
-    android:name="io.flutter.app.FlutterApplication"
+    android:name=".Application"
     android:label="@string/app_name"
     android:icon="@mipmap/ic_launcher">
 
@@ -21,15 +24,20 @@
 
       <meta-data
         android:name="io.flutter.embedding.android.NormalTheme"
-        android:resource="@style/NormalTheme"/>
+        android:resource="@style/NormalTheme" />
 
       <meta-data
         android:name="io.flutter.embedding.android.SplashScreenDrawable"
-        android:resource="@drawable/launch_background"/>
+        android:resource="@drawable/launch_background" />
 
       <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
+        <action android:name="FLUTTER_NOTIFICATION_CLICK" />
+        <category android:name="android.intent.category.DEFAULT" />
+      </intent-filter>
+
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
 
       <!-- Deep Links -->
@@ -51,8 +59,20 @@
       -->
     </activity>
 
+    <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
+    <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+        <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+      </intent-filter>
+    </receiver>
+
+    <meta-data
+      android:name="com.google.firebase.messaging.default_notification_channel_id"
+      android:value="@string/default_notification_channel_id" />
+
     <meta-data
       android:name="flutterEmbedding"
-      android:value="2"/>
+      android:value="2" />
   </application>
 </manifest>

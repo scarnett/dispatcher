@@ -14,14 +14,19 @@ import 'package:timezone/data/latest.dart' as tz;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Bloc
   Bloc.observer = AppBlocObserver();
   HydratedBloc.storage = await HydratedStorage.build();
 
+  // Hive
   await Hive.initFlutter();
   Hive.registerAdapter(DispatcherAdapter());
   await Hive.openBox<Dispatcher>(HiveBoxes.APP_BOX.toString());
+
+  // Firebase
   await Firebase.initializeApp();
 
+  // Timezone
   tz.initializeTimeZones();
 
   // PROD Environment Specific Configuration

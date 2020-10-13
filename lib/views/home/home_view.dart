@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:circular_menu/circular_menu.dart';
+import 'package:dispatcher/utils/push_utils.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/connect/connect_view.dart';
 import 'package:dispatcher/views/contacts/contacts_view.dart';
@@ -14,6 +15,7 @@ import 'package:dispatcher/views/menu/menu_view.dart';
 import 'package:dispatcher/views/settings/settings_view.dart';
 import 'package:dispatcher/widgets/bottom_app_bar.dart';
 import 'package:dispatcher/widgets/spinner.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -54,6 +56,21 @@ class _HomePageViewState extends State<HomePageView> {
   @override
   void initState() {
     super.initState();
+
+    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+    // Listen for fcm token refresh
+    Stream<String> fcmStream = _firebaseMessaging.onTokenRefresh;
+    fcmStream.listen((String token) {
+      if (context.bloc<AuthBloc>().state.user != null) {
+        context.bloc<AuthBloc>()..add(UpdateFcmToken(token));
+      }
+    });
+
+    // Listen for push messages coming from firebase
+    configLocalNotification();
+    listenForPushMessages(_firebaseMessaging);
+
     _pageController = PageController(
       initialPage: context.bloc<HomeBloc>().state.selectedTabIndex,
     );

@@ -4,12 +4,13 @@ import { generateInviteCode } from '../../utils/user_utils'
 import moment = require('moment')
 
 exports = module.exports = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
-  const displayName: string = data.displayName
+  const displayName: string = data.display_name
   const password: string = data.password
   const email: string = data.email
   const phone: any = data.phone
+  const fcm: any = data.fcm
 
-  if (!displayName || !password || !email || !phone) {
+  if (!displayName || !password || !email || !phone || !fcm) {
     throw new functions.https.HttpsError('cancelled', 'user-create-failed', 'missing information')
   }
 
@@ -38,6 +39,10 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
         'user': user,
         'code': generateInviteCode(),
         'expire_date': inviteCodeDateExpire.toUTCString()
+      },
+      'fcm': {
+        'user': user,
+        ...fcm
       }
     })
 

@@ -39,6 +39,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _authRepository.logOut();
     } else if (event is LoadUser) {
       yield await _mapLoadUserToState(event);
+    } else if (event is UpdateFcmToken) {
+      yield await _mapUpdateFcmTokenToState(event);
     }
   }
 
@@ -83,6 +85,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     User user = await tryGetUser(state.firebaseUser);
     return state.copyWith(
       user: user,
+    );
+  }
+
+  Future<AuthState> _mapUpdateFcmTokenToState(
+    UpdateFcmToken event,
+  ) async {
+    await updateFcmToken(state.firebaseUser.uid, event.token);
+
+    return state.copyWith(
+      user: state.user.copyWith(
+        fcm: state.user.fcm.copyWith(token: event.token),
+      ),
     );
   }
 

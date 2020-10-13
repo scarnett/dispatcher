@@ -22,6 +22,9 @@ exports = module.exports = functions.firestore
         }
       })
 
+      // Deletes the sms document from Firestore
+      promises.push(smsDocument.ref.delete())
+
       return Promise.all(promises)
         .then(() => Promise.resolve('ok'))
         .catch((error: any) => {

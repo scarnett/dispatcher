@@ -5,13 +5,15 @@ import i18n from 'i18n'
 
 exports = module.exports = functions.https.onRequest(async (req: functions.https.Request, res: functions.Response<any>) => {
   if (req.method !== 'POST') {
-    res.status(400).send(`invalid method ${req.method}`)
+    functions.logger.error(`Invalid method ${req.method}`)
+    res.status(400).send(`Invalid method ${req.method}`)
     return
   }
 
   const config: functions.config.Config = functions.config()
   const headers: any = req.headers
   if (headers.authorization !== config.hasura.auth.key) {
+    functions.logger.error('Unkonwn error')
     res.status(404).send('Unkonwn error')
     return
   }
@@ -26,6 +28,9 @@ exports = module.exports = functions.https.onRequest(async (req: functions.https
         dial_code
         iso_code
         phone_number
+      }
+      user_fcm {
+        token
       }
     }
   }`
@@ -44,31 +49,47 @@ exports = module.exports = functions.https.onRequest(async (req: functions.https
     })
 
     if (!response) {
+      functions.logger.error('Bad response')
       res.status(500).send('Bad response')
       return
     }
 
-    const dateNow: FirebaseFirestore.Timestamp = admin.firestore.Timestamp.now()
     const users: any[] = response.users
     if (users.length !== 2) {
-      res.status(500).send('Bad response')
-      return
+      //functions.logger.error(`Bad user size. Should be 2 but found ${users.length}`)
+      //res.status(500).send('Bad response')
+      //return
     }
 
     const user: any = users.find(_user => _user.identifier === newConnectionRecord.user)
     const connectUser: any = users.find(_user => _user.identifier === newConnectionRecord.connect_user)
+    const payload: admin.messaging.MessagingPayload = {
+      notification: {
+        title: 'Connection Success',
+        body: i18n.__('You were successfully connected to {{name}} on Dispatcher!', { name: connectUser.name }),
+        badge: '1',
+        sound: 'default'
+      },
+      data: {
+        click_action: 'FLUTTER_NOTIFICATION_CLICK'
+      }
+    }
 
-    // Creates the sms record
-    await admin.firestore().collection('sms').add({
-      'user': user.identifier,
-      'inbound_phone': user.user_phone_number.phone_number,
-      'body': i18n.__('You were successfully connected to {{name}} on Dispatcher!', { name: connectUser.name }),
-      'sent_date': dateNow
-    })
+    // Send a push message
+    admin
+      .messaging()
+      .sendToDevice(user.user_fcm.token, payload)
+      .then((_res: admin.messaging.MessagingDevicesResponse) => {
+        functions.logger.log(`Successfully sent push message: ${JSON.stringify(_res)}`)
+      })
+      .catch((error: any) => {
+        functions.logger.error(`Error sending push message: ${error}`)
+      })
 
     res.status(200).send('ok')
     return
   } catch (e) {
+    functions.logger.error(e)
     res.status(500).send(JSON.stringify(e, undefined, 2))
     return
   }
