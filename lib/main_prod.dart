@@ -5,6 +5,7 @@ import 'package:dispatcher/config.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/repository/repository.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -25,6 +26,9 @@ void main() async {
 
   // Firebase
   await Firebase.initializeApp();
+
+  // Crashlytics
+  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
 
   // Timezone
   tz.initializeTimeZones();

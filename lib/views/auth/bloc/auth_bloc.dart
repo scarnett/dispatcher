@@ -56,6 +56,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<AuthState> _mapAuthStatusChangedToState(
     AuthStatusChanged event,
   ) async {
+    if (event.status == AuthStatus.LOGOUT) {
+      return AuthState.logout();
+    } else {
+      final firebase.User firebaseUser = await _tryGetFirebaseUser();
+      if ((firebaseUser != null) && !firebaseUser.isAnonymous) {
+        return AuthState.authenticated(firebaseUser);
+      }
+    }
+
     switch (event.status) {
       case AuthStatus.UNAUTHENTICATED:
         return const AuthState.unauthenticated();
