@@ -37,13 +37,9 @@ void listenForPushMessages(
 
   firebaseMessaging.configure(
     onMessage: showNotification,
-    onLaunch: (Map<String, dynamic> message) async {
-      _logger.d('onLaunch: $message');
-    },
-    onResume: (Map<String, dynamic> message) async {
-      _logger.d('onResume: $message');
-    },
-    onBackgroundMessage: fcmBackgroundMessageHandler,
+    onLaunch: onLaunch,
+    onResume: onResume,
+    onBackgroundMessage: onBackgroundMessage,
   );
 
   firebaseMessaging.onIosSettingsRegistered
@@ -52,7 +48,21 @@ void listenForPushMessages(
   });
 }
 
-Future<dynamic> fcmBackgroundMessageHandler(
+Future<dynamic> onLaunch(
+  Map<String, dynamic> message,
+) {
+  _logger.d('onLaunch: $message');
+  return Future<dynamic>.value(null);
+}
+
+Future<dynamic> onResume(
+  Map<String, dynamic> message,
+) {
+  _logger.d('onResume: $message');
+  return Future<dynamic>.value(null);
+}
+
+Future<dynamic> onBackgroundMessage(
   Map<String, dynamic> message,
 ) =>
     Future<dynamic>.value(null);

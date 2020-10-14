@@ -28,13 +28,6 @@ class LoadUser extends AuthEvent {
   List<Object> get props => [];
 }
 
-class UpdateFcmToken extends AuthEvent {
-  final String token;
-
-  const UpdateFcmToken(
-    this.token,
-  );
-
-  @override
-  List<Object> get props => [token];
+class ConfigureNotifications extends AuthEvent {
+  const ConfigureNotifications();
 }

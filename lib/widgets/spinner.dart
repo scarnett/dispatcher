@@ -88,11 +88,9 @@ class SpinnerState extends State<Spinner> {
         child: Text(
           widget.message,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: AppTheme.accent,
-            fontSize: 16.0,
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(context).textTheme.subtitle1.copyWith(
+                color: AppTheme.accent,
+              ),
         ),
       );
 }

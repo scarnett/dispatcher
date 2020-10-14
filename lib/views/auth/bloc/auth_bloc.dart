@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:dispatcher/models/user.dart';
 import 'package:dispatcher/repository/repository.dart';
+import 'package:dispatcher/utils/push_utils.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
 import 'package:dispatcher/views/auth/auth_service.dart';
 import 'package:dispatcher/views/auth/bloc/auth_event.dart';
 import 'package:dispatcher/views/auth/bloc/auth_state.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:meta/meta.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -36,11 +38,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (event is AuthStatusChanged) {
       yield await _mapAuthStatusChangedToState(event);
     } else if (event is AuthLogoutRequested) {
-      _authRepository.logOut();
+      yield await _mapAuthLogoutRequestedState(event);
     } else if (event is LoadUser) {
       yield await _mapLoadUserToState(event);
-    } else if (event is UpdateFcmToken) {
-      yield await _mapUpdateFcmTokenToState(event);
+    } else if (event is ConfigureNotifications) {
+      yield await _mapConfigureNotificationsToState(event);
     }
   }
 
@@ -54,24 +56,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<AuthState> _mapAuthStatusChangedToState(
     AuthStatusChanged event,
   ) async {
-    if (event.status == AuthStatus.LOGOUT) {
-      return AuthState.logout();
-    } else {
-      final firebase.User firebaseUser = await _tryGetFirebaseUser();
-      if ((firebaseUser != null) && !firebaseUser.isAnonymous) {
-        final User user = await tryGetUser(firebaseUser);
-        return AuthState.authenticated(firebaseUser, user);
-      }
-    }
-
     switch (event.status) {
       case AuthStatus.UNAUTHENTICATED:
         return const AuthState.unauthenticated();
 
       case AuthStatus.AUTHENTICATED:
         final firebase.User firebaseUser = await _tryGetFirebaseUser();
-        final User user = await tryGetUser(firebaseUser);
-        return AuthState.authenticated(firebaseUser, user);
+        if (firebaseUser == null) {
+          return const AuthState.unauthenticated();
+        }
+
+        return AuthState.authenticated(firebaseUser);
+
+      case AuthStatus.LOGOUT:
+        return AuthState.logout();
 
       case AuthStatus.UNKNOWN:
       default:
@@ -79,25 +77,45 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  Future<AuthState> _mapAuthLogoutRequestedState(
+    AuthLogoutRequested event,
+  ) async {
+    _authRepository.logout();
+    return AuthState.logout();
+  }
+
   Future<AuthState> _mapLoadUserToState(
     LoadUser event,
   ) async {
-    User user = await tryGetUser(state.firebaseUser);
+    final firebase.FirebaseAuth _firebaseAuth = firebase.FirebaseAuth.instance;
+    final firebase.User _firebaseUser = _firebaseAuth.currentUser;
+    User user = await tryGetUser(_firebaseUser);
     return state.copyWith(
       user: user,
     );
   }
 
-  Future<AuthState> _mapUpdateFcmTokenToState(
-    UpdateFcmToken event,
+  Future<AuthState> _mapConfigureNotificationsToState(
+    ConfigureNotifications event,
   ) async {
-    await updateFcmToken(state.firebaseUser.uid, event.token);
+    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
-    return state.copyWith(
-      user: state.user.copyWith(
-        fcm: state.user.fcm.copyWith(token: event.token),
-      ),
-    );
+    // Listen for fcm token refresh
+    Stream<String> fcmStream = _firebaseMessaging.onTokenRefresh;
+    fcmStream.distinct().listen((String token) async* {
+      await updateFcmToken(state.firebaseUser.uid, token);
+
+      yield state.copyWith(
+        user: state.user.copyWith(
+          fcm: state.user.fcm.copyWith(token: token),
+        ),
+      );
+    });
+
+    // Listen for push messages coming from firebase
+    configLocalNotification();
+    listenForPushMessages(_firebaseMessaging);
+    return state;
   }
 
   Future<firebase.User> _tryGetFirebaseUser() async {

@@ -64,7 +64,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       try {
         // Login
-        await _authRepository.logIn(
+        await _authRepository.login(
           email: state.email.value,
           password: state.password.value,
         );

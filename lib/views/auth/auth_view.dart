@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
+import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/auth/login/login_view.dart';
 import 'package:dispatcher/views/auth/create/create_view.dart';
 import 'package:dispatcher/views/auth/widgets/auth_wrapper.dart';
+import 'package:dispatcher/views/home/home_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Displays the auth view
 class AuthView extends StatefulWidget {
@@ -74,6 +78,7 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
                 _buildLogo(),
                 PageView(
                   controller: _pageController,
+                  onPageChanged: (int index) => closeKeyboard(context),
                   physics: NeverScrollableScrollPhysics(),
                   children: _getPages(),
                 ),

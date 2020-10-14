@@ -60,7 +60,9 @@ class _SettingsFormState extends State<SettingsForm> {
           BuildContext context,
           SettingsState state,
         ) {
-          if (state.status.isSubmissionSuccess) {
+          if (state.status.isSubmissionInProgress) {
+            closeKeyboard(context);
+          } else if (state.status.isSubmissionSuccess) {
             widget.scaffoldState
               ..hideCurrentSnackBar()
               ..showSnackBar(
@@ -69,8 +71,6 @@ class _SettingsFormState extends State<SettingsForm> {
                   type: MessageType.SUCCESS,
                 )),
               );
-
-            closeKeyboard(context);
           } else if (state.status.isSubmissionFailure) {
             widget.scaffoldState
               ..hideCurrentSnackBar()
@@ -80,8 +80,6 @@ class _SettingsFormState extends State<SettingsForm> {
                   type: MessageType.ERROR,
                 )),
               );
-
-            closeKeyboard(context);
           }
         },
         child: _buildBody(),

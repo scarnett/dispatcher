@@ -1,5 +1,6 @@
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
+import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/views/auth/login/bloc/bloc.dart';
 import 'package:dispatcher/widgets/form_button.dart';
@@ -29,7 +30,9 @@ class _AuthLoginFormState extends State<AuthLoginForm> {
           BuildContext context,
           LoginState state,
         ) {
-          if (state.status.isSubmissionFailure) {
+          if (state.status.isSubmissionInProgress) {
+            closeKeyboard(context);
+          } else if (state.status.isSubmissionFailure) {
             Scaffold.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
@@ -38,6 +41,8 @@ class _AuthLoginFormState extends State<AuthLoginForm> {
                   type: MessageType.ERROR,
                 )),
               );
+
+            closeKeyboard(context);
           }
         },
         child: Column(

@@ -13,7 +13,7 @@ class AuthRepository {
     yield* _controller.stream;
   }
 
-  Future<void> logIn({
+  Future<void> login({
     @required String email,
     @required String password,
   }) async {
@@ -29,8 +29,8 @@ class AuthRepository {
     _controller.add(AuthStatus.AUTHENTICATED);
   }
 
-  void logOut() async {
-    firebase.FirebaseAuth.instance.signOut();
+  void logout() async {
+    await firebase.FirebaseAuth.instance.signOut();
     _controller.add(AuthStatus.LOGOUT);
   }
 
