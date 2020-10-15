@@ -179,9 +179,7 @@ class _HomePageViewState extends State<HomePageView> {
         toggleButtonPadding: 10.0,
         toggleButtonSize: 20.0,
         toggleButtonBoxShadow: [
-          BoxShadow(
-            blurRadius: 0,
-          ),
+          BoxShadow(blurRadius: 0),
         ],
         startingAngleInRadian: (1.25 * pi),
         endingAngleInRadian: (1.75 * pi),
@@ -219,9 +217,7 @@ class _HomePageViewState extends State<HomePageView> {
         margin: 0.0,
         padding: 10.0,
         boxShadow: [
-          BoxShadow(
-            blurRadius: 0,
-          ),
+          BoxShadow(blurRadius: 0),
         ],
       );
 

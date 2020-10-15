@@ -136,6 +136,7 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
                     child: AvatarDisplay(
                       user: connection.connectUser,
                       avatarRadius: 28.0,
+                      progressStrokeWidth: 2.0,
                     ),
                   ),
                   _buildConnection(connection),

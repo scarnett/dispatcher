@@ -126,7 +126,10 @@ class _UserSelectAvatarDisplayState extends State<UserSelectAvatarDisplay> {
           ),
           child: Row(
             children: <Widget>[
-              AvatarDisplay(user: widget.user),
+              AvatarDisplay(
+                user: widget.user,
+                progressStrokeWidth: 2.0,
+              ),
               Expanded(
                 child: Row(
                   children: <Widget>[

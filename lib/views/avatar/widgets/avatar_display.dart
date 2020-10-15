@@ -23,12 +23,16 @@ class AvatarDisplay extends StatefulWidget {
   // The radius of the avatar
   final double avatarRadius;
 
+  // The progress bar stroke width
+  final double progressStrokeWidth;
+
   AvatarDisplay({
     this.user,
     this.imageUrl,
     this.filePath,
     this.displayName,
     this.avatarRadius: 36.0,
+    this.progressStrokeWidth,
   });
 
   @override
@@ -106,7 +110,9 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
       ) =>
           Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Progress(),
+        child: Progress(
+          strokeWidth: widget.progressStrokeWidth,
+        ),
       ),
       errorWidget: (context, url, error) => Icon(Icons.error),
       imageBuilder: (context, image) => CircleAvatar(

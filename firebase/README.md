@@ -18,6 +18,12 @@ Add the firebase admin sdk config to the following location:
 npm test
 ```
 
+# Install extensions
+
+```bash
+firebase ext:install storage-resize-images --project dispatcher-dev
+```
+
 # Deploy firebase functions
 
 ```bash

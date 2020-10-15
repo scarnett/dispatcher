@@ -4,23 +4,25 @@ import { hasuraClient } from '../../graphql/graphql-client'
 exports = module.exports = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
   const identifier: string = data.identifier
   const avatarUrl: string = data.avatarUrl
+  const avatarThumbUrl: string = data.avatarThumbUrl
 
-  if (!identifier || !avatarUrl) {
+  if (!identifier || !avatarUrl || !avatarThumbUrl) {
     throw new functions.https.HttpsError('cancelled', 'user-avatar-upsert-failed', 'missing information')
   }
 
   // GraphQL mutation for inserting or updating (upserting) a user avatar
-  const mutation: string = `mutation($identifier: String!, $url: String!) {
+  const mutation: string = `mutation($identifier: String!, $url: String!, $thumbUrl: String!) {
     insert_user_avatars(
       objects: [
         {
           user: $identifier,
-          url: $url
+          url: $url,
+          thumb_url: $thumbUrl
         }
       ],
       on_conflict: {
         constraint: user_avatars_user_key,
-        update_columns: [url]
+        update_columns: [url, thumb_url]
       }
     ) {
       affected_rows
@@ -33,7 +35,8 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
     const adminSecret: string = config.hasura.admin.secret
     const response: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
       identifier: identifier,
-      url: avatarUrl
+      url: avatarUrl,
+      thumbUrl: avatarThumbUrl
     })
 
     return response

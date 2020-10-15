@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/utils/common_utils.dart';
+import 'package:dispatcher/utils/user_utils.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:meta/meta.dart';
@@ -74,6 +75,7 @@ class AvatarBloc extends Bloc<AvatarEvent, AvatarState> {
     Map<dynamic, dynamic> userData = Map<dynamic, dynamic>.from({
       'identifier': event.identifier,
       'avatarUrl': await storageRef.getDownloadURL(),
+      'avatarThumbUrl': await getAvatarThumbnailUrl(storageRef),
     });
 
     // Runs the 'callableUserAvatarUpsert' Firebase callable function

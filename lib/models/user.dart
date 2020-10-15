@@ -178,9 +178,11 @@ class UserInviteCode extends Equatable {
 
 class UserAvatar extends Equatable {
   final String url;
+  final String thumbUrl;
 
   UserAvatar({
     this.url,
+    this.thumbUrl,
   });
 
   UserAvatar copyWith({
@@ -188,6 +190,7 @@ class UserAvatar extends Equatable {
   }) =>
       UserAvatar(
         url: url ?? this.url,
+        thumbUrl: thumbUrl ?? this.thumbUrl,
       );
 
   static UserAvatar fromJson(
@@ -197,17 +200,19 @@ class UserAvatar extends Equatable {
           ? UserAvatar()
           : UserAvatar(
               url: json['url'],
+              thumbUrl: json['thumb_url'],
             );
 
   dynamic toJson() => {
         'url': url,
+        'thumb_url': thumbUrl,
       };
 
   @override
-  List<Object> get props => [url];
+  List<Object> get props => [url, thumbUrl];
 
   @override
-  String toString() => 'UserAvatar{url: $url}';
+  String toString() => 'UserAvatar{url: $url, thumbUrl: $thumbUrl}';
 }
 
 class UserPIN extends Equatable {
