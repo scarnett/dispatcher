@@ -153,8 +153,7 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
   Widget _buildConnection(
     UserConnection connection,
   ) {
-    List<Widget> children = <Widget>[];
-    children
+    List<Widget> children = <Widget>[]
       ..add(
         Text(
           removeEmojis(connection.connectUser.name),
