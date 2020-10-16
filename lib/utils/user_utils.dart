@@ -42,3 +42,19 @@ Future<String> getAvatarThumbnailUrl(
       fileUrl.replaceAll(fileName.replaceAll('}', '%7D'), fileNameParts.join());
   return fileUrl;
 }
+
+/// Gets the thumbnail path of an avatar
+Future<String> getAvatarThumbnailPath(
+  StorageReference storageRef, {
+  int width = 200,
+  int height = 200,
+}) async {
+  String fileName = await storageRef.getName();
+  List<String> fileNameParts = fileName.split('.')
+    ..insert(0, 'thumbs/')
+    ..insert(2, '_${width}x$height.');
+
+  String filePath = await storageRef.getPath();
+  filePath = filePath.replaceAll(fileName, fileNameParts.join());
+  return filePath;
+}

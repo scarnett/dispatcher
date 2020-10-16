@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
-import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/auth/login/login_view.dart';
 import 'package:dispatcher/views/auth/create/create_view.dart';
 import 'package:dispatcher/views/auth/widgets/auth_wrapper.dart';
-import 'package:dispatcher/views/home/home_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Displays the auth view
 class AuthView extends StatefulWidget {
@@ -89,22 +86,17 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
       );
 
   /// Builds the PageView pages
-  List<Widget> _getPages() {
-    List<Widget> pages = [];
-    pages
-      ..add(
-        AuthLoginView(
-          pageController: _pageController,
-        ),
-      )
-      ..add(
-        AuthCreateView(
-          pageController: _pageController,
-        ),
-      );
-
-    return pages;
-  }
+  List<Widget> _getPages() => []
+    ..add(
+      AuthLoginView(
+        pageController: _pageController,
+      ),
+    )
+    ..add(
+      AuthCreateView(
+        pageController: _pageController,
+      ),
+    );
 
   /// Builds the logo
   Widget _buildLogo() => Padding(

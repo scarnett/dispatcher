@@ -49,6 +49,9 @@ class AppLocalizations {
 
   String get selectPhoto => addMessage('Select Photo');
   String get search => addMessage('Search');
+  String get yes => addMessage('Yes');
+  String get no => addMessage('No');
+  String get tryAgain => addMessage('Try Again');
   String get all => addMessage('All');
   String get sendInvite => addMessage('Send Invite');
   String get sendMessage => addMessage('Send Message');
@@ -70,6 +73,13 @@ class AppLocalizations {
   String get avatarHowsItLike => addMessage('How\'s it look?');
   String get avatarReTake => addMessage('Re-Take');
   String get avatarLikeIt => addMessage('I like it');
+  String get avatarDelete => addMessage('Delete Avatar');
+  String get avatarDeleteConfirm => addMessage(
+      'Are you sure you want to delete this avatar? This cannot be undone.');
+
+  String get avatarDeleteError => addMessage(
+      'There was an issue deleting your avatar. Please contact support.');
+
   String get save => addMessage('Save');
   String get saved => addMessage('Saved');
   String get ok => addMessage('OK');
@@ -83,14 +93,18 @@ class AppLocalizations {
   String get verifyPINCode => addMessage('Verify PIN Code');
   String get invalidPINCode =>
       addMessage('Invalid PIN code. Please try again.');
+
   String get sendCode => addMessage('Send Code');
   String get verifyCode => addMessage('Verify Code');
   String get validVerificationCode =>
       addMessage('Your verification code was successfully verified!');
+
   String get invalidVerificationCode =>
       addMessage('Invalid verification code. Please try again.');
+
   String get resentVerificationCode =>
       addMessage('The verification code was re-sent.');
+
   String get application => addMessage('Application');
   String get permissions => addMessage('Permissions');
   String get privacyPolicy => addMessage('Privacy Policy');
@@ -217,6 +231,9 @@ class AppLocalizations {
 
   String get avatarFailed =>
       addMessage('There was an issue updating your avatar. Please try again.');
+
+  String get avatarDeleted =>
+      addMessage('Your avatar was deleted successfully!');
 
   String get connectionNotFoundText => addMessage(
         'Connection not found',

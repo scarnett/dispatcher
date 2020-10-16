@@ -42,8 +42,6 @@ class AvatarPageView extends StatefulWidget {
 class _AvatarPageViewState extends State<AvatarPageView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  bool isSubmissionInProgress = false;
-
   @override
   Widget build(
     BuildContext context,
@@ -60,7 +58,6 @@ class _AvatarPageViewState extends State<AvatarPageView> {
                 type: MessageType.SUCCESS,
               )));
 
-              setState(() => isSubmissionInProgress = true);
               context.bloc<AvatarBloc>().add(ClearStorageTaskEventType());
               context.bloc<AuthBloc>().add(LoadUser());
               Navigator.pop(context);
@@ -72,14 +69,7 @@ class _AvatarPageViewState extends State<AvatarPageView> {
                 type: MessageType.ERROR,
               )));
 
-              setState(() => isSubmissionInProgress = true);
               context.bloc<AvatarBloc>().add(ClearStorageTaskEventType());
-              break;
-
-            case StorageTaskEventType.progress:
-            case StorageTaskEventType.resume:
-            case StorageTaskEventType.pause:
-              setState(() => isSubmissionInProgress = true);
               break;
 
             default:
@@ -102,7 +92,7 @@ class _AvatarPageViewState extends State<AvatarPageView> {
     if (state.filePath != null) {
       List<Widget> children = <Widget>[]..add(_buildAvatarConfirmation());
 
-      if (isSubmissionInProgress) {
+      if (state.type == StorageTaskEventType.progress) {
         children.add(
           Spinner(
             fill: true,

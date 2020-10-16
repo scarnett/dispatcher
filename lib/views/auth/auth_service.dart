@@ -53,7 +53,6 @@ Future<User> tryGetUser(
 
       // Retry get user
       if (retryCount < maxRetries) {
-        print('11111111111111111111 ${firebaseUser.uid}; $users');
         return tryGetUser(
           firebaseUser,
           retryCount: (retryCount + 1),

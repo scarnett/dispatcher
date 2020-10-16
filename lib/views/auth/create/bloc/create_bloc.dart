@@ -6,10 +6,13 @@ import 'package:dispatcher/views/auth/create/create_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 
 part 'create_event.dart';
 part 'create_state.dart';
+
+Logger _logger = Logger();
 
 class CreateAccountBloc extends Bloc<CreateAccountEvent, CreateAccountState> {
   final AuthRepository _authRepository;
@@ -107,6 +110,7 @@ class CreateAccountBloc extends Bloc<CreateAccountEvent, CreateAccountState> {
 
         yield state.copyWith(status: FormzStatus.submissionSuccess);
       } on Exception catch (_) {
+        _logger.e(_);
         yield state.copyWith(status: FormzStatus.submissionFailure);
       }
     }

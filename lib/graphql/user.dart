@@ -11,6 +11,9 @@ const String fetchUserQueryStr = r'''
         }
         user_avatar {
           url
+          thumb_url
+          path
+          thumb_path
         }
         user_key {
           pubkey
@@ -50,6 +53,9 @@ const String fetchUserByInviteCodeQueryStr = r'''
           email
           user_avatar {
             url
+            thumb_url
+            path
+            thumb_path
           }
           user_connections {
             user,
@@ -69,6 +75,9 @@ const String fetchUserConnectionsQueryStr = r'''
           identifier
           user_avatar {
             url
+            thumb_url
+            path
+            thumb_path
           }
           user_phone_number {
             phone_number

@@ -1,4 +1,5 @@
 import 'package:dispatcher/localization.dart';
+import 'package:dispatcher/views/avatar/bloc/avatar_bloc.dart';
 import 'package:dispatcher/views/settings/bloc/settings_bloc.dart';
 import 'package:dispatcher/views/settings/settings_form.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
@@ -15,8 +16,15 @@ class SettingsView extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) =>
-      BlocProvider<SettingsBloc>(
-        create: (BuildContext context) => SettingsBloc(),
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<SettingsBloc>(
+            create: (BuildContext context) => SettingsBloc(),
+          ),
+          BlocProvider<AvatarBloc>(
+            create: (BuildContext context) => AvatarBloc(),
+          ),
+        ],
         child: SettingsPageView(),
       );
 }

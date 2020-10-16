@@ -4,8 +4,12 @@ import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/shadow_utils.dart';
 import 'package:dispatcher/utils/user_utils.dart';
+import 'package:dispatcher/views/auth/bloc/bloc.dart';
+import 'package:dispatcher/views/avatar/bloc/avatar_bloc.dart';
+import 'package:dispatcher/views/avatar/widgets/avatar_preview.dart';
 import 'package:dispatcher/widgets/progress.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AvatarDisplay extends StatefulWidget {
   // The user object
@@ -26,6 +30,9 @@ class AvatarDisplay extends StatefulWidget {
   // The progress bar stroke width
   final double progressStrokeWidth;
 
+  // Allows the user to tap te avatar to preview a larger version
+  final bool canPreview;
+
   AvatarDisplay({
     this.user,
     this.imageUrl,
@@ -33,6 +40,7 @@ class AvatarDisplay extends StatefulWidget {
     this.displayName,
     this.avatarRadius: 36.0,
     this.progressStrokeWidth,
+    this.canPreview: false,
   });
 
   @override
@@ -89,6 +97,7 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
           backgroundColor: Colors.white,
           backgroundImage: FileImage(File(widget.filePath)),
           radius: radius,
+          child: widget.canPreview ? getPreviewModal() : null,
         );
       }
 
@@ -119,6 +128,7 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
         backgroundColor: Colors.white,
         backgroundImage: image,
         radius: radius,
+        child: widget.canPreview ? getPreviewModal() : null,
       ),
     );
   }
@@ -146,11 +156,17 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
       );
 
   /// Gets the image url
-  String getImageUrl() {
+  String getImageUrl({
+    bool useThumb = true,
+  }) {
     String imageUrl;
 
     if (widget.user != null) {
-      imageUrl = widget.user.avatar?.url;
+      if (useThumb) {
+        imageUrl = widget.user.avatar?.thumbUrl;
+      } else {
+        imageUrl = widget.user.avatar?.url;
+      }
     } else {
       imageUrl = widget.imageUrl;
     }
@@ -170,4 +186,19 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
 
     return displayName;
   }
+
+  Widget getPreviewModal() => GestureDetector(
+        onTap: () async => await showAvatarPreview(context),
+      );
+
+  Future<void> showAvatarPreview(
+    BuildContext context,
+  ) async =>
+      showDialog(
+        context: context,
+        builder: (_) => AvatarPreview(
+          user: context.bloc<AuthBloc>().state.user,
+          avatarBloc: BlocProvider.of<AvatarBloc>(context),
+        ),
+      );
 }

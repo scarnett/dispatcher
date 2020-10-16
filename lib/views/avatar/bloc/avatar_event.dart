@@ -28,9 +28,6 @@ class SetFilePath extends AvatarEvent {
 
 class ClearFilePath extends AvatarEvent {
   const ClearFilePath();
-
-  @override
-  List<Object> get props => [];
 }
 
 class SetStorageTaskEventType extends AvatarEvent {
@@ -44,7 +41,17 @@ class SetStorageTaskEventType extends AvatarEvent {
 
 class ClearStorageTaskEventType extends AvatarEvent {
   const ClearStorageTaskEventType();
+}
+
+class DeleteAvatar extends AvatarEvent {
+  final String identifier;
+  final UserAvatar avatar;
+
+  const DeleteAvatar(
+    this.identifier,
+    this.avatar,
+  );
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [identifier, avatar];
 }
