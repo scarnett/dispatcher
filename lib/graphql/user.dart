@@ -16,7 +16,7 @@ const String fetchUserQueryStr = r'''
           thumb_path
         }
         user_key {
-          pubkey
+          public_key
         }
         user_fcm {
           token

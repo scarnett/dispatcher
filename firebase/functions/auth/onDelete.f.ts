@@ -11,6 +11,10 @@ exports = module.exports = functions.auth.user().onDelete(async (user: functions
       affected_rows
     }
 
+    delete_user_prekeys(where: {user: {_eq: $identifier}}) {
+      affected_rows
+    }
+
     delete_user_phone_numbers(where: {user: {_eq: $identifier}}) {
       affected_rows
     }

@@ -232,6 +232,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.5"
+  cryptography:
+    dependency: transitive
+    description:
+      name: cryptography
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.4.1"
   csslib:
     dependency: transitive
     description:
@@ -260,6 +267,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.0"
+  ed25519_edwards:
+    dependency: transitive
+    description:
+      name: ed25519_edwards
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.4"
   environment_config:
     dependency: "direct main"
     description:
@@ -485,6 +499,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0"
+  hex:
+    dependency: transitive
+    description:
+      name: hex
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   hive:
     dependency: "direct main"
     description:
@@ -597,6 +618,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  libsignal_protocol_dart:
+    dependency: "direct main"
+    description:
+      name: libsignal_protocol_dart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   logger:
     dependency: "direct main"
     description:
@@ -660,6 +688,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.9"
+  optional:
+    dependency: transitive
+    description:
+      name: optional
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.0"
   package_config:
     dependency: transitive
     description:
@@ -758,6 +793,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.13"
+  protobuf:
+    dependency: transitive
+    description:
+      name: protobuf
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   provider:
     dependency: transitive
     description:

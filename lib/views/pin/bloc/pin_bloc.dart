@@ -104,7 +104,7 @@ class PINBloc extends Bloc<PINEvent, PINState> {
         Dispatcher appData = getAppConfig(event.user.identifier);
         verificationCode = await decrypt(
           state.pin.verificationCode,
-          decode(appData.privateKey),
+          decode(appData.clientKeys.privateKey),
           event.user.identifier,
         );
       }
@@ -144,7 +144,7 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     Dispatcher appData = getAppConfig(event.user.identifier);
     String decryptedVerificationCode = await decrypt(
       state.pin.verificationCode,
-      decode(appData.privateKey),
+      decode(appData.clientKeys.privateKey),
       event.user.identifier,
     );
 

@@ -181,6 +181,7 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
   void _tapConnection(
     UserConnection connection,
   ) {
+    // generateConversationKeys(context.bloc<AuthBloc>().state.user.identifier);
     context.bloc<ConnectionsBloc>().add(ActiveConnection(connection));
   }
 }

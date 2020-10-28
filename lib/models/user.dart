@@ -9,6 +9,7 @@ class User extends Equatable {
   final UserPhoneNumber phone;
   final UserAvatar avatar;
   final UserKey key;
+  final List<UserPreKey> preKeys;
   final UserFCM fcm;
   final List<UserConnection> connections;
 
@@ -19,6 +20,7 @@ class User extends Equatable {
     this.phone,
     this.avatar,
     this.key,
+    this.preKeys,
     this.fcm,
     this.connections,
   });
@@ -30,6 +32,7 @@ class User extends Equatable {
     UserPhoneNumber phone,
     UserAvatar avatar,
     UserKey key,
+    List<UserPreKey> preKeys,
     UserFCM fcm,
     List<UserConnection> connections,
   }) =>
@@ -40,6 +43,7 @@ class User extends Equatable {
         phone: phone ?? this.phone,
         avatar: avatar ?? this.avatar,
         key: key ?? this.key,
+        preKeys: preKeys ?? this.preKeys,
         fcm: fcm ?? this.fcm,
         connections: connections ?? this.connections,
       );
@@ -56,6 +60,7 @@ class User extends Equatable {
               phone: UserPhoneNumber.fromJson(json['user_phone_number']),
               avatar: UserAvatar.fromJson(json['user_avatar']),
               key: UserKey.fromJson(json['user_key']),
+              preKeys: UserPreKey.fromJsonList(json['user_pre_keys']),
               fcm: UserFCM.fromJson(json['user_fcm']),
               connections:
                   UserConnection.fromJsonList(json['user_connections']),
@@ -68,19 +73,20 @@ class User extends Equatable {
         'phone': phone.toJson(),
         'avatar': avatar.toJson(),
         'key': key.toJson(),
+        'preKeys': preKeys,
         'fcm': fcm.toJson(),
         'connections': connections,
       };
 
   @override
   List<Object> get props =>
-      [identifier, name, email, phone, avatar, key, fcm, connections];
+      [identifier, name, email, phone, avatar, key, preKeys, fcm, connections];
 
   @override
   String toString() =>
       'User{identifier: $identifier, name: $name, email: $email, ' +
-      'phone: $phone, avatar: $avatar, key: $key, fcm: $fcm, ' +
-      'connections: ${connections?.length}}';
+      'phone: $phone, avatar: $avatar, key: $key, preKeys: ${preKeys?.length}, ' +
+      'fcm: $fcm, connections: ${connections?.length}}';
 }
 
 class UserPhoneNumber extends Equatable {
@@ -283,16 +289,37 @@ class UserPIN extends Equatable {
 
 class UserKey extends Equatable {
   final String publicKey;
+  final String sigRegistrationId;
+  final String sigPublicKey;
+  final String sigSignedPublicKey;
+  final String sigSignedPrekeySignature;
+  final String sigIdentityPublicKey;
 
   UserKey({
     this.publicKey,
+    this.sigRegistrationId,
+    this.sigPublicKey,
+    this.sigSignedPublicKey,
+    this.sigSignedPrekeySignature,
+    this.sigIdentityPublicKey,
   });
 
   UserKey copyWith({
     String publicKey,
+    String sigRegistrationId,
+    String sigPublicKey,
+    String sigSignedPublicKey,
+    String sigSignedPrekeySignature,
+    String sigIdentityPublicKey,
   }) =>
       UserKey(
         publicKey: publicKey ?? this.publicKey,
+        sigRegistrationId: sigRegistrationId ?? this.sigRegistrationId,
+        sigPublicKey: sigPublicKey ?? this.sigPublicKey,
+        sigSignedPublicKey: sigSignedPublicKey ?? this.sigSignedPublicKey,
+        sigSignedPrekeySignature:
+            sigSignedPrekeySignature ?? this.sigSignedPrekeySignature,
+        sigIdentityPublicKey: sigIdentityPublicKey ?? this.sigIdentityPublicKey,
       );
 
   static UserKey fromJson(
@@ -301,19 +328,97 @@ class UserKey extends Equatable {
       (json == null)
           ? UserKey()
           : UserKey(
-              publicKey: json['pubkey'],
+              publicKey: json['public_key'],
+              sigRegistrationId: json['sig_registration_id'],
+              sigPublicKey: json['sig_public_key'],
+              sigSignedPublicKey: json['sig_signed_public_key'],
+              sigSignedPrekeySignature: json['sig_signed_prekey_signature'],
+              sigIdentityPublicKey: json['sig_identity_public_key'],
             );
 
   dynamic toJson() => {
-        'pubkey': publicKey,
+        'public_key': publicKey,
+        'sig_registration_id': sigRegistrationId,
+        'sig_public_key': sigPublicKey,
+        'sig_signed_public_key': sigSignedPublicKey,
+        'sig_signed_prekey_signature': sigSignedPrekeySignature,
+        'sig_identity_public_key': sigIdentityPublicKey,
       };
 
   @override
-  List<Object> get props => [publicKey];
+  List<Object> get props => [
+        publicKey,
+        sigRegistrationId,
+        sigPublicKey,
+        sigSignedPublicKey,
+        sigSignedPrekeySignature,
+        sigIdentityPublicKey,
+      ];
 
   @override
   String toString() =>
-      'UserKey{publicKey: ${(publicKey == null) ? null : '<publicKey>'}}';
+      'UserKey{public_key: $publicKey, sig_registration_id: $sigRegistrationId ' +
+      'sig_public_key: $sigSignedPublicKey, sig_signed_prekey_signature: $sigSignedPrekeySignature ' +
+      'sig_identity_public_key: $sigIdentityPublicKey}';
+}
+
+class UserPreKey extends Equatable {
+  final int keyId;
+  final String publicKey;
+
+  UserPreKey({
+    this.keyId,
+    this.publicKey,
+  });
+
+  UserPreKey copyWith({
+    String keyId,
+    String publicKey,
+  }) =>
+      UserPreKey(
+        keyId: keyId ?? this.keyId,
+        publicKey: publicKey ?? this.publicKey,
+      );
+
+  static UserPreKey fromJson(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? UserPreKey()
+          : UserPreKey(
+              keyId: json['key_id'],
+              publicKey: json['public_key'],
+            );
+
+  static List<UserPreKey> fromJsonList(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? []
+          : List<dynamic>.from(json)
+              .map((dynamic userJson) => UserPreKey.fromJson(userJson))
+              .toList();
+
+  dynamic toJson() => {
+        'key_id': keyId,
+        'public_key': publicKey,
+      };
+
+  static List<dynamic> toJsonList(
+    List<UserPreKey> preKeys,
+  ) =>
+      (preKeys == null)
+          ? []
+          : preKeys.map((UserPreKey preKey) => preKey.toJson()).toList();
+
+  @override
+  List<Object> get props => [
+        keyId,
+        publicKey,
+      ];
+
+  @override
+  String toString() => 'UserPreKey{key_id: $keyId, public_key: $publicKey}';
 }
 
 class UserFCM extends Equatable {
