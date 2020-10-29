@@ -103,19 +103,20 @@ class _ConnectPageViewState extends State<ConnectPageView> {
             onWillPop: () => _willPopCallback(),
             child: Scaffold(
               key: _scaffoldKey,
-              appBar: SimpleAppBar(
-                showLeading: true,
-                leadingIcon: (state.lookupUser == null) ? null : Icons.close,
-                height: 100.0,
-              ),
-              body: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: <Widget>[
-                      _createContent(state),
-                    ],
+              body: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(),
+                  child: Container(
+                    padding: const EdgeInsets.only(top: 100.0),
+                    margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        children: <Widget>[
+                          _createContent(state),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
