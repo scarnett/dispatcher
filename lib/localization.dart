@@ -40,6 +40,7 @@ class AppLocalizations {
   String get connectionsLoading =>
       addMessage('Loading your connections. Please wait...');
 
+  String get saySomething => addMessage('Say Something...');
   String get settings => addMessage('Settings');
   String get menu => addMessage('Menu');
   String get photo => addMessage('Photo');

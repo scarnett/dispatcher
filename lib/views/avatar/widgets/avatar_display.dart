@@ -33,6 +33,9 @@ class AvatarDisplay extends StatefulWidget {
   // Allows the user to tap te avatar to preview a larger version
   final bool canPreview;
 
+  // Toggled the avatar border
+  final bool showBorder;
+
   AvatarDisplay({
     this.user,
     this.imageUrl,
@@ -41,6 +44,7 @@ class AvatarDisplay extends StatefulWidget {
     this.avatarRadius: 36.0,
     this.progressStrokeWidth,
     this.canPreview: false,
+    this.showBorder: true,
   });
 
   @override
@@ -55,22 +59,33 @@ class _AvatarDisplayState extends State<AvatarDisplay> {
     double size = (widget.avatarRadius * 2.0);
     List<Widget> widgets = List<Widget>();
 
-    widgets
-      ..add(
-        Container(
-          width: size,
-          height: size,
-          child: _buildAvatar(),
-          padding: const EdgeInsets.all(2.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(
-              Radius.circular(widget.avatarRadius),
+    if (widget.showBorder) {
+      widgets
+        ..add(
+          Container(
+            width: size,
+            height: size,
+            child: _buildAvatar(),
+            padding: const EdgeInsets.all(2.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(
+                Radius.circular(widget.avatarRadius),
+              ),
+              boxShadow: commonBoxShadow(),
             ),
-            boxShadow: commonBoxShadow(),
           ),
-        ),
-      );
+        );
+    } else {
+      widgets
+        ..add(
+          Container(
+            width: size,
+            height: size,
+            child: _buildAvatar(),
+          ),
+        );
+    }
 
     return Stack(
       overflow: Overflow.visible,

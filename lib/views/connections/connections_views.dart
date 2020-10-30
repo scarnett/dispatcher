@@ -4,6 +4,7 @@ import 'package:dispatcher/utils/text_utils.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/avatar/widgets/avatar_display.dart';
 import 'package:dispatcher/views/connections/bloc/bloc.dart';
+import 'package:dispatcher/views/connections/connection/connection_views.dart';
 import 'package:dispatcher/views/connections/widgets/connections_appbar.dart';
 import 'package:dispatcher/widgets/none_found.dart';
 import 'package:dispatcher/widgets/spinner.dart';
@@ -180,8 +181,6 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
   /// Handles the 'connection' tap
   void _tapConnection(
     UserConnection connection,
-  ) {
-    // generateConversationKeys(context.bloc<AuthBloc>().state.user.identifier);
-    context.bloc<ConnectionsBloc>().add(ActiveConnection(connection));
-  }
+  ) =>
+      Navigator.push(context, ConnectionView.route(connection));
 }

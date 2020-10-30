@@ -194,14 +194,7 @@ class _ContactsPageViewState extends State<ContactsPageView>
     ContactsState state,
   ) {
     List<Widget> pages = [];
-    pages
-      ..add(_getContacts(state))
-      ..add(
-        ContactView(
-          pageController: _pageController,
-        ),
-      );
-
+    pages..add(_getContacts(state))..add(ContactView());
     return pages;
   }
 

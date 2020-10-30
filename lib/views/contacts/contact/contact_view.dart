@@ -11,11 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share/share.dart';
 
 class ContactView extends StatefulWidget {
-  final PageController pageController;
-
   ContactView({
     Key key,
-    this.pageController,
   }) : super(key: key);
 
   @override

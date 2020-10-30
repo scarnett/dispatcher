@@ -19,8 +19,6 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
   ) async* {
     if (event is FetchConnectionsData) {
       yield* _mapFetchConnectionsData(event);
-    } else if (event is ActiveConnection) {
-      yield* _mapActiveConnectionData(event);
     }
   }
 
@@ -35,11 +33,5 @@ class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
         yield state.copyWith(connections: connections);
       }
     }
-  }
-
-  Stream<ConnectionsState> _mapActiveConnectionData(
-    ActiveConnection event,
-  ) async* {
-    yield state.copyWith(activeConnection: event.activeConnection);
   }
 }
