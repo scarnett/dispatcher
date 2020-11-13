@@ -6,10 +6,6 @@ enum Flavor {
   prod,
 }
 
-enum HiveBoxes {
-  APP_BOX,
-}
-
 class AppConfig extends InheritedWidget {
   final Flavor flavor;
 

@@ -4,7 +4,6 @@ import 'package:dispatcher/bloc/bloc_observer.dart';
 import 'package:dispatcher/config.dart';
 import 'package:dispatcher/repository/repository.dart';
 import 'package:dispatcher/utils/crypt_utils.dart';
-import 'package:dispatcher/utils/hive_utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +17,6 @@ void main() async {
   Bloc.observer = AppBlocObserver();
   HydratedBloc.storage = await HydratedStorage.build();
 
-  // Hive
-  await initializeHive();
-
   // Firebase
   await Firebase.initializeApp();
 
@@ -28,7 +24,7 @@ void main() async {
   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
 
   // Store the client keys
-  await storeKeys();
+  await installClientKeys();
 
   // Timezone
   tz.initializeTimeZones();

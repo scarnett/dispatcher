@@ -1,34 +1,45 @@
 import 'dart:convert';
-import 'dart:typed_data';
-import 'package:dispatcher/config.dart';
-import 'package:dispatcher/models/models.dart';
-import 'package:dispatcher/utils/config_utils.dart';
+import 'package:dispatcher/storage/storage.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
-import 'package:hive/hive.dart';
 import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart' as signal;
 import 'package:openpgp/key_options.dart';
 import 'package:openpgp/key_pair.dart';
 import 'package:openpgp/openpgp.dart';
 import 'package:openpgp/options.dart';
 
-Future<void> storeKeys() async {
-  final firebase.FirebaseAuth _firebaseAuth = firebase.FirebaseAuth.instance;
-  final firebase.User _firebaseUser = _firebaseAuth.currentUser;
-  if ((_firebaseUser == null) || _firebaseUser.isAnonymous) {
-    Box<Dispatcher> appBox = Hive.box<Dispatcher>(HiveBoxes.APP_BOX.toString());
-    final Dispatcher appConfig = getAppConfig(null);
-    if (appConfig == null) {
-      // Store the keys for an anonymous user
-      appBox.add(
-        Dispatcher(
-          identifier: null,
-          clientKeys: generateClientKeys(),
-        ),
-      );
-    }
+Future<void> installClientKeys() async {
+  // Init Storage
+  await GetStorage.init('ClientUserKeys');
+  await GetStorage.init('ClientTrustedKeys');
+  await GetStorage.init('ClientPreKeys');
+  await GetStorage.init('ClientSignedPreKey');
+
+  signal.IdentityKeyPair identityKeyPair =
+      signal.KeyHelper.generateIdentityKeyPair();
+
+  DispatcherIdentityKeyStore.write(
+    identityKeyPair,
+    signal.KeyHelper.generateRegistrationId(false),
+  );
+
+  DispatcherPreKeyStore preKeyStore = DispatcherPreKeyStore();
+  DispatcherSignedPreKeyStore signedPreKeyStore = DispatcherSignedPreKeyStore();
+
+  List<signal.PreKeyRecord> preKeys =
+      signal.KeyHelper.generatePreKeys(0, 10); // TODO!
+
+  for (signal.PreKeyRecord preKey in preKeys) {
+    preKeyStore.storePreKey(preKey.id, preKey);
   }
+
+  signal.SignedPreKeyRecord signedPreKey =
+      signal.KeyHelper.generateSignedPreKey(identityKeyPair, 0);
+
+  signedPreKeyStore.storeSignedPreKey(signedPreKey.id, signedPreKey);
 }
 
+/*
 ClientKeys generateClientKeys() {
   signal.IdentityKeyPair sigIdentityKeyPair =
       signal.KeyHelper.generateIdentityKeyPair();
@@ -94,6 +105,7 @@ ClientKeys generateClientKeys() {
     sigPreKeys: sigPreKeysList,
   );
 }
+*/
 
 /// Generates a pgp keypair for the user
 Future<KeyPair> generateUserKeyPair(

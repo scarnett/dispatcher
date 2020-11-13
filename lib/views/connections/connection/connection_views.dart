@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/theme.dart';
@@ -8,6 +10,7 @@ import 'package:dispatcher/views/connections/connection/widgets/connection_appba
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart' as signal;
 
 class ConnectionView extends StatelessWidget {
   final UserConnection connection;
@@ -134,7 +137,8 @@ class _ConnectionPageViewState extends State<ConnectionPageView>
                       Expanded(
                         child: Theme(
                           data: ThemeData(buttonColor: AppTheme.primary),
-                          child: TextField(
+                          child: TextFormField(
+                            textInputAction: TextInputAction.done,
                             decoration: InputDecoration(
                               hintText:
                                   AppLocalizations.of(context).saySomething,
@@ -142,6 +146,7 @@ class _ConnectionPageViewState extends State<ConnectionPageView>
                               border: InputBorder.none,
                               focusedBorder: InputBorder.none,
                             ),
+                            onFieldSubmitted: (String value) => _tapDone(value),
                           ),
                         ),
                       ),
@@ -154,4 +159,28 @@ class _ConnectionPageViewState extends State<ConnectionPageView>
           ),
         ),
       );
+
+  /// Handles a 'done' tap
+  void _tapDone(
+    String value,
+  ) {
+    print('1111');
+
+    signal.SenderKeyName senderKeyName =
+        signal.SenderKeyName('', signal.SignalProtocolAddress('sender', 1));
+
+    print('2222');
+
+    signal.InMemorySenderKeyStore senderKeyStore =
+        signal.InMemorySenderKeyStore();
+
+    print(senderKeyStore.loadSenderKey(senderKeyName).serialize());
+    signal.GroupCipher groupSession =
+        signal.GroupCipher(senderKeyStore, senderKeyName);
+
+    print('4444');
+    Uint8List message = groupSession.encrypt(utf8.encode('Hello Mixin'));
+    print('5555');
+    print(message);
+  }
 }

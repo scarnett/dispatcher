@@ -289,8 +289,7 @@ class UserPIN extends Equatable {
 
 class UserKey extends Equatable {
   final String publicKey;
-  final String sigRegistrationId;
-  final String sigPublicKey;
+  final int sigRegistrationId;
   final String sigSignedPublicKey;
   final String sigSignedPrekeySignature;
   final String sigIdentityPublicKey;
@@ -298,7 +297,6 @@ class UserKey extends Equatable {
   UserKey({
     this.publicKey,
     this.sigRegistrationId,
-    this.sigPublicKey,
     this.sigSignedPublicKey,
     this.sigSignedPrekeySignature,
     this.sigIdentityPublicKey,
@@ -306,8 +304,7 @@ class UserKey extends Equatable {
 
   UserKey copyWith({
     String publicKey,
-    String sigRegistrationId,
-    String sigPublicKey,
+    int sigRegistrationId,
     String sigSignedPublicKey,
     String sigSignedPrekeySignature,
     String sigIdentityPublicKey,
@@ -315,7 +312,6 @@ class UserKey extends Equatable {
       UserKey(
         publicKey: publicKey ?? this.publicKey,
         sigRegistrationId: sigRegistrationId ?? this.sigRegistrationId,
-        sigPublicKey: sigPublicKey ?? this.sigPublicKey,
         sigSignedPublicKey: sigSignedPublicKey ?? this.sigSignedPublicKey,
         sigSignedPrekeySignature:
             sigSignedPrekeySignature ?? this.sigSignedPrekeySignature,
@@ -330,7 +326,6 @@ class UserKey extends Equatable {
           : UserKey(
               publicKey: json['public_key'],
               sigRegistrationId: json['sig_registration_id'],
-              sigPublicKey: json['sig_public_key'],
               sigSignedPublicKey: json['sig_signed_public_key'],
               sigSignedPrekeySignature: json['sig_signed_prekey_signature'],
               sigIdentityPublicKey: json['sig_identity_public_key'],
@@ -339,7 +334,6 @@ class UserKey extends Equatable {
   dynamic toJson() => {
         'public_key': publicKey,
         'sig_registration_id': sigRegistrationId,
-        'sig_public_key': sigPublicKey,
         'sig_signed_public_key': sigSignedPublicKey,
         'sig_signed_prekey_signature': sigSignedPrekeySignature,
         'sig_identity_public_key': sigIdentityPublicKey,
@@ -349,7 +343,6 @@ class UserKey extends Equatable {
   List<Object> get props => [
         publicKey,
         sigRegistrationId,
-        sigPublicKey,
         sigSignedPublicKey,
         sigSignedPrekeySignature,
         sigIdentityPublicKey,
@@ -358,7 +351,7 @@ class UserKey extends Equatable {
   @override
   String toString() =>
       'UserKey{public_key: $publicKey, sig_registration_id: $sigRegistrationId ' +
-      'sig_public_key: $sigSignedPublicKey, sig_signed_prekey_signature: $sigSignedPrekeySignature ' +
+      'sig_signed_public_key: $sigSignedPublicKey, sig_signed_prekey_signature: $sigSignedPrekeySignature ' +
       'sig_identity_public_key: $sigIdentityPublicKey}';
 }
 

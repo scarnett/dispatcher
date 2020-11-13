@@ -1,9 +1,11 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/env_config.dart';
-import 'package:dispatcher/models/models.dart';
+import 'package:dispatcher/storage/storage.dart';
 import 'package:dispatcher/views/auth/create/bloc/bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart' as signal;
 
 Future<HttpsCallableResult> createUser(
   CreateAccountState state,
@@ -38,26 +40,64 @@ Future<HttpsCallableResult> createUser(
   return userCreateCallable.call(userData);
 }
 
-Future<HttpsCallableResult> saveUserKeys(
-  Dispatcher appConfig,
+Future<HttpsCallableResult> saveKeys(
+  firebase.User firebaseUser,
 ) async {
-  // Builds the key data map
-  Map<String, dynamic> keyData = Map<String, dynamic>.from({
-    'identifier': appConfig.identifier,
-    'public_key': appConfig.clientKeys.publicKey,
-    'sig_registration_id': appConfig.clientKeys.sigRegistrationId,
-    'sig_public_key': appConfig.clientKeys.sigPublicKey,
-    'sig_signed_public_key': appConfig.clientKeys.sigSignedPublicKey,
-    'sig_signed_prekey_signature':
-        appConfig.clientKeys.sigSignedPreKeySignature,
-    'sig_identity_public_key': appConfig.clientKeys.sigIdentityPublicKey,
-    'sig_prekeys': ClientPreKey.toJsonList(appConfig.clientKeys.sigPreKeys),
+  // Generate the user pgp keypair
+  DispatcherKeyStore keyStore = DispatcherKeyStore();
+  await keyStore.generateUserKeys(firebaseUser);
+
+  // Generate the signal keys and prekeys
+  DispatcherIdentityKeyStore identityKeyStore = DispatcherIdentityKeyStore();
+  DispatcherSignedPreKeyStore signedPreKeyStore = DispatcherSignedPreKeyStore();
+  signal.SignedPreKeyRecord signedPreKey =
+      signedPreKeyStore.loadSignedPreKey(0);
+
+  List<dynamic> preKeys = [];
+  DispatcherPreKeyStore preKeyStore = DispatcherPreKeyStore();
+  preKeyStore.store.getKeys().forEach((String key) {
+    signal.PreKeyRecord preKey = preKeyStore.loadPreKey(int.parse(key));
+    preKeys.add({
+      'key_id': preKey.id,
+      'public_key': String.fromCharCodes(preKey.serialize()),
+    });
   });
 
-  // Runs the 'callableUserKeyUpdate' Firebase callable function
+  /*
+  signal.PreKeyRecord preKeyRecord = preKeyStore.loadPreKey(1); // TODO!
+  signal.PreKeyBundle preKeyBundle = signal.PreKeyBundle(
+    prefs.getInt('registerationId'),
+    1, // TODO!
+    preKeyRecord.id,
+    preKeyRecord.getKeyPair().publicKey,
+    signedPreKey.id,
+    signedPreKey.getKeyPair().publicKey,
+    signedPreKey.signature,
+    identityStore.identityKeyPair.getPublicKey(),
+  );
+
+  signal.SessionBuilder sessionBuilder = signal.SessionBuilder(sessionStore,
+      preKeyStore, signedPreKeyStore, identityStore, remoteAddress);
+
+  sessionBuilder.processPreKeyBundle(preKeyBundle);
+  */
+
+  // Builds the key data map
+  Map<String, dynamic> keyData = Map<String, dynamic>.from({
+    'identifier': firebaseUser.uid,
+    'public_key': keyStore.getPublicKey(),
+    'sig_registration_id': identityKeyStore.getLocalRegistrationId(),
+    'sig_signed_public_key':
+        String.fromCharCodes(signedPreKey.getKeyPair().publicKey.serialize()),
+    'sig_signed_prekey_signature': String.fromCharCodes(signedPreKey.signature),
+    'sig_identity_public_key': String.fromCharCodes(
+        identityKeyStore.getIdentityKeyPair().getPublicKey().serialize()),
+    'sig_prekeys': preKeys,
+  });
+
   final HttpsCallable userKeyUpdateCallable = CloudFunctions.instance
       .getHttpsCallable(functionName: 'callableUserKeyUpdate');
 
-  // Post the key data to Firebase
+  // Post the keys to Firebase
   return userKeyUpdateCallable.call(keyData);
 }

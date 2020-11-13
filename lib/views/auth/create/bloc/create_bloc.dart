@@ -1,21 +1,15 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:dispatcher/config.dart';
-import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/repository/auth_repository.dart';
-import 'package:dispatcher/utils/config_utils.dart';
-import 'package:dispatcher/utils/crypt_utils.dart';
 import 'package:dispatcher/views/auth/create/create.dart';
 import 'package:dispatcher/views/auth/create/create_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:formz/formz.dart';
-import 'package:hive/hive.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
-import 'package:openpgp/key_pair.dart';
 
 part 'create_event.dart';
 part 'create_state.dart';
@@ -113,28 +107,12 @@ class CreateAccountBloc extends Bloc<CreateAccountEvent, CreateAccountState> {
             password: state.password.value,
           );
 
-          Box<Dispatcher> appBox =
-              Hive.box<Dispatcher>(HiveBoxes.APP_BOX.toString());
+          final firebase.FirebaseAuth _firebaseAuth =
+              firebase.FirebaseAuth.instance;
+          final firebase.User _firebaseUser = _firebaseAuth.currentUser;
 
-          if (appBox.isNotEmpty) {
-            final firebase.FirebaseAuth _firebaseAuth =
-                firebase.FirebaseAuth.instance;
-            final firebase.User _firebaseUser = _firebaseAuth.currentUser;
-
-            // Generate the user keys
-            KeyPair userKeyPair = await generateUserKeyPair(_firebaseUser);
-
-            dynamic resultData = result.data;
-            int appConfigIndex = getAppConfigIndex(null);
-            Dispatcher appConfig = appBox.getAt(appConfigIndex);
-            appConfig.identifier = resultData['uid'];
-            appConfig.clientKeys.publicKey = encode(userKeyPair.publicKey);
-            appConfig.clientKeys.privateKey = encode(userKeyPair.privateKey);
-            appConfig.save();
-
-            // Store the keys
-            await saveUserKeys(appConfig);
-          }
+          // Save the keys
+          await saveKeys(_firebaseUser);
         }
 
         yield state.copyWith(status: FormzStatus.submissionSuccess);
