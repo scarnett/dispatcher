@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/theme.dart';
+import 'package:dispatcher/utils/crypt_utils.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/avatar/widgets/avatar_display.dart';
 import 'package:dispatcher/views/connections/bloc/bloc.dart';
@@ -13,16 +13,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart' as signal;
 
 class ConnectionView extends StatelessWidget {
+  final User user;
   final UserConnection connection;
 
   static Route route(
+    User user,
     UserConnection connection,
   ) =>
       MaterialPageRoute<void>(
-          builder: (_) => ConnectionView(connection: connection));
+        builder: (_) => ConnectionView(
+          user: user,
+          connection: connection,
+        ),
+      );
 
   const ConnectionView({
     Key key,
+    this.user,
     this.connection,
   }) : super(key: key);
 
@@ -32,15 +39,20 @@ class ConnectionView extends StatelessWidget {
   ) =>
       BlocProvider<ConnectionsBloc>(
         create: (BuildContext context) => ConnectionsBloc(),
-        child: ConnectionPageView(connection: connection),
+        child: ConnectionPageView(
+          user: user,
+          connection: connection,
+        ),
       );
 }
 
 class ConnectionPageView extends StatefulWidget {
+  final User user;
   final UserConnection connection;
 
   ConnectionPageView({
     Key key,
+    this.user,
     this.connection,
   }) : super(key: key);
 
@@ -52,11 +64,16 @@ class _ConnectionPageViewState extends State<ConnectionPageView>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  // The signal session cipher
+  signal.SessionCipher _sessionCipher;
+
   // The scroll controller for the ListView
   ScrollController _connectionsListViewController;
 
   @override
   void initState() {
+    _sessionCipher = buildSessionCipher(widget.user, 1, 0); // TODO! id's
+
     // Setup the ListView controller
     _connectionsListViewController = ScrollController();
 
@@ -161,26 +178,12 @@ class _ConnectionPageViewState extends State<ConnectionPageView>
       );
 
   /// Handles a 'done' tap
+  // TODO!
   void _tapDone(
     String value,
   ) {
-    print('1111');
-
-    signal.SenderKeyName senderKeyName =
-        signal.SenderKeyName('', signal.SignalProtocolAddress('sender', 1));
-
-    print('2222');
-
-    signal.InMemorySenderKeyStore senderKeyStore =
-        signal.InMemorySenderKeyStore();
-
-    print(senderKeyStore.loadSenderKey(senderKeyName).serialize());
-    signal.GroupCipher groupSession =
-        signal.GroupCipher(senderKeyStore, senderKeyName);
-
-    print('4444');
-    Uint8List message = groupSession.encrypt(utf8.encode('Hello Mixin'));
-    print('5555');
-    print(message);
+    signal.CiphertextMessage cipherText =
+        _sessionCipher.encrypt(utf8.encode(value));
+    print(String.fromCharCodes(cipherText.serialize()));
   }
 }

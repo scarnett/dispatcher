@@ -21,6 +21,24 @@ const String fetchUserQueryStr = r'''
         user_fcm {
           token
         }
+        user_connections {
+          connection_user {
+            identifier
+            name
+            email
+            user_avatar {
+              url
+              thumb_url
+              path
+              thumb_path
+            }
+            user_phone_number {
+              phone_number
+              iso_code
+              dial_code
+            }
+          }
+        }
       }
     }
     ''';
@@ -60,29 +78,6 @@ const String fetchUserByInviteCodeQueryStr = r'''
           user_connections {
             user,
             connect_user
-          }
-        }
-      }
-    }
-    ''';
-
-const String fetchUserConnectionsQueryStr = r'''
-    query UserConnectionsQuery($identifier: String!) {
-      user_connections(where: {user: {_eq: $identifier}}) {
-        connection_user {
-          email
-          name
-          identifier
-          user_avatar {
-            url
-            thumb_url
-            path
-            thumb_path
-          }
-          user_phone_number {
-            phone_number
-            iso_code
-            dial_code
           }
         }
       }

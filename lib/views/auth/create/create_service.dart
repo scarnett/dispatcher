@@ -63,25 +63,6 @@ Future<HttpsCallableResult> saveKeys(
     });
   });
 
-  /*
-  signal.PreKeyRecord preKeyRecord = preKeyStore.loadPreKey(1); // TODO!
-  signal.PreKeyBundle preKeyBundle = signal.PreKeyBundle(
-    prefs.getInt('registerationId'),
-    1, // TODO!
-    preKeyRecord.id,
-    preKeyRecord.getKeyPair().publicKey,
-    signedPreKey.id,
-    signedPreKey.getKeyPair().publicKey,
-    signedPreKey.signature,
-    identityStore.identityKeyPair.getPublicKey(),
-  );
-
-  signal.SessionBuilder sessionBuilder = signal.SessionBuilder(sessionStore,
-      preKeyStore, signedPreKeyStore, identityStore, remoteAddress);
-
-  sessionBuilder.processPreKeyBundle(preKeyBundle);
-  */
-
   // Builds the key data map
   Map<String, dynamic> keyData = Map<String, dynamic>.from({
     'identifier': firebaseUser.uid,

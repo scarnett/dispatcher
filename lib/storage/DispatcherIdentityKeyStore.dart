@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:dispatcher/utils/eq.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart';
@@ -37,10 +36,9 @@ class DispatcherIdentityKeyStore extends IdentityKeyStore {
     IdentityKey identityKey,
     Direction direction,
   ) {
-    dynamic trusted =
-        Uint8List.fromList(store.read(address.toString()).codeUnits);
-
-    return ((trusted == null) || eq(trusted, identityKey.serialize()));
+    dynamic trusted = store.read(address.toString());
+    return ((trusted == null) ||
+        eq(Uint8List.fromList(trusted.codeUnits), identityKey.serialize()));
   }
 
   @override
@@ -48,10 +46,9 @@ class DispatcherIdentityKeyStore extends IdentityKeyStore {
     SignalProtocolAddress address,
     IdentityKey identityKey,
   ) {
-    dynamic existing =
-        Uint8List.fromList(store.read(address.toString()).codeUnits);
-
-    if (identityKey.serialize() != existing) {
+    dynamic existing = store.read(address.toString());
+    if ((existing == null) ||
+        (identityKey.serialize() != Uint8List.fromList(existing.codeUnits))) {
       store.write(
           address.toString(), String.fromCharCodes(identityKey.serialize()));
 

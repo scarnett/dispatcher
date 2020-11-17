@@ -25,10 +25,7 @@ class ConnectionsView extends StatelessWidget {
     BuildContext context,
   ) =>
       BlocProvider<ConnectionsBloc>(
-        create: (BuildContext context) => ConnectionsBloc()
-          ..add(
-            FetchConnectionsData(context.bloc<AuthBloc>().state.firebaseUser),
-          ),
+        create: (BuildContext context) => ConnectionsBloc(),
         child: ConnectionsPageView(),
       );
 }
@@ -87,7 +84,7 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
     ConnectionsState state,
   ) {
     if ((state == null) ||
-        (context.bloc<ConnectionsBloc>().state.connections == null)) {
+        (context.bloc<AuthBloc>().state.user.connections == null)) {
       return Spinner(
         message: AppLocalizations.of(context).connectionsLoading,
         centered: false,
@@ -105,7 +102,10 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
   Widget _buildConnectionsList(
     ConnectionsState state,
   ) {
-    if ((state.connections == null) || (state.connections.length == 0)) {
+    List<UserConnection> connections =
+        context.bloc<AuthBloc>().state.user.connections;
+
+    if ((connections == null) || (connections.length == 0)) {
       return NoneFound(
         message: AppLocalizations.of(context).connectionsNone,
       );
@@ -116,15 +116,16 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
         controller: _connectionsListViewController,
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
-        itemCount: state.connections?.length ?? 0,
+        itemCount: connections?.length ?? 0,
         itemBuilder: (
           BuildContext context,
           int index,
         ) {
-          UserConnection connection = state.connections?.elementAt(index);
+          UserConnection connection = connections?.elementAt(index);
 
           return InkWell(
-            onTap: () => _tapConnection(connection),
+            onTap: () =>
+                _tapConnection(context.bloc<AuthBloc>().state.user, connection),
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 10.0,
@@ -180,7 +181,8 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
 
   /// Handles the 'connection' tap
   void _tapConnection(
+    User user,
     UserConnection connection,
   ) =>
-      Navigator.push(context, ConnectionView.route(connection));
+      Navigator.push(context, ConnectionView.route(user, connection));
 }

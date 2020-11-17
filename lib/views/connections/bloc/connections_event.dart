@@ -6,14 +6,3 @@ abstract class ConnectionsEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
-
-class FetchConnectionsData extends ConnectionsEvent {
-  final firebase.User firebaseUser;
-
-  const FetchConnectionsData(
-    this.firebaseUser,
-  );
-
-  @override
-  List<Object> get props => [firebaseUser];
-}
