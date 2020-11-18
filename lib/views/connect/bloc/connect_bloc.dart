@@ -51,7 +51,7 @@ class ConnectBloc extends Bloc<ConnectEvent, ConnectState> {
       } else {
         UserConnection connection = user.connections.firstWhere(
             (connection) =>
-                connection.connectUser.identifier == event.firebaseUser.uid,
+                connection.connectionUser.identifier == event.firebaseUser.uid,
             orElse: () => null);
 
         if (connection == null) {

@@ -136,7 +136,7 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
                   Padding(
                     padding: const EdgeInsets.only(right: 10.0),
                     child: AvatarDisplay(
-                      user: connection.connectUser,
+                      user: connection.connectionUser,
                       avatarRadius: 28.0,
                       progressStrokeWidth: 2.0,
                     ),
@@ -158,13 +158,13 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
     List<Widget> children = <Widget>[]
       ..add(
         Text(
-          removeEmojis(connection.connectUser.name),
+          removeEmojis(connection.connectionUser.name),
           style: Theme.of(context).textTheme.headline6,
         ),
       )
       ..add(
         Text(
-          connection.connectUser.email,
+          connection.connectionUser.email,
           style: Theme.of(context).textTheme.subtitle2,
         ),
       );

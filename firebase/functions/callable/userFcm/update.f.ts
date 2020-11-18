@@ -20,12 +20,13 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
     const config: functions.config.Config = functions.config()
     const endpoint: string = config.graphql.endpoint
     const adminSecret: string = config.hasura.admin.secret
-    const response: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
-      identifier: identifier,
-      fcm: {
-        token: token
-      }
-    })
+    const response: any = await hasuraClient(endpoint, adminSecret)
+      .request(mutation, {
+        identifier: identifier,
+        fcm: {
+          token: token
+        }
+      })
 
     return response
   } catch (e) {

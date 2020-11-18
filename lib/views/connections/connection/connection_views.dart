@@ -97,7 +97,7 @@ class _ConnectionPageViewState extends State<ConnectionPageView>
         resizeToAvoidBottomInset: true,
         appBar: ConnectionAppBar(
           height: 60.0,
-          title: widget.connection.connectUser.name,
+          title: widget.connection.connectionUser.name,
         ),
         body: _buildContent(),
       );

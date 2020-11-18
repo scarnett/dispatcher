@@ -2,8 +2,6 @@ import * as functions from 'firebase-functions'
 import { hasuraClient } from '../../graphql/graphql-client'
 
 exports = module.exports = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
-  console.log(JSON.stringify(data))
-
   const identifier: string = data.identifier
   const publicKey: string = data.public_key
   const sigRegistrationId: number = data.sig_registration_id
@@ -43,15 +41,16 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
     const config: functions.config.Config = functions.config()
     const endpoint: string = config.graphql.endpoint
     const adminSecret: string = config.hasura.admin.secret
-    const response: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
-      identifier: identifier,
-      publicKey: publicKey,
-      sigRegistrationId: sigRegistrationId,
-      sigSignedPublicKey: sigSignedPublicKey,
-      sigSignedPreKeySignature: sigSignedPreKeySignature,
-      sigIdentityPublicKey: sigIdentityPublicKey,
-      sigPreKeys: sigPreKeys
-    })
+    const response: any = await hasuraClient(endpoint, adminSecret)
+      .request(mutation, {
+        identifier: identifier,
+        publicKey: publicKey,
+        sigRegistrationId: sigRegistrationId,
+        sigSignedPublicKey: sigSignedPublicKey,
+        sigSignedPreKeySignature: sigSignedPreKeySignature,
+        sigIdentityPublicKey: sigIdentityPublicKey,
+        sigPreKeys: sigPreKeys
+      })
 
     return response
   } catch (e) {

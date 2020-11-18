@@ -449,17 +449,21 @@ class UserFCM extends Equatable {
 }
 
 class UserConnection extends Equatable {
-  final User connectUser;
+  final User connectionUser;
+  final UserPreKey preKey;
 
   UserConnection({
-    this.connectUser,
+    this.connectionUser,
+    this.preKey,
   });
 
   UserConnection copyWith({
-    String connectUser,
+    User connectUser,
+    UserPreKey preKey,
   }) =>
       UserConnection(
-        connectUser: connectUser ?? this.connectUser,
+        connectionUser: connectionUser ?? this.connectionUser,
+        preKey: preKey ?? this.preKey,
       );
 
   static UserConnection fromJson(
@@ -468,7 +472,7 @@ class UserConnection extends Equatable {
       (json == null)
           ? UserConnection()
           : UserConnection(
-              connectUser: User.fromJson(json['connection_user']),
+              connectionUser: User.fromJson(json['connection_user']),
             );
 
   static List<UserConnection> fromJsonList(
@@ -481,7 +485,7 @@ class UserConnection extends Equatable {
               .toList();
 
   dynamic toJson() => {
-        'connect_user': connectUser,
+        'connection_user': connectionUser,
       };
 
   static List<dynamic> toJsonList(
@@ -494,8 +498,8 @@ class UserConnection extends Equatable {
               .toList();
 
   @override
-  List<Object> get props => [connectUser];
+  List<Object> get props => [connectionUser];
 
   @override
-  String toString() => 'UserConnection{connect_user: $connectUser}';
+  String toString() => 'UserConnection{connection_user: $connectionUser}';
 }

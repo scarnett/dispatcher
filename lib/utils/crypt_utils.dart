@@ -53,7 +53,7 @@ void generateSignedPreKey(
 void generatePreKeys() {
   DispatcherPreKeyStore preKeyStore = DispatcherPreKeyStore();
   List<signal.PreKeyRecord> preKeys =
-      signal.KeyHelper.generatePreKeys(0, 10); // TODO!
+      signal.KeyHelper.generatePreKeys(1, 25); // TODO! config
 
   for (signal.PreKeyRecord preKey in preKeys) {
     preKeyStore.storePreKey(preKey.id, preKey);

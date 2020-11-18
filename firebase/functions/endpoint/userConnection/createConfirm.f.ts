@@ -39,12 +39,13 @@ exports = module.exports = functions.https.onRequest(async (req: functions.https
     const adminSecret: string = config.hasura.admin.secret
 
     // Query the user records
-    const response: any = await hasuraClient(endpoint, adminSecret).request(query, {
-      identifiers: [
-        newConnectionRecord.user,
-        newConnectionRecord.connect_user
-      ]
-    })
+    const response: any = await hasuraClient(endpoint, adminSecret)
+      .request(query, {
+        identifiers: [
+          newConnectionRecord.user,
+          newConnectionRecord.connect_user
+        ]
+      })
 
     if (!response) {
       res.status(500).send('Bad response')
