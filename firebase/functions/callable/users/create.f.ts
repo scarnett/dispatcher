@@ -11,7 +11,7 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
   const fcm: any = data.fcm
 
   if (!displayName || !password || !email || !phone || !fcm) {
-    throw new functions.https.HttpsError('cancelled', 'user-create-failed', 'missing information')
+    throw new functions.https.HttpsError('cancelled', 'users-create-failed', 'missing information')
   }
 
   try {
@@ -58,6 +58,6 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
     await admin.auth().setCustomUserClaims(user, customClaims)
     return authRecord.toJSON()
   } catch (e) {
-    throw new functions.https.HttpsError('aborted', 'user-create-failed', JSON.stringify(e, undefined, 2))
+    throw new functions.https.HttpsError('aborted', 'users-create-failed', JSON.stringify(e, undefined, 2))
   }
 })

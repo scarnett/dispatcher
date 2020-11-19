@@ -8,7 +8,7 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
   const phone: any = data.phone
 
   if (!identifier || !name || !email || !phone) {
-    throw new functions.https.HttpsError('cancelled', 'user-update-failed', 'missing information')
+    throw new functions.https.HttpsError('cancelled', 'users-update-failed', 'missing information')
   }
 
   // GraphQL mutation for updating a user
@@ -39,6 +39,6 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
 
     return response
   } catch (e) {
-    throw new functions.https.HttpsError('aborted', 'user-update-failed', JSON.stringify(e, undefined, 2))
+    throw new functions.https.HttpsError('aborted', 'users-update-failed', JSON.stringify(e, undefined, 2))
   }
 })
