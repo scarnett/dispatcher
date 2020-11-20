@@ -66,6 +66,15 @@ class User extends Equatable {
                   UserConnection.fromJsonList(json['user_connections']),
             );
 
+  static List<User> fromJsonList(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? []
+          : List<dynamic>.from(json)
+              .map((dynamic userJson) => User.fromJson(userJson))
+              .toList();
+
   dynamic toJson() => {
         'identifier': identifier,
         'name': name,
@@ -77,6 +86,11 @@ class User extends Equatable {
         'fcm': fcm.toJson(),
         'connections': connections,
       };
+
+  static List<dynamic> toJsonList(
+    List<User> users,
+  ) =>
+      (users == null) ? [] : users.map((User user) => user.toJson()).toList();
 
   @override
   List<Object> get props =>
@@ -450,11 +464,9 @@ class UserFCM extends Equatable {
 
 class UserConnection extends Equatable {
   final User connectionUser;
-  final UserPreKey preKey;
 
   UserConnection({
     this.connectionUser,
-    this.preKey,
   });
 
   UserConnection copyWith({
@@ -463,7 +475,6 @@ class UserConnection extends Equatable {
   }) =>
       UserConnection(
         connectionUser: connectionUser ?? this.connectionUser,
-        preKey: preKey ?? this.preKey,
       );
 
   static UserConnection fromJson(
@@ -485,7 +496,7 @@ class UserConnection extends Equatable {
               .toList();
 
   dynamic toJson() => {
-        'connection_user': connectionUser,
+        'connection_user': connectionUser.toJson(),
       };
 
   static List<dynamic> toJsonList(

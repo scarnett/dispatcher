@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/storage/storage.dart';
 import 'package:get_storage/get_storage.dart';
@@ -131,52 +132,48 @@ String decode(
 
 /// Builds the signal session cipher
 signal.SessionCipher buildSessionCipher(
-  User user,
-  int preKeyId,
-  int signedPreKeyId,
+  RoomUser roomUser1,
+  RoomUser roomUser2,
 ) {
-  signal.InMemorySessionStore _sessionStore = signal.InMemorySessionStore();
-  DispatcherPreKeyStore _preKeyStore = DispatcherPreKeyStore();
-  DispatcherIdentityKeyStore _identityKeyStore = DispatcherIdentityKeyStore();
-  DispatcherSignedPreKeyStore _signedPreKeyStore =
-      DispatcherSignedPreKeyStore();
+  DispatcherIdentityKeyStore identityKeyStore = DispatcherIdentityKeyStore();
+  DispatcherSignalProtocolStore _sessionStore = DispatcherSignalProtocolStore(
+    identityKeyStore.getIdentityKeyPair(),
+    identityKeyStore.getLocalRegistrationId(),
+  );
 
-  signal.SignalProtocolAddress _remoteAddress =
-      signal.SignalProtocolAddress(user.identifier, 1);
+  signal.SignalProtocolAddress _connectionUserRemoteAddress =
+      signal.SignalProtocolAddress(roomUser1.user.identifier, 1);
 
-  signal.PreKeyRecord _preKeyRecord = _preKeyStore.loadPreKey(preKeyId);
+  signal.PreKeyRecord _preKeyRecord =
+      _sessionStore.loadPreKey(roomUser2.preKey.keyId);
 
-  signal.SignedPreKeyRecord _signedPreKey =
-      _signedPreKeyStore.loadSignedPreKey(signedPreKeyId);
+  signal.ECPublicKey _signedPreKeyRecord = signal.Curve.decodePoint(
+      Uint8List.fromList(roomUser2.user.key.sigSignedPublicKey.codeUnits), 0);
 
-  signal.PreKeyBundle _preKeyBundle = signal.PreKeyBundle(
-    _identityKeyStore.getLocalRegistrationId(),
+  Uint8List signedPreKeySignature =
+      Uint8List.fromList(roomUser2.user.key.sigSignedPrekeySignature.codeUnits);
+
+  signal.IdentityKey _identityKey = signal.IdentityKey.fromBytes(
+      Uint8List.fromList(roomUser2.user.key.sigIdentityPublicKey.codeUnits), 0);
+
+  signal.PreKeyBundle _connectionUserPreKey = signal.PreKeyBundle(
+    roomUser2.user.key.sigRegistrationId,
     1, // TODO!
     _preKeyRecord.id,
     _preKeyRecord.getKeyPair().publicKey,
-    _signedPreKey.id,
-    _signedPreKey.getKeyPair().publicKey,
-    _signedPreKey.signature,
-    _identityKeyStore.getIdentityKeyPair().getPublicKey(),
+    0, // TODO!
+    _signedPreKeyRecord,
+    signedPreKeySignature,
+    _identityKey,
   );
 
-  signal.SessionBuilder _sessionBuilder = signal.SessionBuilder(
+  signal.SessionBuilder.fromSignalStore(
     _sessionStore,
-    _preKeyStore,
-    _signedPreKeyStore,
-    _identityKeyStore,
-    _remoteAddress,
-  );
+    _connectionUserRemoteAddress,
+  ).processPreKeyBundle(_connectionUserPreKey);
 
-  _sessionBuilder.processPreKeyBundle(_preKeyBundle);
-
-  signal.SessionCipher _sessionCipher = signal.SessionCipher(
+  return signal.SessionCipher.fromStore(
     _sessionStore,
-    _preKeyStore,
-    _signedPreKeyStore,
-    _identityKeyStore,
-    _remoteAddress,
+    _connectionUserRemoteAddress,
   );
-
-  return _sessionCipher;
 }

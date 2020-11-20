@@ -37,6 +37,13 @@ const String fetchUserQueryStr = r'''
               iso_code
               dial_code
             }
+            user_key {
+              sig_identity_public_key
+              sig_registration_id
+              sig_signed_prekey_signature
+              sig_signed_public_key
+              public_key
+            }
           }
         }
       }

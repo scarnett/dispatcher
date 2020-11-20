@@ -1,26 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ConnectionAppBar extends StatefulWidget implements PreferredSizeWidget {
+class RoomAppBar extends StatefulWidget implements PreferredSizeWidget {
   // The height of the AppBar
   final double height;
 
   final String title;
 
-  ConnectionAppBar({
+  RoomAppBar({
     Key key,
     @required this.height,
     @required this.title,
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ConnectionAppBarState();
+  State<StatefulWidget> createState() => _RoomAppBarState();
 
   @override
   Size get preferredSize => Size.fromHeight(height);
 }
 
-class _ConnectionAppBarState extends State<ConnectionAppBar> {
+class _RoomAppBarState extends State<RoomAppBar> {
   @override
   Widget build(
     BuildContext context,

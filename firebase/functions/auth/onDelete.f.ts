@@ -35,6 +35,10 @@ exports = module.exports = functions.auth.user().onDelete(async (user: functions
       affected_rows
     }
 
+    delete_rooms(where: {room_users: {user: {_eq: $identifier}}}) {
+      affected_rows
+    }
+
     delete_user_fcms(where: {user: {_eq: $identifier}}) {
       affected_rows
     }
