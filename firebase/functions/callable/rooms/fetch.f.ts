@@ -10,7 +10,7 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
 
   // GraphQL query for selecting user rooms
   const roomsQuery: string = `query RoomsQuery($users: [String!]!) {
-    rooms(where: {room_users: {user: {_in: $users}}}) {
+    rooms(where: {room_users: {user_identifier: {_in: $users}}}) {
       id
       identifier
       room_users {

@@ -2,29 +2,17 @@ part of 'connections_bloc.dart';
 
 @immutable
 class ConnectionsState extends Equatable {
-  final UserConnection activeConnection;
+  ConnectionsState();
 
-  ConnectionsState({
-    this.activeConnection,
-  });
-
-  const ConnectionsState._({
-    this.activeConnection,
-  });
+  const ConnectionsState._();
 
   const ConnectionsState.initial() : this._();
 
-  ConnectionsState copyWith({
-    List<UserConnection> connections,
-    UserConnection activeConnection,
-  }) =>
-      ConnectionsState._(
-        activeConnection: activeConnection ?? this.activeConnection,
-      );
+  ConnectionsState copyWith() => ConnectionsState._();
 
   @override
-  List<Object> get props => [activeConnection];
+  List<Object> get props => [];
 
   @override
-  String toString() => 'ConnectionsState{activeConnection: $activeConnection}';
+  String toString() => 'ConnectionsState{}';
 }

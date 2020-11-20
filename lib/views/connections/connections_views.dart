@@ -5,7 +5,7 @@ import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/avatar/widgets/avatar_display.dart';
 import 'package:dispatcher/views/connections/bloc/bloc.dart';
 import 'package:dispatcher/views/connections/widgets/connections_appbar.dart';
-import 'package:dispatcher/views/room/room_views.dart';
+import 'package:dispatcher/views/rooms/rooms_views.dart';
 import 'package:dispatcher/widgets/none_found.dart';
 import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/cupertino.dart';
@@ -124,12 +124,7 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
           UserConnection connection = connections?.elementAt(index);
 
           return InkWell(
-            onTap: () => _tapConnection(
-              [
-                context.bloc<AuthBloc>().state.user,
-                connection.connectionUser,
-              ],
-            ),
+            onTap: () => _tapConnection(connection.connectionUser),
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 10.0,
@@ -185,7 +180,7 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
 
   /// Handles the 'connection' tap
   void _tapConnection(
-    List<User> users,
+    User user,
   ) =>
-      Navigator.push(context, RoomView.route(users));
+      Navigator.push(context, RoomView.route(user));
 }

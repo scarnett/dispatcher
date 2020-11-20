@@ -5,43 +5,52 @@ import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/avatar/widgets/avatar_display.dart';
 import 'package:dispatcher/views/connections/bloc/bloc.dart';
-import 'package:dispatcher/views/room/widgets/room_appbar.dart';
+import 'package:dispatcher/views/rooms/bloc/bloc.dart';
+import 'package:dispatcher/views/rooms/widgets/room_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart' as signal;
 
 class RoomView extends StatelessWidget {
-  final List<User> users;
+  // final List<User> users;
+  final User user;
 
   static Route route(
-    List<User> users,
+    User user,
   ) =>
       MaterialPageRoute<void>(
-        builder: (_) => RoomView(users: users),
+        builder: (_) => RoomView(user: user),
       );
 
   const RoomView({
     Key key,
-    this.users,
+    this.user,
   }) : super(key: key);
 
   @override
   Widget build(
     BuildContext context,
   ) =>
-      BlocProvider<ConnectionsBloc>(
-        create: (BuildContext context) => ConnectionsBloc(),
-        child: RoomPageView(users: users),
+      BlocProvider<RoomsBloc>(
+        create: (BuildContext context) => RoomsBloc()
+          ..add(
+            FetchRoomData([
+              context.bloc<AuthBloc>().state.user.identifier,
+              user.identifier,
+            ]),
+          ),
+        child: RoomPageView(user: user),
       );
 }
 
 class RoomPageView extends StatefulWidget {
-  final List<User> users;
+  // final List<User> users;
+  final User user;
 
   RoomPageView({
     Key key,
-    this.users,
+    this.user,
   }) : super(key: key);
 
   @override
@@ -74,14 +83,20 @@ class _RoomPageViewState extends State<RoomPageView>
   Widget build(
     BuildContext context,
   ) =>
-      Scaffold(
-        key: _scaffoldKey,
-        resizeToAvoidBottomInset: true,
-        appBar: RoomAppBar(
-          height: 60.0,
-          title: '???',
+      BlocBuilder<RoomsBloc, RoomsState>(
+        builder: (
+          BuildContext context,
+          RoomsState state,
+        ) =>
+            Scaffold(
+          key: _scaffoldKey,
+          resizeToAvoidBottomInset: true,
+          appBar: RoomAppBar(
+            height: 60.0,
+            title: widget.user.name,
+          ),
+          body: _buildContent(),
         ),
-        body: _buildContent(),
       );
 
   /// Builds the content
