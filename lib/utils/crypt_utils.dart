@@ -132,8 +132,7 @@ String decode(
 
 /// Builds the signal session cipher
 signal.SessionCipher buildSessionCipher(
-  RoomUser roomUser1,
-  RoomUser roomUser2,
+  RoomUser roomUser,
 ) {
   DispatcherIdentityKeyStore identityKeyStore = DispatcherIdentityKeyStore();
   DispatcherSignalProtocolStore _sessionStore = DispatcherSignalProtocolStore(
@@ -142,22 +141,22 @@ signal.SessionCipher buildSessionCipher(
   );
 
   signal.SignalProtocolAddress _connectionUserRemoteAddress =
-      signal.SignalProtocolAddress(roomUser1.user.identifier, 1);
+      signal.SignalProtocolAddress(roomUser.user.identifier, 1);
 
   signal.PreKeyRecord _preKeyRecord =
-      _sessionStore.loadPreKey(roomUser2.preKey.keyId);
+      _sessionStore.loadPreKey(roomUser.preKey.keyId);
 
   signal.ECPublicKey _signedPreKeyRecord = signal.Curve.decodePoint(
-      Uint8List.fromList(roomUser2.user.key.sigSignedPublicKey.codeUnits), 0);
+      Uint8List.fromList(roomUser.user.key.sigSignedPublicKey.codeUnits), 0);
 
   Uint8List signedPreKeySignature =
-      Uint8List.fromList(roomUser2.user.key.sigSignedPrekeySignature.codeUnits);
+      Uint8List.fromList(roomUser.user.key.sigSignedPrekeySignature.codeUnits);
 
   signal.IdentityKey _identityKey = signal.IdentityKey.fromBytes(
-      Uint8List.fromList(roomUser2.user.key.sigIdentityPublicKey.codeUnits), 0);
+      Uint8List.fromList(roomUser.user.key.sigIdentityPublicKey.codeUnits), 0);
 
   signal.PreKeyBundle _connectionUserPreKey = signal.PreKeyBundle(
-    roomUser2.user.key.sigRegistrationId,
+    roomUser.user.key.sigRegistrationId,
     1, // TODO!
     _preKeyRecord.id,
     _preKeyRecord.getKeyPair().publicKey,

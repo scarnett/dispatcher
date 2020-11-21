@@ -2,9 +2,11 @@ import 'package:dispatcher/models/models.dart';
 import 'package:equatable/equatable.dart';
 
 class Room extends Equatable {
+  final String identifier;
   final List<RoomUser> users;
 
   Room({
+    this.identifier,
     this.users,
   });
 
@@ -12,6 +14,7 @@ class Room extends Equatable {
     List<RoomUser> users,
   }) =>
       Room(
+        identifier: identifier ?? this.identifier,
         users: users ?? this.users,
       );
 
@@ -21,18 +24,23 @@ class Room extends Equatable {
       (json == null)
           ? Room()
           : Room(
-              users: RoomUser.fromJsonList(json['users']),
+              identifier: json['identifier'],
+              users: RoomUser.fromJsonList(json['room_users']),
             );
 
   dynamic toJson() => {
-        'users': RoomUser.toJsonList(users),
+        'identifier': identifier,
+        'room_users': RoomUser.toJsonList(users),
       };
 
   @override
-  List<Object> get props => [users];
+  List<Object> get props => [
+        users,
+        identifier,
+      ];
 
   @override
-  String toString() => 'Room{users: ${users.length}}';
+  String toString() => 'Room{users: ${users.length}, identifier: $identifier}';
 }
 
 class RoomUser extends Equatable {

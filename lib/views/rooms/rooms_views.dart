@@ -4,16 +4,14 @@ import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
 import 'package:dispatcher/views/avatar/widgets/avatar_display.dart';
-import 'package:dispatcher/views/connections/bloc/bloc.dart';
 import 'package:dispatcher/views/rooms/bloc/bloc.dart';
-import 'package:dispatcher/views/rooms/widgets/room_appbar.dart';
+import 'package:dispatcher/views/rooms/widgets/rooms_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart' as signal;
 
 class RoomView extends StatelessWidget {
-  // final List<User> users;
   final User user;
 
   static Route route(
@@ -35,17 +33,16 @@ class RoomView extends StatelessWidget {
       BlocProvider<RoomsBloc>(
         create: (BuildContext context) => RoomsBloc()
           ..add(
-            FetchRoomData([
-              context.bloc<AuthBloc>().state.user.identifier,
+            FetchRoomData(
+              context.bloc<AuthBloc>().state.user,
               user.identifier,
-            ]),
+            ),
           ),
         child: RoomPageView(user: user),
       );
 }
 
 class RoomPageView extends StatefulWidget {
-  // final List<User> users;
   final User user;
 
   RoomPageView({
@@ -61,22 +58,10 @@ class _RoomPageViewState extends State<RoomPageView>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // The signal session cipher
-  signal.SessionCipher _sessionCipher;
-
-  @override
-  void initState() {
-    // TODO! FIX
-    // _sessionCipher = buildSessionCipher(widget.user, widget.connection);
-
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
+  /// Handles the android back button
+  Future<bool> _willPopCallback() async {
+    context.bloc<RoomsBloc>().add(ClearRoomData());
+    return Future.value(true);
   }
 
   @override
@@ -88,22 +73,28 @@ class _RoomPageViewState extends State<RoomPageView>
           BuildContext context,
           RoomsState state,
         ) =>
-            Scaffold(
-          key: _scaffoldKey,
-          resizeToAvoidBottomInset: true,
-          appBar: RoomAppBar(
-            height: 60.0,
-            title: widget.user.name,
+            WillPopScope(
+          onWillPop: () => _willPopCallback(),
+          child: Scaffold(
+            key: _scaffoldKey,
+            resizeToAvoidBottomInset: true,
+            appBar: RoomAppBar(
+              height: 60.0,
+              title: widget.user.name,
+            ),
+            body: _buildContent(state),
           ),
-          body: _buildContent(),
         ),
       );
 
   /// Builds the content
-  Widget _buildContent() => Column(
+  Widget _buildContent(
+    RoomsState state,
+  ) =>
+      Column(
         children: <Widget>[
           _buildMessageList(),
-          _buildMessageField(),
+          _buildMessageField(state),
         ],
       );
 
@@ -116,7 +107,10 @@ class _RoomPageViewState extends State<RoomPageView>
       );
 
   /// Builds the message field
-  Widget _buildMessageField() => SizedBox(
+  Widget _buildMessageField(
+    RoomsState state,
+  ) =>
+      SizedBox(
         width: double.infinity,
         child: Container(
           margin: EdgeInsets.all(15.0),
@@ -160,7 +154,8 @@ class _RoomPageViewState extends State<RoomPageView>
                               border: InputBorder.none,
                               focusedBorder: InputBorder.none,
                             ),
-                            onFieldSubmitted: (String value) => _tapDone(value),
+                            onFieldSubmitted: (String value) =>
+                                _tapDone(state, value),
                           ),
                         ),
                       ),
@@ -177,10 +172,11 @@ class _RoomPageViewState extends State<RoomPageView>
   /// Handles a 'done' tap
   // TODO!
   void _tapDone(
+    RoomsState state,
     String value,
   ) {
     signal.CiphertextMessage cipherText =
-        _sessionCipher.encrypt(utf8.encode(value));
+        state.sessionCipher.encrypt(utf8.encode(value));
 
     print(String.fromCharCodes(cipherText.serialize()));
 

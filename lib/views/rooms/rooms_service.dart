@@ -6,7 +6,10 @@ Future<HttpsCallableResult> fetchRoom(
 ) async {
   // Builds the room user data map
   Map<String, dynamic> roomUserData = Map<String, dynamic>.from({
-    'users': event.users,
+    'users': [
+      event.user.identifier,
+      event.roomUserIdentifer,
+    ],
   });
 
   // Runs the 'callableRoomsFetch' Firebase callable function

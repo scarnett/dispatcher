@@ -3,7 +3,6 @@ import { hasuraClient } from '../../graphql/graphql-client'
 
 exports = module.exports = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
   const users: string[] = data.users
-
   if (!users) {
     throw new functions.https.HttpsError('cancelled', 'rooms-fetch-failed', 'missing information')
   }
@@ -14,7 +13,21 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
       id
       identifier
       room_users {
-        user
+        user {
+          identifier
+          name
+          email
+          user_key {
+            sig_identity_public_key
+            sig_registration_id
+            sig_signed_prekey_signature
+            sig_signed_public_key
+          }
+        }
+        preKey {
+          key_id
+          public_key
+        }
       }
     }
   }`
@@ -40,11 +53,12 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
     for (const room of rooms) {
       const roomUsers: any[] = room['room_users']
       if (users.length === roomUsers.length) {
-        const roomUsersSorted: any[] = roomUsers.slice().sort()
+        const userIdentifiers: string[] = roomUsers.map(entry => entry.user.identifier)
+        const roomUsersSorted: any[] = userIdentifiers.slice().sort()
 
         // Here we make sure that the room user list matches exactly
         // @see https://stackoverflow.com/a/19746771/13197894
-        if (users.slice().sort().every((userId, index) => (userId === roomUsersSorted[index]['user']))) {
+        if (users.slice().sort().every((userId: string, index: number) => (userId === roomUsersSorted[index]))) {
           return room
         }
       }

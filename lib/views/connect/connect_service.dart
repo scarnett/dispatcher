@@ -62,11 +62,10 @@ Future<HttpsCallableResult> connectUsers(
 Future<HttpsCallableResult> createRoom(
   ConnectUser event,
 ) async {
-  List<dynamic> users = []..add(event.user)..add(event.connectUser);
-
   // Builds the room user data map
   Map<String, dynamic> roomUserData = Map<String, dynamic>.from({
-    'users': users,
+    'roomUser1': event.user,
+    'roomUser2': event.connectUser,
   });
 
   // Runs the 'callableRoomsCreate' Firebase callable function

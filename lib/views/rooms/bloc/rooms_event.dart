@@ -8,12 +8,21 @@ abstract class RoomsEvent extends Equatable {
 }
 
 class FetchRoomData extends RoomsEvent {
-  final List<String> users;
+  final User user;
+  final String roomUserIdentifer;
 
   const FetchRoomData(
-    this.users,
+    this.user,
+    this.roomUserIdentifer,
   );
 
   @override
-  List<Object> get props => [users];
+  List<Object> get props => [
+        user,
+        roomUserIdentifer,
+      ];
+}
+
+class ClearRoomData extends RoomsEvent {
+  const ClearRoomData();
 }
