@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/models/models.dart';
@@ -21,13 +22,15 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
     RoomsEvent event,
   ) async* {
     if (event is FetchRoomData) {
-      yield* _mapFetchRoomData(event);
+      yield* _mapFetchRoomDataToStates(event);
     } else if (event is ClearRoomData) {
       yield _mapClearRoomDataToStates(event);
+    } else if (event is SendMessage) {
+      yield* _mapSendMessageToStates(event);
     }
   }
 
-  Stream<RoomsState> _mapFetchRoomData(
+  Stream<RoomsState> _mapFetchRoomDataToStates(
     FetchRoomData event,
   ) async* {
     yield state.copyWith(sessionStatus: RoomSessionStatus.CREATING);
@@ -54,6 +57,29 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
     } else {
       yield state.copyWith(sessionStatus: RoomSessionStatus.CANT_CREATE);
     }
+  }
+
+  Stream<RoomsState> _mapSendMessageToStates(
+    SendMessage event,
+  ) async* {
+    signal.CiphertextMessage cipherText =
+        state.sessionCipher.encrypt(utf8.encode(event.message));
+
+    signal.PreKeySignalMessage msgIn =
+        signal.PreKeySignalMessage(cipherText.serialize());
+
+    String cipherTextStr = String.fromCharCodes(cipherText.serialize());
+    int messageType = msgIn.getType();
+
+    // Send a message to the room
+    await sendMessage(
+      state.activeRoom.id,
+      event.user,
+      cipherTextStr,
+      messageType,
+    );
+
+    yield state;
   }
 
   RoomsState _mapClearRoomDataToStates(

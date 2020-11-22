@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/theme.dart';
@@ -9,7 +8,6 @@ import 'package:dispatcher/views/rooms/widgets/rooms_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart' as signal;
 
 class RoomView extends StatelessWidget {
   final User user;
@@ -82,19 +80,16 @@ class _RoomPageViewState extends State<RoomPageView>
               height: 60.0,
               title: widget.user.name,
             ),
-            body: _buildContent(state),
+            body: _buildContent(),
           ),
         ),
       );
 
   /// Builds the content
-  Widget _buildContent(
-    RoomsState state,
-  ) =>
-      Column(
+  Widget _buildContent() => Column(
         children: <Widget>[
           _buildMessageList(),
-          _buildMessageField(state),
+          _buildMessageField(),
         ],
       );
 
@@ -107,10 +102,7 @@ class _RoomPageViewState extends State<RoomPageView>
       );
 
   /// Builds the message field
-  Widget _buildMessageField(
-    RoomsState state,
-  ) =>
-      SizedBox(
+  Widget _buildMessageField() => SizedBox(
         width: double.infinity,
         child: Container(
           margin: EdgeInsets.all(15.0),
@@ -154,8 +146,7 @@ class _RoomPageViewState extends State<RoomPageView>
                               border: InputBorder.none,
                               focusedBorder: InputBorder.none,
                             ),
-                            onFieldSubmitted: (String value) =>
-                                _tapDone(state, value),
+                            onFieldSubmitted: (String value) => _tapDone(value),
                           ),
                         ),
                       ),
@@ -170,19 +161,13 @@ class _RoomPageViewState extends State<RoomPageView>
       );
 
   /// Handles a 'done' tap
-  // TODO!
   void _tapDone(
-    RoomsState state,
     String value,
-  ) {
-    signal.CiphertextMessage cipherText =
-        state.sessionCipher.encrypt(utf8.encode(value));
-
-    print(String.fromCharCodes(cipherText.serialize()));
-
-    signal.PreKeySignalMessage msgIn =
-        signal.PreKeySignalMessage(cipherText.serialize());
-
-    print(msgIn.getType());
-  }
+  ) =>
+      context.bloc<RoomsBloc>().add(
+            SendMessage(
+              context.bloc<AuthBloc>().state.user.identifier,
+              value,
+            ),
+          );
 }

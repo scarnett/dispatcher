@@ -23,6 +23,19 @@ class FetchRoomData extends RoomsEvent {
       ];
 }
 
+class SendMessage extends RoomsEvent {
+  final String user;
+  final String message;
+
+  const SendMessage(
+    this.user,
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [user, message];
+}
+
 class ClearRoomData extends RoomsEvent {
   const ClearRoomData();
 }

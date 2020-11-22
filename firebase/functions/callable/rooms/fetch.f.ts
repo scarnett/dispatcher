@@ -29,6 +29,11 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
           public_key
         }
       }
+      room_messages {
+        message
+        user_identifier
+        created_date
+      }
     }
   }`
 
