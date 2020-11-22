@@ -1,7 +1,8 @@
 import 'package:dispatcher/extensions/extensions.dart';
 import 'package:dispatcher/utils/text_utils.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
-/// Gets the initial from someones name.
+/// Gets the initials from someones name
 String getNameInitials(
   String name,
 ) {
@@ -23,4 +24,37 @@ String getNameInitials(
   String lastName = parts[parts.length - 1];
   String lastInitial = lastName.substring(0, 1).toUpperCase();
   return '$firstInitial $lastInitial';
+}
+
+/// Gets the thumbnail url of an avatar
+Future<String> getAvatarThumbnailUrl(
+  StorageReference storageRef, {
+  int width = 200,
+  int height = 200,
+}) async {
+  String fileName = await storageRef.getName();
+  List<String> fileNameParts = fileName.split('.')
+    ..insert(0, 'thumbs%2F')
+    ..insert(2, '_${width}x$height.');
+
+  String fileUrl = await storageRef.getDownloadURL();
+  fileUrl =
+      fileUrl.replaceAll(fileName.replaceAll('}', '%7D'), fileNameParts.join());
+  return fileUrl;
+}
+
+/// Gets the thumbnail path of an avatar
+Future<String> getAvatarThumbnailPath(
+  StorageReference storageRef, {
+  int width = 200,
+  int height = 200,
+}) async {
+  String fileName = await storageRef.getName();
+  List<String> fileNameParts = fileName.split('.')
+    ..insert(0, 'thumbs/')
+    ..insert(2, '_${width}x$height.');
+
+  String filePath = await storageRef.getPath();
+  filePath = filePath.replaceAll(fileName, fileNameParts.join());
+  return filePath;
 }

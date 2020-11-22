@@ -18,12 +18,16 @@ import 'package:logger/logger.dart';
 class UserSelectAvatar extends StatelessWidget {
   final User user;
   final int imageQuality;
+  final double maxHeight;
+  final double maxWidth;
   final ScaffoldState scaffoldState;
 
   const UserSelectAvatar({
     Key key,
     this.user,
     this.imageQuality: 85,
+    this.maxHeight: 800.0,
+    this.maxWidth: 800.0,
     this.scaffoldState,
   }) : super(key: key);
 
@@ -31,25 +35,28 @@ class UserSelectAvatar extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) =>
-      BlocProvider<AvatarBloc>(
-        create: (BuildContext context) => AvatarBloc(),
-        child: UserSelectAvatarDisplay(
-          user: user,
-          imageQuality: imageQuality,
-          scaffoldState: scaffoldState,
-        ),
+      UserSelectAvatarDisplay(
+        user: user,
+        imageQuality: imageQuality,
+        maxHeight: maxHeight,
+        maxWidth: maxWidth,
+        scaffoldState: scaffoldState,
       );
 }
 
 class UserSelectAvatarDisplay extends StatefulWidget {
   final User user;
   final int imageQuality;
+  final double maxHeight;
+  final double maxWidth;
   final ScaffoldState scaffoldState;
 
   UserSelectAvatarDisplay({
     Key key,
     this.user,
     this.imageQuality,
+    this.maxHeight,
+    this.maxWidth,
     this.scaffoldState,
   }) : super(key: key);
 
@@ -126,7 +133,11 @@ class _UserSelectAvatarDisplayState extends State<UserSelectAvatarDisplay> {
           ),
           child: Row(
             children: <Widget>[
-              AvatarDisplay(user: widget.user),
+              AvatarDisplay(
+                user: widget.user,
+                progressStrokeWidth: 2.0,
+                canPreview: true,
+              ),
               Expanded(
                 child: Row(
                   children: <Widget>[
@@ -185,6 +196,8 @@ class _UserSelectAvatarDisplayState extends State<UserSelectAvatarDisplay> {
       final PickedFile avatarFile = await _picker.getImage(
         source: ImageSource.gallery,
         imageQuality: widget.imageQuality,
+        maxHeight: widget.maxHeight,
+        maxWidth: widget.maxWidth,
       );
 
       _uploadImage(avatarFile);

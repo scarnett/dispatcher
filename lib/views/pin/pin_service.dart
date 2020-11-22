@@ -66,7 +66,7 @@ Future<Tuple2<String, DateTime>> sendVerification(
   );
 
   String encryptedVerificationCode =
-      await encrypt(verificationCode, decode(user.key.publicKey));
+      await encrypt(verificationCode, user.key.publicKey);
 
   // Builds the PIN data map
   Map<String, dynamic> pinData = Map<String, dynamic>.from({
@@ -123,7 +123,7 @@ Future<HttpsCallableResult> updatePIN(
   User user,
   String pinCode,
 ) async {
-  String encryptedPINCode = await encrypt(pinCode, decode(user.key.publicKey));
+  String encryptedPINCode = await encrypt(pinCode, user.key.publicKey);
 
   // Builds the PIN data map
   Map<dynamic, dynamic> pinData = Map<dynamic, dynamic>.from({

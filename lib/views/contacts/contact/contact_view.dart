@@ -11,11 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share/share.dart';
 
 class ContactView extends StatefulWidget {
-  final PageController pageController;
-
   ContactView({
     Key key,
-    this.pageController,
   }) : super(key: key);
 
   @override
@@ -37,7 +34,7 @@ class _ContactViewState extends State<ContactView> {
             Scaffold(
           key: _scaffoldKey,
           resizeToAvoidBottomInset: true,
-          appBar: SimpleAppBar(showBackButton: true),
+          appBar: SimpleAppBar(showLeading: true),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

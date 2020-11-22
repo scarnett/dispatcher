@@ -8,7 +8,7 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
   const phone: any = data.phone
 
   if (!identifier || !name || !email || !phone) {
-    throw new functions.https.HttpsError('cancelled', 'user-update-failed', 'missing information')
+    throw new functions.https.HttpsError('cancelled', 'users-update-failed', 'missing information')
   }
 
   // GraphQL mutation for updating a user
@@ -29,15 +29,16 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
     const config: functions.config.Config = functions.config()
     const endpoint: string = config.graphql.endpoint
     const adminSecret: string = config.hasura.admin.secret
-    const response: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
-      identifier: identifier,
-      name: name,
-      email: email,
-      phone: phone
-    })
+    const response: any = await hasuraClient(endpoint, adminSecret)
+      .request(mutation, {
+        identifier: identifier,
+        name: name,
+        email: email,
+        phone: phone
+      })
 
     return response
   } catch (e) {
-    throw new functions.https.HttpsError('aborted', 'user-update-failed', JSON.stringify(e, undefined, 2))
+    throw new functions.https.HttpsError('aborted', 'users-update-failed', JSON.stringify(e, undefined, 2))
   }
 })

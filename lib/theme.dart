@@ -12,7 +12,6 @@ class AppTheme {
   static const Color error = Colors.red;
   static const Color warning = Colors.orange;
   static const Color info = Colors.blue;
-  static Color loadingBackground = Colors.white.withOpacity(0.9);
   static Color border = Colors.grey[300];
 }
 

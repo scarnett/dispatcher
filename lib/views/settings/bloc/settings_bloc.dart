@@ -7,10 +7,13 @@ import 'package:dispatcher/views/settings/models/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 
 part 'settings_event.dart';
 part 'settings_state.dart';
+
+Logger _logger = Logger();
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   SettingsBloc() : super(const SettingsState());
@@ -119,6 +122,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
         yield state.copyWith(status: FormzStatus.submissionSuccess);
       } on Exception catch (_) {
+        _logger.e(_);
         yield state.copyWith(status: FormzStatus.submissionFailure);
       }
     }

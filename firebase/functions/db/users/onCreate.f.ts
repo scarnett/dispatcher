@@ -1,5 +1,4 @@
 import * as functions from 'firebase-functions'
-import * as admin from 'firebase-admin'
 import { hasuraClient } from '../../graphql/graphql-client'
 
 /**
@@ -8,6 +7,7 @@ import { hasuraClient } from '../../graphql/graphql-client'
 exports = module.exports = functions.firestore
   .document('users/{identifier}').onCreate(async (userDocument: functions.firestore.QueryDocumentSnapshot) => {
     try {
+      const promises: Array<Promise<any>> = []
       const userData: FirebaseFirestore.DocumentData = userDocument.data()
       const userIdentifier: string = userDocument.id
 
@@ -17,7 +17,7 @@ exports = module.exports = functions.firestore
         const adminSecret: string = config.hasura.admin.secret
 
         // GraphQL mutation for inserting the new user
-        const mutation: string = `mutation ($identifier: String!, $name: String!, $email: String!, $phone: user_phone_numbers_insert_input!, $invite_code: user_invite_codes_insert_input!) {
+        const mutation: string = `mutation ($identifier: String!, $name: String!, $email: String!, $phone: user_phone_numbers_insert_input!, $invite_code: user_invite_codes_insert_input!, $fcm: user_fcms_insert_input!) {
           insert_user_phone_numbers_one(
             object: $phone
           ) {
@@ -41,9 +41,15 @@ exports = module.exports = functions.firestore
             user
           }
           
+          insert_user_fcms_one(
+            object: $fcm
+          ) {
+            user
+          }
+          
           insert_user_avatars_one(
             object: {
-              user: $identifier,
+              user: $identifier
             }
           ) {
             user
@@ -51,7 +57,7 @@ exports = module.exports = functions.firestore
           
           insert_user_pins_one(
             object: {
-              user: $identifier,
+              user: $identifier
             }
           ) {
             user
@@ -70,23 +76,29 @@ exports = module.exports = functions.firestore
         }`
 
         // Post the mutation to Hasura GraphQL
-        await hasuraClient(endpoint, adminSecret).request(mutation, {
+        promises.push(hasuraClient(endpoint, adminSecret).request(mutation, {
           identifier: userIdentifier,
           name: userData['name'],
           email: userData['email'],
           phone: userData['phone'],
           invite_code: userData['invite_code'],
-          key: userData['key']
-        })
+          key: userData['key'],
+          fcm: userData['fcm']
+        }))
 
         // Deletes the user document from Firestore
-        await admin.firestore().collection('users').doc(userIdentifier).delete()
+        promises.push(userDocument.ref.delete())
       } catch (e) {
         functions.logger.error(e)
         return Promise.resolve('error')
       }
 
-      return Promise.resolve('ok')
+      return Promise.all(promises)
+        .then(() => Promise.resolve('ok'))
+        .catch((error: any) => {
+          functions.logger.error(error)
+          return Promise.resolve('error')
+        })
     } catch (error) {
       functions.logger.error(error)
       return Promise.resolve('error')

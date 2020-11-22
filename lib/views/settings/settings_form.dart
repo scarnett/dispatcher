@@ -4,6 +4,8 @@ import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
+import 'package:dispatcher/views/avatar/avatar_enums.dart';
+import 'package:dispatcher/views/avatar/bloc/avatar_bloc.dart';
 import 'package:dispatcher/views/avatar/widgets/avatar_select.dart';
 import 'package:dispatcher/views/settings/bloc/settings_bloc.dart';
 import 'package:dispatcher/widgets/form_button.dart';
@@ -60,7 +62,11 @@ class _SettingsFormState extends State<SettingsForm> {
           BuildContext context,
           SettingsState state,
         ) {
-          if (state.status.isSubmissionSuccess) {
+          if (state.status.isSubmissionInProgress) {
+            closeKeyboard(context);
+          } else if (state.status.isSubmissionSuccess) {
+            context.bloc<AuthBloc>().add(LoadUser());
+
             widget.scaffoldState
               ..hideCurrentSnackBar()
               ..showSnackBar(
@@ -69,8 +75,6 @@ class _SettingsFormState extends State<SettingsForm> {
                   type: MessageType.SUCCESS,
                 )),
               );
-
-            closeKeyboard(context);
           } else if (state.status.isSubmissionFailure) {
             widget.scaffoldState
               ..hideCurrentSnackBar()
@@ -80,8 +84,6 @@ class _SettingsFormState extends State<SettingsForm> {
                   type: MessageType.ERROR,
                 )),
               );
-
-            closeKeyboard(context);
           }
         },
         child: _buildBody(),
@@ -89,8 +91,7 @@ class _SettingsFormState extends State<SettingsForm> {
 
   /// Builds the settings body
   Widget _buildBody() {
-    List<Widget> tiles = [];
-    tiles
+    List<Widget> tiles = []
       ..addAll(_buildPersonalDetailsSection())
       ..addAll(_buildAvatarSection())
       ..add(
@@ -117,18 +118,16 @@ class _SettingsFormState extends State<SettingsForm> {
   }
 
   /// Builds the 'personal details' section
-  List<Widget> _buildPersonalDetailsSection() {
-    return [
-      SectionHeader(
-        text: AppLocalizations.of(context).personalDetails,
-        borderBottom: true,
-        borderTop: true,
-      ),
-      _buildNameField(),
-      _buildEmailField(),
-      _buildPhoneNumberField(),
-    ];
-  }
+  List<Widget> _buildPersonalDetailsSection() => [
+        SectionHeader(
+          text: AppLocalizations.of(context).personalDetails,
+          borderBottom: true,
+          borderTop: true,
+        ),
+        _buildNameField(),
+        _buildEmailField(),
+        _buildPhoneNumberField(),
+      ];
 
   /// Builds the 'name' field
   Widget _buildNameField() => BlocBuilder<SettingsBloc, SettingsState>(
@@ -209,16 +208,14 @@ class _SettingsFormState extends State<SettingsForm> {
       );
 
   /// Builds the 'avatar' section
-  List<Widget> _buildAvatarSection() {
-    return [
-      SectionHeader(
-        text: AppLocalizations.of(context).avatar,
-        borderBottom: true,
-        borderTop: true,
-      ),
-      _buildAvatar(),
-    ];
-  }
+  List<Widget> _buildAvatarSection() => [
+        SectionHeader(
+          text: AppLocalizations.of(context).avatar,
+          borderBottom: true,
+          borderTop: true,
+        ),
+        _buildAvatar(),
+      ];
 
   /// Builds the 'avatar'
   Widget _buildAvatar() => Padding(
@@ -226,9 +223,31 @@ class _SettingsFormState extends State<SettingsForm> {
           left: 20.0,
           right: 20.0,
         ),
-        child: UserSelectAvatar(
-          user: context.bloc<AuthBloc>().state.user,
-          scaffoldState: widget.scaffoldState,
+        child: BlocListener<AvatarBloc, AvatarState>(
+          listener: (
+            BuildContext context,
+            AvatarState state,
+          ) {
+            switch (state.deleteStatus) {
+              case AvatarDeleteStatus.DELETED:
+                widget.scaffoldState
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar((buildSnackBar(Message(
+                    text: AppLocalizations.of(context).avatarDeleted,
+                    type: MessageType.SUCCESS,
+                  ))));
+
+                context.bloc<AuthBloc>().add(LoadUser());
+                break;
+
+              default:
+                break;
+            }
+          },
+          child: UserSelectAvatar(
+            user: context.bloc<AuthBloc>().state.user,
+            scaffoldState: widget.scaffoldState,
+          ),
         ),
       );
 

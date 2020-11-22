@@ -60,11 +60,12 @@ class DispatcherApp extends StatelessWidget {
 
 class DispatcherAppView extends StatefulWidget {
   @override
-  _AppViewState createState() => _AppViewState();
+  _DispatcherAppViewState createState() => _DispatcherAppViewState();
 }
 
-class _AppViewState extends State<DispatcherAppView> {
+class _DispatcherAppViewState extends State<DispatcherAppView> {
   final _navigatorKey = GlobalKey<NavigatorState>();
+
   NavigatorState get _navigator => _navigatorKey.currentState;
 
   @override

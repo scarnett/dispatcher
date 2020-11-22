@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 class Progress extends StatefulWidget {
   final Color backgroundColor;
   final double strokeWidth;
+  final double size;
 
   Progress({
     Key key,
     this.backgroundColor,
     this.strokeWidth = 4.0,
+    this.size = 30.0,
   }) : super(key: key);
 
   @override
@@ -25,9 +27,15 @@ class ProgressState extends State<Progress> {
 
   /// Builds the content
   Widget _buildContent() => Center(
-        child: CircularProgressIndicator(
-          backgroundColor: widget.backgroundColor,
-          strokeWidth: widget.strokeWidth,
+        child: SizedBox(
+          width: widget.size,
+          height: widget.size,
+          child: Center(
+            child: CircularProgressIndicator(
+              backgroundColor: widget.backgroundColor,
+              strokeWidth: widget.strokeWidth,
+            ),
+          ),
         ),
       );
 }

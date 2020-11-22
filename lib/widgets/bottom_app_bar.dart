@@ -59,7 +59,19 @@ class BottomNavBarState extends State<BottomNavBar>
       ),
     );
 
-    items..insert(items.length >> 1, Container());
+    // Inserts an empty container in the center on the item list. This
+    // gives us room to position the circlular menu into its place.
+    items
+      ..insert(
+        items.length >> 1,
+        Padding(
+          padding: const EdgeInsets.only(
+            left: 20.0,
+            right: 20.0,
+          ),
+          child: Container(),
+        ),
+      );
 
     return Container(
       decoration: BoxDecoration(
@@ -147,10 +159,13 @@ class BottomNavBarState extends State<BottomNavBar>
         message: item.disabled || widget.verbose ? null : item.text,
         child: Opacity(
           opacity: item.disabled ? 0.3 : 1.0,
-          child: Icon(
-            item.iconData,
-            color: color,
-            size: widget.verbose ? widget.verboseIconSize : widget.iconSize,
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Icon(
+              item.iconData,
+              color: color,
+              size: widget.verbose ? widget.verboseIconSize : widget.iconSize,
+            ),
           ),
         ),
       ),

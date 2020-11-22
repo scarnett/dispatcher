@@ -3,8 +3,8 @@ import 'package:bloc/bloc.dart';
 import 'package:dispatcher/extensions/extensions.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
+import 'package:dispatcher/storage/storage.dart';
 import 'package:dispatcher/utils/common_utils.dart';
-import 'package:dispatcher/utils/config_utils.dart';
 import 'package:dispatcher/utils/crypt_utils.dart';
 import 'package:dispatcher/views/pin/pin_config.dart';
 import 'package:dispatcher/views/pin/pin_enums.dart';
@@ -101,10 +101,11 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     String verificationCode;
     if (state.verificationCode.isNullEmptyOrWhitespace) {
       if (!state.pin.verificationCode.isNullEmptyOrWhitespace) {
-        Dispatcher appData = getAppConfig(event.user.identifier);
+        DispatcherKeyStore keyStore = DispatcherKeyStore();
+
         verificationCode = await decrypt(
           state.pin.verificationCode,
-          decode(appData.privateKey),
+          keyStore.getPrivateKey(),
           event.user.identifier,
         );
       }
@@ -141,10 +142,10 @@ class PINBloc extends Bloc<PINEvent, PINState> {
         eventType:
             Nullable<PINEventType>(PINEventType.VERIFYING_VERIFICATION_CODE));
 
-    Dispatcher appData = getAppConfig(event.user.identifier);
+    DispatcherKeyStore keyStore = DispatcherKeyStore();
     String decryptedVerificationCode = await decrypt(
       state.pin.verificationCode,
-      decode(appData.privateKey),
+      keyStore.getPrivateKey(),
       event.user.identifier,
     );
 

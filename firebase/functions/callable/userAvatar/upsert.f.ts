@@ -4,23 +4,29 @@ import { hasuraClient } from '../../graphql/graphql-client'
 exports = module.exports = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
   const identifier: string = data.identifier
   const avatarUrl: string = data.avatarUrl
+  const avatarPath: string = data.avatarPath
+  const avatarThumbUrl: string = data.avatarThumbUrl
+  const avatarThumbPath: string = data.avatarThumbPath
 
-  if (!identifier || !avatarUrl) {
+  if (!identifier) {
     throw new functions.https.HttpsError('cancelled', 'user-avatar-upsert-failed', 'missing information')
   }
 
   // GraphQL mutation for inserting or updating (upserting) a user avatar
-  const mutation: string = `mutation($identifier: String!, $url: String!) {
+  const mutation: string = `mutation($identifier: String!, $url: String, $thumbUrl: String, $path: String, $thumbPath: String) {
     insert_user_avatars(
       objects: [
         {
           user: $identifier,
-          url: $url
+          url: $url,
+          thumb_url: $thumbUrl,
+          path: $path,
+          thumb_path: $thumbPath
         }
       ],
       on_conflict: {
         constraint: user_avatars_user_key,
-        update_columns: [url]
+        update_columns: [url, thumb_url, path, thumb_path]
       }
     ) {
       affected_rows
@@ -31,10 +37,14 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
     const config: functions.config.Config = functions.config()
     const endpoint: string = config.graphql.endpoint
     const adminSecret: string = config.hasura.admin.secret
-    const response: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
-      identifier: identifier,
-      url: avatarUrl
-    })
+    const response: any = await hasuraClient(endpoint, adminSecret)
+      .request(mutation, {
+        identifier: identifier,
+        url: avatarUrl,
+        path: avatarPath,
+        thumbUrl: avatarThumbUrl,
+        thumbPath: avatarThumbPath
+      })
 
     return response
   } catch (e) {

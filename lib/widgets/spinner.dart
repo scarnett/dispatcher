@@ -7,12 +7,14 @@ class Spinner extends StatefulWidget {
   final bool fill;
   final Color fillColor;
   final String message;
+  final bool centered;
 
   Spinner({
     Key key,
     this.fill: false,
     this.fillColor,
     this.message,
+    this.centered = true,
   }) : super(key: key);
 
   @override
@@ -48,17 +50,34 @@ class SpinnerState extends State<Spinner> {
     List<Widget> children,
   ) =>
       Container(
-        color: (widget.fillColor == null)
-            ? AppTheme.loadingBackground
-            : widget.fillColor,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: children,
-          ),
+        color:
+            (widget.fillColor == null) ? AppTheme.background : widget.fillColor,
+        child: _buildContainerWrapper(children),
+      );
+
+  Widget _buildContainerWrapper(
+    List<Widget> children,
+  ) {
+    if (widget.centered) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: children,
         ),
       );
+    }
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 30.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: children,
+        ),
+      ),
+    );
+  }
 
   /// Builds the 'loading' spinner
   Widget _buildSpinner() => CircularProgressIndicator();

@@ -1,7 +1,12 @@
-import 'package:dispatcher/views/connections/bloc/bloc.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:bloc/bloc.dart';
+import 'package:dispatcher/models/models.dart';
+import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 
-class ConnectionsBloc extends HydratedBloc<ConnectionsEvent, ConnectionsState> {
+part 'connections_event.dart';
+part 'connections_state.dart';
+
+class ConnectionsBloc extends Bloc<ConnectionsEvent, ConnectionsState> {
   ConnectionsBloc() : super(ConnectionsState.initial());
 
   ConnectionsState get initialState => ConnectionsState.initial();
@@ -10,16 +15,4 @@ class ConnectionsBloc extends HydratedBloc<ConnectionsEvent, ConnectionsState> {
   Stream<ConnectionsState> mapEventToState(
     ConnectionsEvent event,
   ) async* {}
-
-  @override
-  ConnectionsState fromJson(
-    Map<String, dynamic> json,
-  ) =>
-      throw UnimplementedError();
-
-  @override
-  Map<String, dynamic> toJson(
-    ConnectionsState state,
-  ) =>
-      throw UnimplementedError();
 }

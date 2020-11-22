@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
+part of 'connections_bloc.dart';
 
 @immutable
 class ConnectionsState extends Equatable {
@@ -8,6 +7,8 @@ class ConnectionsState extends Equatable {
   const ConnectionsState._();
 
   const ConnectionsState.initial() : this._();
+
+  ConnectionsState copyWith() => ConnectionsState._();
 
   @override
   List<Object> get props => [];

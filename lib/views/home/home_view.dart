@@ -16,6 +16,7 @@ import 'package:dispatcher/widgets/bottom_app_bar.dart';
 import 'package:dispatcher/widgets/spinner.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,7 +32,13 @@ class HomeView extends StatelessWidget {
     BuildContext context,
   ) =>
       BlocProvider<HomeBloc>(
-        create: (BuildContext context) => HomeBloc(),
+        create: (BuildContext context) {
+          context.bloc<AuthBloc>()
+            ..add(LoadUser())
+            ..add(ConfigureNotifications());
+
+          return HomeBloc();
+        },
         child: HomePageView(),
       );
 }
@@ -54,6 +61,7 @@ class _HomePageViewState extends State<HomePageView> {
   @override
   void initState() {
     super.initState();
+
     _pageController = PageController(
       initialPage: context.bloc<HomeBloc>().state.selectedTabIndex,
     );
@@ -171,9 +179,7 @@ class _HomePageViewState extends State<HomePageView> {
         toggleButtonPadding: 10.0,
         toggleButtonSize: 20.0,
         toggleButtonBoxShadow: [
-          BoxShadow(
-            blurRadius: 0,
-          ),
+          BoxShadow(blurRadius: 0),
         ],
         startingAngleInRadian: (1.25 * pi),
         endingAngleInRadian: (1.75 * pi),
@@ -211,9 +217,7 @@ class _HomePageViewState extends State<HomePageView> {
         margin: 0.0,
         padding: 10.0,
         boxShadow: [
-          BoxShadow(
-            blurRadius: 0,
-          ),
+          BoxShadow(blurRadius: 0),
         ],
       );
 

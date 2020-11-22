@@ -41,14 +41,13 @@ Future<User> tryLookupUserByInviteCode(
   return null;
 }
 
-Future<HttpsCallableResult> connectUser(
-  String user,
-  String connectUser,
+Future<HttpsCallableResult> connectUsers(
+  ConnectUser event,
 ) async {
-  // Builds the PIN data map
+  // Builds the user data map
   Map<String, dynamic> connectData = Map<String, dynamic>.from({
-    'user': user,
-    'connectUser': connectUser,
+    'user': event.user,
+    'connectUser': event.connectUser,
   });
 
   // Runs the 'callableUserConnectionCreate' Firebase callable function
@@ -58,4 +57,22 @@ Future<HttpsCallableResult> connectUser(
 
   // Post the connection data to Firebase
   return callable.call(connectData);
+}
+
+Future<HttpsCallableResult> createRoom(
+  ConnectUser event,
+) async {
+  // Builds the room user data map
+  Map<String, dynamic> roomUserData = Map<String, dynamic>.from({
+    'roomUser1': event.user,
+    'roomUser2': event.connectUser,
+  });
+
+  // Runs the 'callableRoomsCreate' Firebase callable function
+  final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+    functionName: 'callableRoomsCreate',
+  );
+
+  // Post the room data to Firebase
+  return callable.call(roomUserData);
 }

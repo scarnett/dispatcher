@@ -1,6 +1,6 @@
 # Dispatcher
 
-# Generate env configuration
+# Generate ENV Configuration
 
 ```bash
 flutter pub run environment_config:generate

@@ -9,6 +9,8 @@ class User extends Equatable {
   final UserPhoneNumber phone;
   final UserAvatar avatar;
   final UserKey key;
+  final List<UserPreKey> preKeys;
+  final UserFCM fcm;
   final List<UserConnection> connections;
 
   User({
@@ -18,6 +20,8 @@ class User extends Equatable {
     this.phone,
     this.avatar,
     this.key,
+    this.preKeys,
+    this.fcm,
     this.connections,
   });
 
@@ -28,6 +32,8 @@ class User extends Equatable {
     UserPhoneNumber phone,
     UserAvatar avatar,
     UserKey key,
+    List<UserPreKey> preKeys,
+    UserFCM fcm,
     List<UserConnection> connections,
   }) =>
       User(
@@ -37,21 +43,37 @@ class User extends Equatable {
         phone: phone ?? this.phone,
         avatar: avatar ?? this.avatar,
         key: key ?? this.key,
+        preKeys: preKeys ?? this.preKeys,
+        fcm: fcm ?? this.fcm,
         connections: connections ?? this.connections,
       );
 
   static User fromJson(
     dynamic json,
   ) =>
-      User(
-        identifier: json['identifier'],
-        name: json['name'],
-        email: json['email'],
-        phone: UserPhoneNumber.fromJson(json['user_phone_number']),
-        avatar: UserAvatar.fromJson(json['user_avatar']),
-        key: UserKey.fromJson(json['user_key']),
-        connections: UserConnection.fromJsonList(json['user_connections']),
-      );
+      (json == null)
+          ? User()
+          : User(
+              identifier: json['identifier'],
+              name: json['name'],
+              email: json['email'],
+              phone: UserPhoneNumber.fromJson(json['user_phone_number']),
+              avatar: UserAvatar.fromJson(json['user_avatar']),
+              key: UserKey.fromJson(json['user_key']),
+              preKeys: UserPreKey.fromJsonList(json['user_pre_keys']),
+              fcm: UserFCM.fromJson(json['user_fcm']),
+              connections:
+                  UserConnection.fromJsonList(json['user_connections']),
+            );
+
+  static List<User> fromJsonList(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? []
+          : List<dynamic>.from(json)
+              .map((dynamic userJson) => User.fromJson(userJson))
+              .toList();
 
   dynamic toJson() => {
         'identifier': identifier,
@@ -60,16 +82,25 @@ class User extends Equatable {
         'phone': phone.toJson(),
         'avatar': avatar.toJson(),
         'key': key.toJson(),
+        'preKeys': preKeys,
+        'fcm': fcm.toJson(),
         'connections': connections,
       };
 
+  static List<dynamic> toJsonList(
+    List<User> users,
+  ) =>
+      (users == null) ? [] : users.map((User user) => user.toJson()).toList();
+
   @override
-  List<Object> get props => [identifier, name, email, phone, avatar, key];
+  List<Object> get props =>
+      [identifier, name, email, phone, avatar, key, preKeys, fcm, connections];
 
   @override
   String toString() =>
       'User{identifier: $identifier, name: $name, email: $email, ' +
-      'phone: $phone, avatar: $avatar, key: $key}';
+      'phone: $phone, avatar: $avatar, key: $key, preKeys: ${preKeys?.length}, ' +
+      'fcm: $fcm, connections: ${connections?.length}}';
 }
 
 class UserPhoneNumber extends Equatable {
@@ -167,16 +198,28 @@ class UserInviteCode extends Equatable {
 
 class UserAvatar extends Equatable {
   final String url;
+  final String thumbUrl;
+  final String path;
+  final String thumbPath;
 
   UserAvatar({
     this.url,
+    this.thumbUrl,
+    this.path,
+    this.thumbPath,
   });
 
   UserAvatar copyWith({
     String url,
+    String thumbUrl,
+    String path,
+    String thumbPath,
   }) =>
       UserAvatar(
         url: url ?? this.url,
+        thumbUrl: thumbUrl ?? this.thumbUrl,
+        path: path ?? this.path,
+        thumbPath: thumbPath ?? this.thumbPath,
       );
 
   static UserAvatar fromJson(
@@ -186,17 +229,25 @@ class UserAvatar extends Equatable {
           ? UserAvatar()
           : UserAvatar(
               url: json['url'],
+              thumbUrl: json['thumb_url'],
+              path: json['path'],
+              thumbPath: json['thumb_path'],
             );
 
   dynamic toJson() => {
         'url': url,
+        'thumb_url': thumbUrl,
+        'path': path,
+        'thumb_path': thumbPath
       };
 
   @override
-  List<Object> get props => [url];
+  List<Object> get props => [url, thumbUrl, path, thumbPath];
 
   @override
-  String toString() => 'UserAvatar{url: $url}';
+  String toString() =>
+      'UserAvatar{url: $url, thumbUrl: $thumbUrl, ' +
+      'path: $path, thumb_path: $thumbPath}';
 }
 
 class UserPIN extends Equatable {
@@ -252,16 +303,33 @@ class UserPIN extends Equatable {
 
 class UserKey extends Equatable {
   final String publicKey;
+  final int sigRegistrationId;
+  final String sigSignedPublicKey;
+  final String sigSignedPrekeySignature;
+  final String sigIdentityPublicKey;
 
   UserKey({
     this.publicKey,
+    this.sigRegistrationId,
+    this.sigSignedPublicKey,
+    this.sigSignedPrekeySignature,
+    this.sigIdentityPublicKey,
   });
 
   UserKey copyWith({
     String publicKey,
+    int sigRegistrationId,
+    String sigSignedPublicKey,
+    String sigSignedPrekeySignature,
+    String sigIdentityPublicKey,
   }) =>
       UserKey(
         publicKey: publicKey ?? this.publicKey,
+        sigRegistrationId: sigRegistrationId ?? this.sigRegistrationId,
+        sigSignedPublicKey: sigSignedPublicKey ?? this.sigSignedPublicKey,
+        sigSignedPrekeySignature:
+            sigSignedPrekeySignature ?? this.sigSignedPrekeySignature,
+        sigIdentityPublicKey: sigIdentityPublicKey ?? this.sigIdentityPublicKey,
       );
 
   static UserKey fromJson(
@@ -270,37 +338,143 @@ class UserKey extends Equatable {
       (json == null)
           ? UserKey()
           : UserKey(
-              publicKey: json['pubkey'],
+              publicKey: json['public_key'],
+              sigRegistrationId: json['sig_registration_id'],
+              sigSignedPublicKey: json['sig_signed_public_key'],
+              sigSignedPrekeySignature: json['sig_signed_prekey_signature'],
+              sigIdentityPublicKey: json['sig_identity_public_key'],
             );
 
   dynamic toJson() => {
-        'pubkey': publicKey,
+        'public_key': publicKey,
+        'sig_registration_id': sigRegistrationId,
+        'sig_signed_public_key': sigSignedPublicKey,
+        'sig_signed_prekey_signature': sigSignedPrekeySignature,
+        'sig_identity_public_key': sigIdentityPublicKey,
       };
 
   @override
-  List<Object> get props => [publicKey];
+  List<Object> get props => [
+        publicKey,
+        sigRegistrationId,
+        sigSignedPublicKey,
+        sigSignedPrekeySignature,
+        sigIdentityPublicKey,
+      ];
 
   @override
   String toString() =>
-      'UserKey{publicKey: ${(publicKey == null) ? null : '<publicKey>'}}';
+      'UserKey{public_key: $publicKey, sig_registration_id: $sigRegistrationId ' +
+      'sig_signed_public_key: $sigSignedPublicKey, sig_signed_prekey_signature: $sigSignedPrekeySignature ' +
+      'sig_identity_public_key: $sigIdentityPublicKey}';
+}
+
+class UserPreKey extends Equatable {
+  final int keyId;
+  final String publicKey;
+
+  UserPreKey({
+    this.keyId,
+    this.publicKey,
+  });
+
+  UserPreKey copyWith({
+    String keyId,
+    String publicKey,
+  }) =>
+      UserPreKey(
+        keyId: keyId ?? this.keyId,
+        publicKey: publicKey ?? this.publicKey,
+      );
+
+  static UserPreKey fromJson(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? UserPreKey()
+          : UserPreKey(
+              keyId: json['key_id'],
+              publicKey: json['public_key'],
+            );
+
+  static List<UserPreKey> fromJsonList(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? []
+          : List<dynamic>.from(json)
+              .map((dynamic userJson) => UserPreKey.fromJson(userJson))
+              .toList();
+
+  dynamic toJson() => {
+        'key_id': keyId,
+        'public_key': publicKey,
+      };
+
+  static List<dynamic> toJsonList(
+    List<UserPreKey> preKeys,
+  ) =>
+      (preKeys == null)
+          ? []
+          : preKeys.map((UserPreKey preKey) => preKey.toJson()).toList();
+
+  @override
+  List<Object> get props => [
+        keyId,
+        publicKey,
+      ];
+
+  @override
+  String toString() => 'UserPreKey{key_id: $keyId, public_key: $publicKey}';
+}
+
+class UserFCM extends Equatable {
+  final String token;
+
+  UserFCM({
+    this.token,
+  });
+
+  UserFCM copyWith({
+    String token,
+  }) =>
+      UserFCM(
+        token: token ?? this.token,
+      );
+
+  static UserFCM fromJson(
+    dynamic json,
+  ) =>
+      (json == null)
+          ? UserFCM()
+          : UserFCM(
+              token: json['token'],
+            );
+
+  dynamic toJson() => {
+        'token': token,
+      };
+
+  @override
+  List<Object> get props => [token];
+
+  @override
+  String toString() => 'UserFCM{token: $token}';
 }
 
 class UserConnection extends Equatable {
-  final String user;
-  final String connectUser;
+  final User connectionUser;
 
   UserConnection({
-    this.user,
-    this.connectUser,
+    this.connectionUser,
   });
 
   UserConnection copyWith({
-    String user,
-    String connectUser,
+    User connectUser,
+    UserPreKey preKey,
   }) =>
       UserConnection(
-        user: user ?? this.user,
-        connectUser: connectUser ?? this.connectUser,
+        connectionUser: connectionUser ?? this.connectionUser,
       );
 
   static UserConnection fromJson(
@@ -309,8 +483,7 @@ class UserConnection extends Equatable {
       (json == null)
           ? UserConnection()
           : UserConnection(
-              user: json['user'],
-              connectUser: json['connect_user'],
+              connectionUser: User.fromJson(json['connection_user']),
             );
 
   static List<UserConnection> fromJsonList(
@@ -323,14 +496,21 @@ class UserConnection extends Equatable {
               .toList();
 
   dynamic toJson() => {
-        'user': user,
-        'connect_user': connectUser,
+        'connection_user': connectionUser.toJson(),
       };
 
-  @override
-  List<Object> get props => [user, connectUser];
+  static List<dynamic> toJsonList(
+    List<UserConnection> connections,
+  ) =>
+      (connections == null)
+          ? []
+          : connections
+              .map((UserConnection connection) => connection.toJson())
+              .toList();
 
   @override
-  String toString() =>
-      'UserConnection{user: $user, connect_user: $connectUser}';
+  List<Object> get props => [connectionUser];
+
+  @override
+  String toString() => 'UserConnection{connection_user: $connectionUser}';
 }

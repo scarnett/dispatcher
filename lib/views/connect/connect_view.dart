@@ -10,7 +10,6 @@ import 'package:dispatcher/views/connect/connect_enums.dart';
 import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/pin_code.dart';
 import 'package:dispatcher/widgets/progress.dart';
-import 'package:dispatcher/widgets/simple_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -103,18 +102,20 @@ class _ConnectPageViewState extends State<ConnectPageView> {
             onWillPop: () => _willPopCallback(),
             child: Scaffold(
               key: _scaffoldKey,
-              appBar: SimpleAppBar(
-                showBackButton: true,
-                height: 100.0,
-              ),
-              body: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: <Widget>[
-                      _createContent(state),
-                    ],
+              body: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(),
+                  child: Container(
+                    padding: const EdgeInsets.only(top: 100.0),
+                    margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        children: <Widget>[
+                          _createContent(state),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -288,7 +289,6 @@ class _ConnectPageViewState extends State<ConnectPageView> {
     ConnectState state,
   ) =>
       Container(
-        padding: const EdgeInsets.only(top: 100.0),
         width: double.infinity,
         child: Column(
           children: <Widget>[
@@ -330,7 +330,6 @@ class _ConnectPageViewState extends State<ConnectPageView> {
     ConnectState state,
   ) =>
       Container(
-        padding: const EdgeInsets.only(top: 100.0),
         width: double.infinity,
         child: Column(
           children: <Widget>[
@@ -372,7 +371,6 @@ class _ConnectPageViewState extends State<ConnectPageView> {
     ConnectState state,
   ) =>
       Container(
-        padding: const EdgeInsets.only(top: 100.0),
         width: double.infinity,
         child: Column(
           children: <Widget>[
@@ -395,7 +393,10 @@ class _ConnectPageViewState extends State<ConnectPageView> {
               padding: const EdgeInsets.only(right: 5.0),
               child: FormButton(
                 text: AppLocalizations.of(context).ok,
-                onPressed: () => _tapOK(redirect: false),
+                onPressed: () => _tapOK(
+                  clear: true,
+                  redirect: false,
+                ),
               ),
             ),
           ],
@@ -403,9 +404,12 @@ class _ConnectPageViewState extends State<ConnectPageView> {
       );
 
   void _tapOK({
+    bool clear: false,
     bool redirect: true,
   }) {
-    context.bloc<ConnectBloc>().add(ClearConnect());
+    if (clear) {
+      context.bloc<ConnectBloc>().add(ClearConnect());
+    }
 
     if (redirect) {
       Navigator.pop(context);

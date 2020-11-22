@@ -1,6 +1,7 @@
 import 'package:dispatcher/env_config.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
+import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
 import 'package:dispatcher/views/auth/create/bloc/bloc.dart';
 import 'package:dispatcher/widgets/form_button.dart';
@@ -34,7 +35,9 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
           BuildContext context,
           CreateAccountState state,
         ) {
-          if (state.status.isSubmissionFailure) {
+          if (state.status.isSubmissionInProgress) {
+            closeKeyboard(context);
+          } else if (state.status.isSubmissionFailure) {
             Scaffold.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
@@ -43,6 +46,8 @@ class _AuthCreateFormState extends State<AuthCreateForm> {
                   type: MessageType.ERROR,
                 )),
               );
+
+            closeKeyboard(context);
           }
         },
         child: Column(

@@ -22,11 +22,9 @@ class AuthState extends Equatable {
 
   const AuthState.authenticated(
     firebase.User firebaseUser,
-    User user,
   ) : this._(
           status: AuthStatus.AUTHENTICATED,
           firebaseUser: firebaseUser,
-          user: user,
         );
 
   const AuthState.unauthenticated()
@@ -59,5 +57,6 @@ class AuthState extends Equatable {
 
   @override
   String toString() =>
-      'AuthState{status: $status, firebaseUser: ${firebaseUser?.displayName}, user: $user}';
+      'AuthState{status: $status, firebaseUser: ${firebaseUser?.displayName}, ' +
+      'user: $user}';
 }

@@ -10,7 +10,7 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
   }
 
   // GraphQL mutation for inserting a two-way user connection
-  const mutation: string = `mutation($user: String!, $connectUser: String!) {
+  const userConnectionMutation: string = `mutation($user: String!, $connectUser: String!) {
     insert_user_connections(
       objects: [
         {
@@ -31,12 +31,13 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
     const config: functions.config.Config = functions.config()
     const endpoint: string = config.graphql.endpoint
     const adminSecret: string = config.hasura.admin.secret
-    const response: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
-      user: user,
-      connectUser: connectUser
-    })
+    const userConnectionResponse: Promise<any> = await hasuraClient(endpoint, adminSecret)
+      .request(userConnectionMutation, {
+        user: user,
+        connectUser: connectUser
+      })
 
-    return response
+    return userConnectionResponse
   } catch (e) {
     throw new functions.https.HttpsError('aborted', 'user-connection-create-failed', JSON.stringify(e, undefined, 2))
   }

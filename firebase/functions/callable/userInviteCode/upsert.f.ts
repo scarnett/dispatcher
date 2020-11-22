@@ -42,11 +42,12 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
     const dateNow: FirebaseFirestore.Timestamp = admin.firestore.Timestamp.now()
     const inviteCodeDateExpire: Date = moment(dateNow.toDate()).add(5, 'days').toDate()
 
-    const response: any = await hasuraClient(endpoint, adminSecret).request(mutation, {
-      identifier: identifier,
-      code: generateInviteCode(),
-      expireDate: inviteCodeDateExpire.toUTCString()
-    })
+    const response: any = await hasuraClient(endpoint, adminSecret)
+      .request(mutation, {
+        identifier: identifier,
+        code: generateInviteCode(),
+        expireDate: inviteCodeDateExpire.toUTCString()
+      })
 
     return response
   } catch (e) {

@@ -1,9 +1,11 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/views/connect/connect_enums.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/views/connect/connect_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -50,7 +52,8 @@ class ConnectBloc extends Bloc<ConnectEvent, ConnectState> {
         );
       } else {
         UserConnection connection = user.connections.firstWhere(
-            (connection) => connection.connectUser == event.firebaseUser.uid,
+            (connection) =>
+                connection.connectionUser.identifier == event.firebaseUser.uid,
             orElse: () => null);
 
         if (connection == null) {
@@ -78,7 +81,20 @@ class ConnectBloc extends Bloc<ConnectEvent, ConnectState> {
       eventType: Nullable<ConnectEventType>(ConnectEventType.CONNECTING),
     );
 
-    await connectUser(event.user, event.connectUser);
+    try {
+      await connectUsers(event);
+      await createRoom(event);
+    } on CloudFunctionsException catch (e) {
+      yield state.copyWith(
+        status: Nullable<ConnectStatus>(ConnectStatus.CANT_CONNECT), // TODO!
+        eventType: Nullable<ConnectEventType>(null),
+      );
+    } on PlatformException catch (e) {
+      yield state.copyWith(
+        status: Nullable<ConnectStatus>(ConnectStatus.CANT_CONNECT), // TODO!
+        eventType: Nullable<ConnectEventType>(null),
+      );
+    }
 
     yield state.copyWith(
       status: Nullable<ConnectStatus>(ConnectStatus.CONNECTED),

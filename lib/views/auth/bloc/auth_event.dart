@@ -27,3 +27,7 @@ class LoadUser extends AuthEvent {
   @override
   List<Object> get props => [];
 }
+
+class ConfigureNotifications extends AuthEvent {
+  const ConfigureNotifications();
+}

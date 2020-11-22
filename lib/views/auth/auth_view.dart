@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/views/auth/auth_enums.dart';
 import 'package:dispatcher/views/auth/login/login_view.dart';
 import 'package:dispatcher/views/auth/create/create_view.dart';
@@ -74,6 +75,7 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
                 _buildLogo(),
                 PageView(
                   controller: _pageController,
+                  onPageChanged: (int index) => closeKeyboard(context),
                   physics: NeverScrollableScrollPhysics(),
                   children: _getPages(),
                 ),
@@ -84,22 +86,17 @@ class _AuthViewState extends State<AuthView> with TickerProviderStateMixin {
       );
 
   /// Builds the PageView pages
-  List<Widget> _getPages() {
-    List<Widget> pages = [];
-    pages
-      ..add(
-        AuthLoginView(
-          pageController: _pageController,
-        ),
-      )
-      ..add(
-        AuthCreateView(
-          pageController: _pageController,
-        ),
-      );
-
-    return pages;
-  }
+  List<Widget> _getPages() => []
+    ..add(
+      AuthLoginView(
+        pageController: _pageController,
+      ),
+    )
+    ..add(
+      AuthCreateView(
+        pageController: _pageController,
+      ),
+    );
 
   /// Builds the logo
   Widget _buildLogo() => Padding(

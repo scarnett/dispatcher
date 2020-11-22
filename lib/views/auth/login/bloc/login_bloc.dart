@@ -4,10 +4,13 @@ import 'package:dispatcher/repository/auth_repository.dart';
 import 'package:dispatcher/views/auth/login/login.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
+import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
+
+Logger _logger = Logger();
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthRepository _authRepository;
@@ -64,13 +67,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       try {
         // Login
-        await _authRepository.logIn(
+        await _authRepository.login(
           email: state.email.value,
           password: state.password.value,
         );
 
         yield state.copyWith(status: FormzStatus.submissionSuccess);
       } on Exception catch (_) {
+        _logger.e(_);
         yield state.copyWith(status: FormzStatus.submissionFailure);
       }
     }

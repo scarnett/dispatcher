@@ -71,7 +71,7 @@ class _NoneFoundState extends State<NoneFound> with TickerProviderStateMixin {
                         ? widget.message
                         : AppLocalizations.of(context).bummerText,
                     style: const TextStyle(
-                      color: AppTheme.hint,
+                      color: AppTheme.accent,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600,
                     ),
