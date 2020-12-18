@@ -1,4 +1,5 @@
 import 'package:dispatcher/extensions/extensions.dart';
+import 'package:dispatcher/graphql/client_provider.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/theme.dart';
@@ -13,6 +14,8 @@ import 'package:dispatcher/widgets/progress.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
 
 class ConnectView extends StatelessWidget {
   static Route route() =>
@@ -26,9 +29,11 @@ class ConnectView extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) =>
-      BlocProvider<ConnectBloc>(
-        create: (BuildContext context) => ConnectBloc(),
-        child: ConnectPageView(),
+      ClientProvider(
+        child: BlocProvider<ConnectBloc>(
+          create: (BuildContext context) => ConnectBloc(),
+          child: ConnectPageView(),
+        ),
       );
 }
 
@@ -205,6 +210,10 @@ class _ConnectPageViewState extends State<ConnectPageView> {
                           (inviteCode.length == INVITE_CODE_LENGTH))
                       ? () => context.bloc<ConnectBloc>().add(
                             LookupUser(
+                              Provider.of<GraphQLClient>(
+                                context,
+                                listen: false,
+                              ),
                               context.bloc<AuthBloc>().state.firebaseUser,
                               inviteCode,
                             ),

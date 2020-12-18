@@ -96,9 +96,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<AuthState> _mapLoadUserToState(
     LoadUser event,
   ) async {
-    final firebase.FirebaseAuth _firebaseAuth = firebase.FirebaseAuth.instance;
-    final firebase.User _firebaseUser = _firebaseAuth.currentUser;
-    User user = await tryGetUser(_firebaseUser);
+    User user = await tryGetUser(event.client, state.firebaseUser);
     return state.copyWith(
       user: user,
     );

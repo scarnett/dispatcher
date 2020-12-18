@@ -13,17 +13,18 @@ import 'package:openpgp/options.dart';
 /// Initiates the storage boxes and generates the client keys during install time
 Future<void> installClientKeys() async {
   // Init Storage
+  await GetStorage.init('ClientSessions');
   await GetStorage.init('ClientUserKeys');
   await GetStorage.init('ClientTrustedKeys');
   await GetStorage.init('ClientPreKeys');
   await GetStorage.init('ClientSignedPreKey');
 
   DispatcherKeyStore keyStore = DispatcherKeyStore();
-  if (!keyStore.hasData()) {
-    signal.IdentityKeyPair identityKeyPair = generateIdentityKeyPar();
-    generateSignedPreKey(identityKeyPair);
-    generatePreKeys();
-  }
+  //if (!keyStore.hasData()) {
+  signal.IdentityKeyPair identityKeyPair = generateIdentityKeyPar();
+  generateSignedPreKey(identityKeyPair);
+  generatePreKeys();
+  //}
 }
 
 /// Generates the signal identity keypair
@@ -131,48 +132,43 @@ String decode(
 }
 
 /// Builds the signal session cipher
-signal.SessionCipher buildSessionCipher(
+Future<signal.SessionCipher> buildSessionCipher(
   RoomUser roomUser,
-) {
+) async {
   DispatcherIdentityKeyStore identityKeyStore = DispatcherIdentityKeyStore();
-  DispatcherSignalProtocolStore _sessionStore = DispatcherSignalProtocolStore(
+  DispatcherSignalProtocolStore _store = DispatcherSignalProtocolStore(
     identityKeyStore.getIdentityKeyPair(),
     identityKeyStore.getLocalRegistrationId(),
   );
 
-  signal.SignalProtocolAddress _connectionUserRemoteAddress =
+  signal.SignalProtocolAddress _address =
       signal.SignalProtocolAddress(roomUser.user.identifier, 1);
 
-  signal.PreKeyRecord _preKeyRecord =
-      _sessionStore.loadPreKey(roomUser.preKey.keyId);
+  signal.SessionBuilder _sessionBuilder =
+      signal.SessionBuilder.fromSignalStore(_store, _address);
+
+  signal.PreKeyRecord _preKeyRecord = _store.loadPreKey(roomUser.preKey.keyId);
 
   signal.ECPublicKey _signedPreKeyRecord = signal.Curve.decodePoint(
       Uint8List.fromList(roomUser.user.key.sigSignedPublicKey.codeUnits), 0);
 
-  Uint8List signedPreKeySignature =
+  Uint8List _signedPreKeySignature =
       Uint8List.fromList(roomUser.user.key.sigSignedPrekeySignature.codeUnits);
 
   signal.IdentityKey _identityKey = signal.IdentityKey.fromBytes(
       Uint8List.fromList(roomUser.user.key.sigIdentityPublicKey.codeUnits), 0);
 
-  signal.PreKeyBundle _connectionUserPreKey = signal.PreKeyBundle(
+  signal.PreKeyBundle _userPreKey = signal.PreKeyBundle(
     roomUser.user.key.sigRegistrationId,
     1, // TODO!
     _preKeyRecord.id,
     _preKeyRecord.getKeyPair().publicKey,
-    0, // TODO!
+    1, // TODO!
     _signedPreKeyRecord,
-    signedPreKeySignature,
+    _signedPreKeySignature,
     _identityKey,
   );
 
-  signal.SessionBuilder.fromSignalStore(
-    _sessionStore,
-    _connectionUserRemoteAddress,
-  ).processPreKeyBundle(_connectionUserPreKey);
-
-  return signal.SessionCipher.fromStore(
-    _sessionStore,
-    _connectionUserRemoteAddress,
-  );
+  _sessionBuilder.processPreKeyBundle(_userPreKey);
+  return signal.SessionCipher.fromStore(_store, _address);
 }

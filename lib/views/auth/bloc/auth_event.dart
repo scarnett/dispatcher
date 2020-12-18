@@ -1,5 +1,6 @@
 import 'package:dispatcher/views/auth/auth.dart';
 import 'package:equatable/equatable.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 abstract class AuthEvent extends Equatable {
   const AuthEvent();
@@ -22,10 +23,14 @@ class AuthStatusChanged extends AuthEvent {
 class AuthLogoutRequested extends AuthEvent {}
 
 class LoadUser extends AuthEvent {
-  const LoadUser();
+  final GraphQLClient client;
+
+  const LoadUser(
+    this.client,
+  );
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [client];
 }
 
 class ConfigureNotifications extends AuthEvent {

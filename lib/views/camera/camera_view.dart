@@ -7,7 +7,7 @@ import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/date_utils.dart';
 import 'package:dispatcher/utils/snackbar_utils.dart';
-import 'package:dispatcher/widgets/spinner.dart';
+import 'package:dispatcher/widgets/view_message.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
@@ -86,7 +86,7 @@ class _CameraPageViewState extends State<CameraPageView>
               return _createContent();
             }
 
-            return Spinner();
+            return ViewMessage();
           },
         ),
       );
@@ -225,7 +225,7 @@ class _CameraPageViewState extends State<CameraPageView>
   Widget _buildControls() {
     if ((_controller == null) || !_controller.value.isInitialized) {
       return _wrapControls(
-        Spinner(fillColor: Colors.transparent),
+        ViewMessage(fillColor: Colors.transparent),
       );
     }
 

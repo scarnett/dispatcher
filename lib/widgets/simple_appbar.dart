@@ -41,7 +41,7 @@ class _SimpleAppBarState extends State<SimpleAppBar> {
         leading: (widget.showLeading)
             ? IconButton(
                 icon: Icon(widget.leadingIcon),
-                onPressed: () => Navigator.pop(context, false),
+                onPressed: () => Navigator.pop(context),
               )
             : null,
         flexibleSpace: (widget.title == null)

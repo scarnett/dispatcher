@@ -19,6 +19,7 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
           email
           user_key {
             sig_identity_public_key
+            sig_identity_public_key_test
             sig_registration_id
             sig_signed_prekey_signature
             sig_signed_public_key
@@ -28,11 +29,6 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
           key_id
           public_key
         }
-      }
-      room_messages {
-        message
-        user_identifier
-        created_date
       }
     }
   }`

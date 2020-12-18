@@ -6,8 +6,8 @@ import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/utils/common_utils.dart';
 import 'package:dispatcher/utils/crypt_utils.dart';
 import 'package:dispatcher/utils/date_utils.dart';
+import 'package:dispatcher/views/pin/bloc/pin_bloc.dart';
 import 'package:dispatcher/views/pin/pin_config.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:graphql/client.dart';
 import 'package:logger/logger.dart';
 import 'package:tuple/tuple.dart';
@@ -15,14 +15,14 @@ import 'package:tuple/tuple.dart';
 Logger _logger = Logger();
 
 Future<UserPIN> tryGetPIN(
-  firebase.User firebaseUser,
+  LoadUserPIN event,
 ) async {
   try {
-    GraphQLService service = GraphQLService(await firebaseUser.getIdToken());
-    final QueryResult result = await service.performMutation(
+    GraphQLService service = GraphQLService(event.client);
+    final QueryResult result = await service.performQuery(
       fetchPINQueryStr,
       variables: {
-        'identifier': firebaseUser.uid,
+        'identifier': event.firebaseUser.uid,
       },
     );
 

@@ -7,7 +7,7 @@ import 'package:dispatcher/views/connections/bloc/bloc.dart';
 import 'package:dispatcher/views/connections/widgets/connections_appbar.dart';
 import 'package:dispatcher/views/rooms/rooms_views.dart';
 import 'package:dispatcher/widgets/none_found.dart';
-import 'package:dispatcher/widgets/spinner.dart';
+import 'package:dispatcher/widgets/view_message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -85,7 +85,7 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
   ) {
     if ((state == null) ||
         (context.bloc<AuthBloc>().state.user.connections == null)) {
-      return Spinner(
+      return ViewMessage(
         message: AppLocalizations.of(context).connectionsLoading,
         centered: false,
       );

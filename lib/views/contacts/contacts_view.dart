@@ -1,4 +1,5 @@
 import 'package:contacts_service/contacts_service.dart';
+import 'package:dispatcher/graphql/client_provider.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/utils/common_utils.dart';
@@ -12,10 +13,12 @@ import 'package:dispatcher/views/contacts/contacts_enums.dart';
 import 'package:dispatcher/views/contacts/widgets/contacts_appbar.dart';
 import 'package:dispatcher/views/contacts/contact/widgets/contact_avatar.dart';
 import 'package:dispatcher/widgets/none_found.dart';
-import 'package:dispatcher/widgets/spinner.dart';
+import 'package:dispatcher/widgets/view_message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:supercharged/supercharged.dart';
 
 class ContactsView extends StatelessWidget {
@@ -30,15 +33,20 @@ class ContactsView extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) =>
-      BlocProvider<ContactsBloc>(
-        create: (BuildContext context) => ContactsBloc()
-          ..add(
-            FetchInviteCodeData(context.bloc<AuthBloc>().state.firebaseUser),
-          )
-          ..add(
-            FetchContactsData(context),
-          ),
-        child: ContactsPageView(),
+      ClientProvider(
+        child: BlocProvider<ContactsBloc>(
+          create: (BuildContext context) => ContactsBloc()
+            ..add(
+              FetchInviteCodeData(
+                Provider.of<GraphQLClient>(context, listen: false),
+                context.bloc<AuthBloc>().state.firebaseUser,
+              ),
+            )
+            ..add(
+              FetchContactsData(context),
+            ),
+          child: ContactsPageView(),
+        ),
       );
 }
 
@@ -206,7 +214,7 @@ class _ContactsPageViewState extends State<ContactsPageView>
 
     if (state.contacts == null) {
       children.add(
-        Spinner(
+        ViewMessage(
           message: AppLocalizations.of(context).contactsLoading,
         ),
       );

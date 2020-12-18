@@ -51,7 +51,7 @@ Future<HttpsCallableResult> saveKeys(
   DispatcherIdentityKeyStore identityKeyStore = DispatcherIdentityKeyStore();
   DispatcherSignedPreKeyStore signedPreKeyStore = DispatcherSignedPreKeyStore();
   signal.SignedPreKeyRecord signedPreKey =
-      signedPreKeyStore.loadSignedPreKey(0);
+      signedPreKeyStore.loadSignedPreKey(0); // TODO!
 
   List<dynamic> preKeys = [];
   DispatcherPreKeyStore preKeyStore = DispatcherPreKeyStore();
@@ -73,6 +73,8 @@ Future<HttpsCallableResult> saveKeys(
     'sig_signed_prekey_signature': String.fromCharCodes(signedPreKey.signature),
     'sig_identity_public_key': String.fromCharCodes(
         identityKeyStore.getIdentityKeyPair().getPublicKey().serialize()),
+    'sig_identity_public_key_test':
+        identityKeyStore.getIdentityKeyPair().getPublicKey().serialize(),
     'sig_prekeys': preKeys,
   });
 

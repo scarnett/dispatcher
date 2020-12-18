@@ -22,6 +22,7 @@ class RoomsState extends Equatable {
 
   RoomsState copyWith({
     Room activeRoom,
+    List<RoomMessage> messages,
     RoomSessionStatus sessionStatus,
     signal.SessionCipher sessionCipher,
   }) =>
@@ -32,11 +33,7 @@ class RoomsState extends Equatable {
       );
 
   @override
-  List<Object> get props => [
-        activeRoom,
-        sessionStatus,
-        sessionCipher,
-      ];
+  List<Object> get props => [activeRoom, sessionStatus, sessionCipher];
 
   @override
   String toString() =>

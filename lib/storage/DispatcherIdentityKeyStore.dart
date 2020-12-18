@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:dispatcher/utils/eq.dart';
+import 'package:dispatcher/utils/eq.dart' as eq;
 import 'package:get_storage/get_storage.dart';
 import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart';
 
@@ -12,8 +12,7 @@ class DispatcherIdentityKeyStore extends IdentityKeyStore {
     IdentityKeyPair identityKeyPair,
     int localRegistrationId,
   ) {
-    store.write(
-        'identityKeyPair', String.fromCharCodes(identityKeyPair.serialize()));
+    store.write('identityKeyPair', identityKeyPair.serialize().toList());
     store.write('localRegistrationId', localRegistrationId);
   }
 
@@ -21,11 +20,17 @@ class DispatcherIdentityKeyStore extends IdentityKeyStore {
   IdentityKey getIdentity(
     SignalProtocolAddress address,
   ) =>
-      store.read(address.toString());
+      IdentityKey.fromBytes(store.read(address.toString()), 0);
 
   @override
-  IdentityKeyPair getIdentityKeyPair() => IdentityKeyPair.fromSerialized(
-      Uint8List.fromList(store.read('identityKeyPair').codeUnits));
+  IdentityKeyPair getIdentityKeyPair() {
+    List<dynamic> identityKeyPairDynList = store.read('identityKeyPair');
+    List<int> identityKeyPairIntList =
+        identityKeyPairDynList.map((s) => s as int).toList();
+
+    return IdentityKeyPair.fromSerialized(
+        Uint8List.fromList(identityKeyPairIntList));
+  }
 
   @override
   int getLocalRegistrationId() => store.read('localRegistrationId');
@@ -36,9 +41,10 @@ class DispatcherIdentityKeyStore extends IdentityKeyStore {
     IdentityKey identityKey,
     Direction direction,
   ) {
-    dynamic trusted = store.read(address.toString());
-    return ((trusted == null) ||
-        eq(Uint8List.fromList(trusted.codeUnits), identityKey.serialize()));
+    List<dynamic> trustedDynList = store.read(address.toString());
+    List<int> trustedIntList = trustedDynList.map((s) => s as int).toList();
+    return ((trustedDynList == null) ||
+        eq.eq(Uint8List.fromList(trustedIntList), identityKey.serialize()));
   }
 
   @override
@@ -46,12 +52,15 @@ class DispatcherIdentityKeyStore extends IdentityKeyStore {
     SignalProtocolAddress address,
     IdentityKey identityKey,
   ) {
-    dynamic existing = store.read(address.toString());
-    if ((existing == null) ||
-        (identityKey.serialize() != Uint8List.fromList(existing.codeUnits))) {
-      store.write(
-          address.toString(), String.fromCharCodes(identityKey.serialize()));
+    List<dynamic> exitingDynList = store.read(address.toString());
+    if (exitingDynList == null) {
+      store.write(address.toString(), identityKey.serialize().toList());
+      return true;
+    }
 
+    List<int> exitingIntList = exitingDynList.map((s) => s as int).toList();
+    if (identityKey.serialize() != Uint8List.fromList(exitingIntList)) {
+      store.write(address.toString(), identityKey.serialize().toList());
       return true;
     }
 

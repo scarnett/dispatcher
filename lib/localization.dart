@@ -40,6 +40,24 @@ class AppLocalizations {
   String get connectionsLoading =>
       addMessage('Loading your connections. Please wait...');
 
+  String get messagesNone => addMessage('No messages found');
+  String get messagesLoading =>
+      addMessage('Loading your messages. Please wait...');
+
+  String sessionEncryption(
+    String name,
+  ) =>
+      addMessage(
+        'Encrypting your session with $name',
+        name: 'sessionEncryption',
+        args: [
+          name,
+        ],
+      );
+
+  String get sessionEncryptionError =>
+      addMessage('There was an issue with encrypting your session.');
+
   String get saySomething => addMessage('Say Something...');
   String get settings => addMessage('Settings');
   String get menu => addMessage('Menu');
@@ -62,6 +80,7 @@ class AppLocalizations {
   String get connect => addMessage('Connect');
   String get connectSuccess => addMessage('Connection Success!');
   String get cancel => addMessage('Cancel');
+  String get goBack => addMessage('Go Back');
   String get personalDetails => addMessage('Personal Details');
   String get name => addMessage('Name');
   String get namePlease => addMessage('Please enter your name');

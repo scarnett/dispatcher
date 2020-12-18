@@ -7,11 +7,13 @@ import 'package:dispatcher/views/avatar/bloc/avatar_bloc.dart';
 import 'package:dispatcher/views/avatar/widgets/avatar_display.dart';
 import 'package:dispatcher/views/camera/camera_view.dart';
 import 'package:dispatcher/widgets/form_button.dart';
-import 'package:dispatcher/widgets/spinner.dart';
+import 'package:dispatcher/widgets/view_message.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
 
 class AvatarView extends StatelessWidget {
   static Route route() => MaterialPageRoute<void>(builder: (_) => AvatarView());
@@ -59,7 +61,9 @@ class _AvatarPageViewState extends State<AvatarPageView> {
               )));
 
               context.bloc<AvatarBloc>().add(ClearStorageTaskEventType());
-              context.bloc<AuthBloc>().add(LoadUser());
+              context
+                  .bloc<AuthBloc>()
+                  .add(LoadUser(Provider.of<GraphQLClient>(context)));
               Navigator.pop(context);
               break;
 
@@ -94,7 +98,7 @@ class _AvatarPageViewState extends State<AvatarPageView> {
 
       if (state.type == StorageTaskEventType.progress) {
         children.add(
-          Spinner(
+          ViewMessage(
             fill: true,
             message: AppLocalizations.of(context).uploadingPhoto,
           ),

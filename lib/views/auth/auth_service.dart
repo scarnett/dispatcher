@@ -27,13 +27,14 @@ Future<HttpsCallableResult> updateFcmToken(
 }
 
 Future<User> tryGetUser(
+  GraphQLClient client,
   firebase.User firebaseUser, {
   int retryCount = 0,
   maxRetries = 10,
 }) async {
   try {
-    GraphQLService service = GraphQLService(await firebaseUser.getIdToken());
-    final QueryResult result = await service.performMutation(
+    GraphQLService service = GraphQLService(client);
+    final QueryResult result = await service.performQuery(
       fetchUserQueryStr,
       variables: {
         'identifier': firebaseUser.uid,
@@ -54,6 +55,7 @@ Future<User> tryGetUser(
       // Retry get user
       if (retryCount < maxRetries) {
         return tryGetUser(
+          client,
           firebaseUser,
           retryCount: (retryCount + 1),
         );

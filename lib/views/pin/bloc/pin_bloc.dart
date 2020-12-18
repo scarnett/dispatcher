@@ -12,6 +12,7 @@ import 'package:dispatcher/extensions/user_extensions.dart';
 import 'package:dispatcher/views/pin/pin_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:meta/meta.dart';
 import 'package:tuple/tuple.dart';
 
@@ -58,7 +59,7 @@ class PINBloc extends Bloc<PINEvent, PINState> {
     LoadUserPIN event,
   ) async* {
     // Check to see if the expiration date has ellapsed
-    UserPIN pin = await tryGetPIN(event.firebaseUser);
+    UserPIN pin = await tryGetPIN(event);
     if (pin.isExpired()) {
       await resetVerificationCode(event.firebaseUser.uid);
     } else {

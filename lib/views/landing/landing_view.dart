@@ -1,5 +1,5 @@
 import 'package:dispatcher/localization.dart';
-import 'package:dispatcher/widgets/spinner.dart';
+import 'package:dispatcher/widgets/view_message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +21,7 @@ class _LandingViewState extends State<LandingView> {
       Scaffold(
         key: _scaffoldKey,
         body: Container(
-          child: Spinner(
+          child: ViewMessage(
             message: AppLocalizations.of(context).loading,
           ),
         ),

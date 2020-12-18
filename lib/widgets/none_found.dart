@@ -26,57 +26,62 @@ class _NoneFoundState extends State<NoneFound> with TickerProviderStateMixin {
   Widget build(
     BuildContext context,
   ) =>
-      Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 20.0,
-              bottom: 10.0,
-            ),
-            child: Container(
-              width: widget.size,
-              height: widget.size,
-              decoration: BoxDecoration(
-                color: AppTheme.accent.withOpacity(0.25),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                widget.icon,
-                color: Colors.white,
-                size: widget.size,
-              ),
-            ),
-          ),
-          (widget.title == null)
-              ? Container()
-              : Text(
-                  (widget.title != null)
-                      ? widget.title
-                      : AppLocalizations.of(context).bummer,
-                  style: TextStyle(
-                    color: AppTheme.accent,
-                    fontSize: 28.0,
-                    fontWeight: FontWeight.w800,
+      Center(
+        child: Container(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 20.0,
+                  bottom: 10.0,
+                ),
+                child: Container(
+                  width: widget.size,
+                  height: widget.size,
+                  decoration: BoxDecoration(
+                    color: AppTheme.accent.withOpacity(0.25),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    widget.icon,
+                    color: Colors.white,
+                    size: widget.size,
                   ),
                 ),
-          Padding(
-            padding: EdgeInsets.only(
-              top: 4.0,
-              bottom: widget.padding,
-            ),
-            child: (widget.message == null)
-                ? Container()
-                : Text(
-                    (widget.message != null)
-                        ? widget.message
-                        : AppLocalizations.of(context).bummerText,
-                    style: const TextStyle(
-                      color: AppTheme.accent,
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w600,
+              ),
+              (widget.title == null)
+                  ? Container()
+                  : Text(
+                      (widget.title != null)
+                          ? widget.title
+                          : AppLocalizations.of(context).bummer,
+                      style: TextStyle(
+                        color: AppTheme.accent,
+                        fontSize: 28.0,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                  ),
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 4.0,
+                  bottom: widget.padding,
+                ),
+                child: (widget.message == null)
+                    ? Container()
+                    : Text(
+                        (widget.message != null)
+                            ? widget.message
+                            : AppLocalizations.of(context).bummerText,
+                        style: const TextStyle(
+                          color: AppTheme.accent,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+              ),
+            ],
           ),
-        ],
+        ),
       );
 }

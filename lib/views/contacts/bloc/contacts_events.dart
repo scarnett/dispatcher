@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/cupertino.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 abstract class ContactsEvent extends Equatable {
   const ContactsEvent();
@@ -10,14 +11,16 @@ abstract class ContactsEvent extends Equatable {
 }
 
 class FetchInviteCodeData extends ContactsEvent {
+  final GraphQLClient client;
   final firebase.User firebaseUser;
 
   const FetchInviteCodeData(
+    this.client,
     this.firebaseUser,
   );
 
   @override
-  List<Object> get props => [firebaseUser];
+  List<Object> get props => [client, firebaseUser];
 }
 
 class FetchContactsData extends ContactsEvent {

@@ -6,26 +6,22 @@ class Room extends Equatable {
   final int id;
   final String identifier;
   final List<RoomUser> users;
-  final List<RoomMessage> messages;
 
   Room({
     this.id,
     this.identifier,
     this.users,
-    this.messages,
   });
 
   Room copyWith({
     int id,
     String identifier,
     List<RoomUser> users,
-    List<RoomMessage> messages,
   }) =>
       Room(
         id: id ?? this.id,
         identifier: identifier ?? this.identifier,
         users: users ?? this.users,
-        messages: messages ?? this.messages,
       );
 
   static Room fromJson(
@@ -37,23 +33,20 @@ class Room extends Equatable {
               id: json['id'],
               identifier: json['identifier'],
               users: RoomUser.fromJsonList(json['room_users']),
-              messages: RoomMessage.fromJsonList(json['room_messages']),
             );
 
   dynamic toJson() => {
         'id': id,
         'identifier': identifier,
         'room_users': RoomUser.toJsonList(users),
-        'room_messages': RoomMessage.toJsonList(messages),
       };
 
   @override
-  List<Object> get props => [id, identifier, users, messages];
+  List<Object> get props => [id, identifier, users];
 
   @override
   String toString() =>
-      'Room{id: $id, identifier: $identifier, users: ${users.length}, ' +
-      'messages: ${messages.length}}';
+      'Room{id: $id, identifier: $identifier, users: ${users.length}}';
 }
 
 class RoomUser extends Equatable {

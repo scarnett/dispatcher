@@ -8,14 +8,16 @@ abstract class PINEvent extends Equatable {
 }
 
 class LoadUserPIN extends PINEvent {
+  final GraphQLClient client;
   final firebase.User firebaseUser;
 
   const LoadUserPIN(
+    this.client,
     this.firebaseUser,
   );
 
   @override
-  List<Object> get props => [firebaseUser];
+  List<Object> get props => [client, firebaseUser];
 }
 
 class SendVerificationCode extends PINEvent {

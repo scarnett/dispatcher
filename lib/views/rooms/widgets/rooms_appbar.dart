@@ -6,11 +6,13 @@ class RoomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
 
   final String title;
+  final Function onBackButtonPressed;
 
   RoomAppBar({
     Key key,
     @required this.height,
     @required this.title,
+    this.onBackButtonPressed,
   }) : super(key: key);
 
   @override
@@ -30,7 +32,7 @@ class _RoomAppBarState extends State<RoomAppBar> {
         elevation: 4.0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context, false),
+          onPressed: () => _tapBack(),
         ),
       );
 
@@ -41,4 +43,12 @@ class _RoomAppBarState extends State<RoomAppBar> {
           style: Theme.of(context).textTheme.headline5,
         ),
       );
+
+  void _tapBack() {
+    if (widget.onBackButtonPressed != null) {
+      // widget.onBackButtonPressed();
+    }
+
+    Navigator.pop(context);
+  }
 }

@@ -12,9 +12,8 @@ Future<User> tryLookupUserByInviteCode(
   LookupUser event,
 ) async {
   try {
-    GraphQLService service =
-        GraphQLService(await event.firebaseUser.getIdToken());
-    final QueryResult result = await service.performMutation(
+    GraphQLService service = GraphQLService(event.client);
+    final QueryResult result = await service.performQuery(
       fetchUserByInviteCodeQueryStr,
       variables: {
         'inviteCode': event.inviteCode,

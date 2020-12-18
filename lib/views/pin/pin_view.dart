@@ -1,4 +1,6 @@
 import 'package:dispatcher/extensions/extensions.dart';
+import 'package:dispatcher/graphql/client_provider.dart';
+import 'package:dispatcher/graphql/user.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/theme.dart';
@@ -11,10 +13,12 @@ import 'package:dispatcher/widgets/form_button.dart';
 import 'package:dispatcher/widgets/pin_code.dart';
 import 'package:dispatcher/widgets/progress.dart';
 import 'package:dispatcher/widgets/simple_appbar.dart';
-import 'package:dispatcher/widgets/spinner.dart';
+import 'package:dispatcher/widgets/view_message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
 
 // Displays the 'PIN' view
 class PINView extends StatelessWidget {
@@ -28,12 +32,17 @@ class PINView extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) =>
-      BlocProvider<PINBloc>(
-        create: (BuildContext context) => PINBloc()
-          ..add(
-            LoadUserPIN(context.bloc<AuthBloc>().state.firebaseUser),
-          ),
-        child: PINPageView(),
+      ClientProvider(
+        child: BlocProvider<PINBloc>(
+          create: (BuildContext context) => PINBloc()
+            ..add(
+              LoadUserPIN(
+                Provider.of<GraphQLClient>(context, listen: false),
+                context.bloc<AuthBloc>().state.firebaseUser,
+              ),
+            ),
+          child: PINPageView(),
+        ),
       );
 }
 
@@ -116,14 +125,28 @@ class _PINPageViewState extends State<PINPageView> {
               appBar: SimpleAppBar(
                 height: 100.0,
               ),
-              body: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: <Widget>[
-                      _buildBody(state),
-                    ],
+              body: Query(
+                options: QueryOptions(
+                  documentNode: gql(fetchPINQueryStr),
+                  variables: <String, dynamic>{
+                    'identifier':
+                        context.bloc<AuthBloc>().state.firebaseUser.uid,
+                  },
+                ),
+                builder: (
+                  QueryResult result, {
+                  Refetch refetch,
+                  FetchMore fetchMore,
+                }) =>
+                    Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      children: <Widget>[
+                        _buildBody(state),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -164,7 +187,7 @@ class _PINPageViewState extends State<PINPageView> {
       }
     }
 
-    return Spinner();
+    return ViewMessage();
   }
 
   /// Builds the 'send verification code' form

@@ -8,16 +8,18 @@ abstract class ConnectEvent extends Equatable {
 }
 
 class LookupUser extends ConnectEvent {
+  final GraphQLClient client;
   final firebase.User firebaseUser;
   final String inviteCode;
 
   const LookupUser(
+    this.client,
     this.firebaseUser,
     this.inviteCode,
   );
 
   @override
-  List<Object> get props => [firebaseUser, inviteCode];
+  List<Object> get props => [client, firebaseUser, inviteCode];
 }
 
 class ConnectUser extends ConnectEvent {

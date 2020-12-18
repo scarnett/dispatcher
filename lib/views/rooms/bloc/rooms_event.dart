@@ -8,19 +8,18 @@ abstract class RoomsEvent extends Equatable {
 }
 
 class FetchRoomData extends RoomsEvent {
+  final GraphQLClient client;
   final User user;
   final String roomUserIdentifer;
 
   const FetchRoomData(
+    this.client,
     this.user,
     this.roomUserIdentifer,
   );
 
   @override
-  List<Object> get props => [
-        user,
-        roomUserIdentifer,
-      ];
+  List<Object> get props => [client, user, roomUserIdentifer];
 }
 
 class SendMessage extends RoomsEvent {
@@ -36,6 +35,39 @@ class SendMessage extends RoomsEvent {
   List<Object> get props => [user, message];
 }
 
+class AddMessages extends RoomsEvent {
+  final List<dynamic> messages;
+
+  const AddMessages(
+    this.messages,
+  );
+
+  @override
+  List<Object> get props => [messages];
+}
+
+class AddMessage extends RoomsEvent {
+  final dynamic message;
+
+  const AddMessage(
+    this.message,
+  );
+
+  @override
+  List<Object> get props => [message];
+}
+
 class ClearRoomData extends RoomsEvent {
   const ClearRoomData();
+}
+
+class SetSessionStatus extends RoomsEvent {
+  final RoomSessionStatus sessionStatus;
+
+  const SetSessionStatus(
+    this.sessionStatus,
+  );
+
+  @override
+  List<Object> get props => [sessionStatus];
 }

@@ -7,12 +7,14 @@ import 'package:dispatcher/views/avatar/avatar_view.dart';
 import 'package:dispatcher/views/avatar/bloc/avatar_bloc.dart';
 import 'package:dispatcher/views/avatar/widgets/avatar_display.dart';
 import 'package:dispatcher/widgets/form_button.dart';
-import 'package:dispatcher/widgets/spinner.dart';
+import 'package:dispatcher/widgets/view_message.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 /// Displays the avatar selector
 class UserSelectAvatar extends StatelessWidget {
@@ -88,7 +90,9 @@ class _UserSelectAvatarDisplayState extends State<UserSelectAvatarDisplay> {
               }
 
               context.bloc<AvatarBloc>().add(ClearStorageTaskEventType());
-              context.bloc<AuthBloc>().add(LoadUser());
+              context
+                  .bloc<AuthBloc>()
+                  .add(LoadUser(Provider.of<GraphQLClient>(context)));
               break;
 
             case StorageTaskEventType.failure:
@@ -177,7 +181,7 @@ class _UserSelectAvatarDisplayState extends State<UserSelectAvatarDisplay> {
     switch (state.type) {
       case StorageTaskEventType.progress:
       case StorageTaskEventType.resume:
-        return Spinner(fill: true);
+        return ViewMessage(fill: true);
 
       case StorageTaskEventType.pause:
       case StorageTaskEventType.success:

@@ -2,21 +2,21 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/graphql/service.dart';
 import 'package:dispatcher/graphql/user.dart';
 import 'package:dispatcher/models/models.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:dispatcher/views/contacts/bloc/bloc.dart';
 import 'package:graphql/client.dart';
 import 'package:logger/logger.dart';
 
 Logger _logger = Logger();
 
 Future<UserInviteCode> tryGetInviteCode(
-  firebase.User firebaseUser,
+  FetchInviteCodeData event,
 ) async {
   try {
-    GraphQLService service = GraphQLService(await firebaseUser.getIdToken());
-    final QueryResult result = await service.performMutation(
+    GraphQLService service = GraphQLService(event.client);
+    final QueryResult result = await service.performQuery(
       fetchInviteCodeQueryStr,
       variables: {
-        'identifier': firebaseUser.uid,
+        'identifier': event.firebaseUser.uid,
       },
     );
 

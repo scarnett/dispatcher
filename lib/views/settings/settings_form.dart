@@ -15,8 +15,10 @@ import 'package:dispatcher/widgets/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 /// Builds the settings form
 class SettingsForm extends StatefulWidget {
@@ -65,7 +67,9 @@ class _SettingsFormState extends State<SettingsForm> {
           if (state.status.isSubmissionInProgress) {
             closeKeyboard(context);
           } else if (state.status.isSubmissionSuccess) {
-            context.bloc<AuthBloc>().add(LoadUser());
+            context
+                .bloc<AuthBloc>()
+                .add(LoadUser(Provider.of<GraphQLClient>(context)));
 
             widget.scaffoldState
               ..hideCurrentSnackBar()
@@ -237,7 +241,9 @@ class _SettingsFormState extends State<SettingsForm> {
                     type: MessageType.SUCCESS,
                   ))));
 
-                context.bloc<AuthBloc>().add(LoadUser());
+                context
+                    .bloc<AuthBloc>()
+                    .add(LoadUser(Provider.of<GraphQLClient>(context)));
                 break;
 
               default:

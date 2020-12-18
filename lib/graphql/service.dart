@@ -1,23 +1,12 @@
-import 'package:dispatcher/env_config.dart';
 import 'package:graphql/client.dart';
 
 class GraphQLService {
   GraphQLClient _client;
 
   GraphQLService(
-    String token,
+    GraphQLClient client,
   ) {
-    HttpLink link = HttpLink(
-      uri: EnvConfig.DISPATCHER_GRAPHQL_URL,
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    _client = GraphQLClient(
-      link: link,
-      cache: InMemoryCache(),
-    );
+    _client = client;
   }
 
   Future<QueryResult> performQuery(
@@ -44,5 +33,17 @@ class GraphQLService {
 
     final QueryResult result = await _client.mutate(options);
     return result;
+  }
+
+  Stream<FetchResult> subscribe(
+    String query, {
+    Map<String, dynamic> variables,
+  }) {
+    Operation operation = Operation(
+      documentNode: gql(query),
+      variables: variables,
+    );
+
+    return _client.subscribe(operation);
   }
 }

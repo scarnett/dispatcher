@@ -48,7 +48,7 @@ class ContactsBloc extends Bloc<ContactsEvent, ContactsState> {
   ) async* {
     if (event.firebaseUser != null) {
       if (state.inviteCode == null) {
-        UserInviteCode inviteCode = await tryGetInviteCode(event.firebaseUser);
+        UserInviteCode inviteCode = await tryGetInviteCode(event);
         if (inviteCode == null) {
           yield* _generateInviteCode(event);
         } else {

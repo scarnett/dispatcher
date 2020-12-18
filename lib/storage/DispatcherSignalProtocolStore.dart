@@ -1,19 +1,16 @@
 import 'package:dispatcher/storage/storage.dart';
-import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart' as signal;
+import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart';
 
-class DispatcherSignalProtocolStore implements signal.SignalProtocolStore {
+class DispatcherSignalProtocolStore implements SignalProtocolStore {
+  final DispatcherSessionStore _sessionStore = DispatcherSessionStore();
   final DispatcherPreKeyStore _preKeyStore = DispatcherPreKeyStore();
-
-  final signal.InMemorySessionStore sessionStore =
-      signal.InMemorySessionStore();
-
   final DispatcherSignedPreKeyStore _signedPreKeyStore =
       DispatcherSignedPreKeyStore();
 
   DispatcherIdentityKeyStore _identityKeyStore;
 
   DispatcherSignalProtocolStore(
-    signal.IdentityKeyPair identityKeyPair,
+    IdentityKeyPair identityKeyPair,
     int registrationId,
   ) {
     _identityKeyStore =
@@ -21,7 +18,7 @@ class DispatcherSignalProtocolStore implements signal.SignalProtocolStore {
   }
 
   @override
-  signal.IdentityKeyPair getIdentityKeyPair() =>
+  IdentityKeyPair getIdentityKeyPair() =>
       _identityKeyStore.getIdentityKeyPair();
 
   @override
@@ -29,27 +26,27 @@ class DispatcherSignalProtocolStore implements signal.SignalProtocolStore {
 
   @override
   bool saveIdentity(
-    signal.SignalProtocolAddress address,
-    signal.IdentityKey identityKey,
+    SignalProtocolAddress address,
+    IdentityKey identityKey,
   ) =>
       _identityKeyStore.saveIdentity(address, identityKey);
 
   @override
   bool isTrustedIdentity(
-    signal.SignalProtocolAddress address,
-    signal.IdentityKey identityKey,
-    signal.Direction direction,
+    SignalProtocolAddress address,
+    IdentityKey identityKey,
+    Direction direction,
   ) =>
       _identityKeyStore.isTrustedIdentity(address, identityKey, direction);
 
   @override
-  signal.IdentityKey getIdentity(
-    signal.SignalProtocolAddress address,
+  IdentityKey getIdentity(
+    SignalProtocolAddress address,
   ) =>
       _identityKeyStore.getIdentity(address);
 
   @override
-  signal.PreKeyRecord loadPreKey(
+  PreKeyRecord loadPreKey(
     int preKeyId,
   ) =>
       _preKeyStore.loadPreKey(preKeyId);
@@ -57,7 +54,7 @@ class DispatcherSignalProtocolStore implements signal.SignalProtocolStore {
   @override
   void storePreKey(
     int preKeyId,
-    signal.PreKeyRecord record,
+    PreKeyRecord record,
   ) =>
       _preKeyStore.storePreKey(preKeyId, record);
 
@@ -74,56 +71,56 @@ class DispatcherSignalProtocolStore implements signal.SignalProtocolStore {
       _preKeyStore.removePreKey(preKeyId);
 
   @override
-  signal.SessionRecord loadSession(
-    signal.SignalProtocolAddress address,
+  SessionRecord loadSession(
+    SignalProtocolAddress address,
   ) =>
-      sessionStore.loadSession(address);
+      _sessionStore.loadSession(address);
 
   @override
   List<int> getSubDeviceSessions(
     String name,
   ) =>
-      sessionStore.getSubDeviceSessions(name);
+      _sessionStore.getSubDeviceSessions(name);
 
   @override
   void storeSession(
-    signal.SignalProtocolAddress address,
-    signal.SessionRecord record,
+    SignalProtocolAddress address,
+    SessionRecord record,
   ) =>
-      sessionStore.storeSession(address, record);
+      _sessionStore.storeSession(address, record);
 
   @override
   bool containsSession(
-    signal.SignalProtocolAddress address,
+    SignalProtocolAddress address,
   ) =>
-      sessionStore.containsSession(address);
+      _sessionStore.containsSession(address);
 
   @override
   void deleteSession(
-    signal.SignalProtocolAddress address,
+    SignalProtocolAddress address,
   ) =>
-      sessionStore.deleteSession(address);
+      _sessionStore.deleteSession(address);
 
   @override
   void deleteAllSessions(
     String name,
   ) =>
-      sessionStore.deleteAllSessions(name);
+      _sessionStore.deleteAllSessions(name);
 
   @override
-  signal.SignedPreKeyRecord loadSignedPreKey(
+  SignedPreKeyRecord loadSignedPreKey(
     int signedPreKeyId,
   ) =>
       _signedPreKeyStore.loadSignedPreKey(signedPreKeyId);
 
   @override
-  List<signal.SignedPreKeyRecord> loadSignedPreKeys() =>
+  List<SignedPreKeyRecord> loadSignedPreKeys() =>
       _signedPreKeyStore.loadSignedPreKeys();
 
   @override
   void storeSignedPreKey(
     int signedPreKeyId,
-    signal.SignedPreKeyRecord record,
+    SignedPreKeyRecord record,
   ) =>
       _signedPreKeyStore.storeSignedPreKey(signedPreKeyId, record);
 
