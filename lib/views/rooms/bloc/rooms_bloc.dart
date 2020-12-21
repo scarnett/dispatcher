@@ -29,7 +29,7 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
   RoomsState get initialState => RoomsState.initial();
 
   @override
-  Future<Function> close() {
+  Future<void> close() {
     roomMessageRepository.dispose();
     return super.close();
   }
@@ -102,14 +102,12 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
       signal.PreKeySignalMessage msgIn =
           signal.PreKeySignalMessage(serializedCipherText);
 
-      String cipherTextStr = String.fromCharCodes(serializedCipherText);
-
       // Sends a message to the room
       roomMessageRepository.sendMessage(
         state.activeRoom.identifier,
         RoomMessage(
           user: event.user,
-          message: cipherTextStr,
+          message: cipherText.serialize().toList(),
           type: msgIn.getType(),
         ),
       );

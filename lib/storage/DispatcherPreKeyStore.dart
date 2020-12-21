@@ -9,9 +9,8 @@ class DispatcherPreKeyStore extends PreKeyStore {
   @override
   bool containsPreKey(
     int preKeyId,
-  ) {
-    return store.hasData(preKeyId.toString());
-  }
+  ) =>
+      store.hasData(preKeyId.toString());
 
   @override
   PreKeyRecord loadPreKey(
@@ -22,8 +21,9 @@ class DispatcherPreKeyStore extends PreKeyStore {
         throw InvalidKeyIdException('No such prekeyrecord!');
       }
 
-      return PreKeyRecord.fromBuffer(
-          Uint8List.fromList(store.read(preKeyId.toString()).codeUnits));
+      List<dynamic> prekeyDynList = store.read(preKeyId.toString());
+      List<int> prekeyIntList = prekeyDynList.map((s) => s as int).toList();
+      return PreKeyRecord.fromBuffer(Uint8List.fromList(prekeyIntList));
     } on IOException catch (e) {
       throw AssertionError(e);
     }
@@ -40,6 +40,5 @@ class DispatcherPreKeyStore extends PreKeyStore {
     int preKeyId,
     PreKeyRecord record,
   ) =>
-      store.write(
-          preKeyId.toString(), String.fromCharCodes(record.serialize()));
+      store.write(preKeyId.toString(), record.serialize().toList());
 }

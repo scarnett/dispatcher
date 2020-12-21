@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dispatcher/graphql/client_provider.dart';
 import 'package:dispatcher/localization.dart';
@@ -42,18 +41,12 @@ class RoomView extends StatelessWidget {
   ) =>
       ClientProvider(
         child: RepositoryProvider<RoomMessageRepository>(
-          create: (context) => TipRepositoryFirestore()
-            ..refreshMessages('-MNeBQI1ZW74VAUwH2_1'), // TODO!
+          create: (context) => RoomMessageRepositoryFirestore()
+            ..refreshMessages('-MP0Q5nH0HILAldj30JE'), // TODO!
           child: BlocProvider<RoomsBloc>(
             create: (BuildContext context) => RoomsBloc(
               roomMessageRepository: RepositoryProvider.of(context),
-            )..add(
-                FetchRoomData(
-                  Provider.of<GraphQLClient>(context, listen: false),
-                  context.bloc<AuthBloc>().state.user,
-                  user.identifier,
-                ),
-              ),
+            ),
             child: RoomPageView(user: user),
           ),
         ),
@@ -83,6 +76,16 @@ class _RoomPageViewState extends State<RoomPageView>
 
   @override
   void initState() {
+    // Fetch the room data
+    context.bloc<RoomsBloc>()
+      ..add(
+        FetchRoomData(
+          Provider.of<GraphQLClient>(context, listen: false),
+          context.bloc<AuthBloc>().state.user,
+          widget.user.identifier,
+        ),
+      );
+
     // Setup the ListView controller
     _messageListViewController = ScrollController();
 
@@ -94,7 +97,7 @@ class _RoomPageViewState extends State<RoomPageView>
   }
 
   /// Handles the android back button
-  Future<bool> _willPopCallback() async {
+  Future<bool> _willPopCallback() {
     context.bloc<RoomsBloc>().add(ClearRoomData());
     return Future.value(true);
   }
@@ -147,10 +150,9 @@ class _RoomPageViewState extends State<RoomPageView>
       case RoomSessionStatus.CREATING:
       default:
         return ViewMessage(
-          message:
-              AppLocalizations.of(context).sessionEncryption(widget.user.name),
+          message: AppLocalizations.of(context).sessionEncryption,
           showSpinner: false,
-          icon: Icons.lock,
+          icon: AvatarDisplay(user: widget.user),
         );
     }
   }
@@ -194,6 +196,7 @@ class _RoomPageViewState extends State<RoomPageView>
 
             case ConnectionState.active:
             case ConnectionState.done:
+
               // TODO! Handle
               return Expanded(
                 child: ListView.builder(
@@ -213,7 +216,10 @@ class _RoomPageViewState extends State<RoomPageView>
 
                       signal.PreKeySignalMessage incomingMessage =
                           signal.PreKeySignalMessage(
-                              Uint8List.fromList(message.message.codeUnits));
+                              Uint8List.fromList(message.message));
+
+                      print(incomingMessage.getType());
+                      print(incomingMessage.message);
 
                       Uint8List plainText =
                           sessionCipher.decrypt(incomingMessage);
@@ -221,12 +227,10 @@ class _RoomPageViewState extends State<RoomPageView>
                       //String result =
                       //    utf8.decode(plainText, allowMalformed: true);
 
-                      //print(result);
+                      // print(result);
                       // print(String.fromCharCodes(msg));
                     } catch (e) {
                       print(e);
-                      print((e as signal.UntrustedIdentityException).name);
-                      print((e as signal.UntrustedIdentityException).key);
                     }
 
                     return Padding(
@@ -234,7 +238,7 @@ class _RoomPageViewState extends State<RoomPageView>
                         vertical: 10.0,
                         horizontal: 20.0,
                       ),
-                      child: Text(message.message.trim()),
+                      child: Text('message'),
                     );
                   },
                 ),
@@ -310,7 +314,7 @@ class _RoomPageViewState extends State<RoomPageView>
         message: AppLocalizations.of(context).sessionEncryptionError,
         messageColor: AppTheme.error,
         showSpinner: false,
-        icon: Icons.error,
+        iconData: Icons.error,
         iconColor: AppTheme.error,
         showButton: true,
         buttonText: AppLocalizations.of(context).goBack,

@@ -8,7 +8,8 @@ class ViewMessage extends StatefulWidget {
   final Color fillColor;
   final String message;
   final Color messageColor;
-  final IconData icon;
+  final Widget icon;
+  final IconData iconData;
   final Color iconColor;
   final double iconSize;
   final bool centered;
@@ -24,6 +25,7 @@ class ViewMessage extends StatefulWidget {
     this.message,
     this.messageColor = AppTheme.accent,
     this.icon,
+    this.iconData,
     this.iconColor = AppTheme.primary,
     this.iconSize = 70.0,
     this.centered = true,
@@ -46,7 +48,7 @@ class ViewMessageState extends State<ViewMessage> {
 
     if (widget.showSpinner) {
       children.add(_buildSpinner());
-    } else if (widget.icon != null) {
+    } else if (this.hasIcon()) {
       children.add(_buildIcon());
     }
 
@@ -110,7 +112,7 @@ class ViewMessageState extends State<ViewMessage> {
 
   /// Builds the spinner
   Widget _buildSpinner() {
-    if (widget.icon != null) {
+    if (this.hasIcon()) {
       return Stack(children: <Widget>[
         CircularProgressIndicator(),
         _buildIcon(),
@@ -120,12 +122,28 @@ class ViewMessageState extends State<ViewMessage> {
     return CircularProgressIndicator();
   }
 
-  /// Builds the icon
-  Widget _buildIcon() => Icon(
-        widget.icon,
+  Widget _buildIcon() {
+    if (widget.iconData != null) {
+      return _buildIconData();
+    }
+
+    return widget.icon;
+  }
+
+  /// Builds the icon data
+  Widget _buildIconData() => Icon(
+        widget.iconData,
         color: widget.iconColor,
         size: widget.iconSize,
       );
+
+  bool hasIcon() {
+    if ((widget.icon != null) || (widget.iconData != null)) {
+      return true;
+    }
+
+    return false;
+  }
 
   /// Builds the message
   Widget _buildMessage() => Padding(

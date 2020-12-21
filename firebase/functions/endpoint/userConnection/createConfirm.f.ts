@@ -17,7 +17,7 @@ exports = module.exports = functions.https.onRequest(async (req: functions.https
   }
 
   // GraphQL query for getting a user
-  const query: string = `query($identifiers: [String!]) {
+  const userQuery: string = `query($identifiers: [String!]) {
     users(where: {identifier: {_in: $identifiers}}) {
       identifier
       name
@@ -40,7 +40,7 @@ exports = module.exports = functions.https.onRequest(async (req: functions.https
 
     // Query the user records
     const response: any = await hasuraClient(endpoint, adminSecret)
-      .request(query, {
+      .request(userQuery, {
         identifiers: [
           newConnectionRecord.user,
           newConnectionRecord.connect_user
@@ -58,6 +58,7 @@ exports = module.exports = functions.https.onRequest(async (req: functions.https
       return
     }
 
+    const promises: Array<Promise<any>> = []
     const user: any = users.find(_user => _user.identifier === newConnectionRecord.user)
     const connectUser: any = users.find(_user => _user.identifier === newConnectionRecord.connect_user)
     const payload: admin.messaging.MessagingPayload = {
@@ -73,18 +74,20 @@ exports = module.exports = functions.https.onRequest(async (req: functions.https
     }
 
     // Send a push message
-    admin
+    promises.push(admin
       .messaging()
-      .sendToDevice(user.user_fcm.token, payload)
-      .then((_res: admin.messaging.MessagingDevicesResponse) => {
-        functions.logger.log(`Push message success: ${JSON.stringify(_res)}`)
+      .sendToDevice(user.user_fcm.token, payload))
+
+    return Promise.all(promises)
+      .then(() => {
+        res.status(200).send('ok')
+        return
       })
       .catch((error: any) => {
-        functions.logger.error(`Push message error: ${error}`)
+        functions.logger.error(error)
+        res.status(500).send(JSON.stringify(error, undefined, 2))
+        return
       })
-
-    res.status(200).send('ok')
-    return
   } catch (e) {
     functions.logger.error(e)
     res.status(500).send(JSON.stringify(e, undefined, 2))

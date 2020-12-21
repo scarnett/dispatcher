@@ -18,7 +18,7 @@ exports = module.exports = functions.firestore
         const adminSecret: string = config.hasura.admin.secret
 
         // GraphQL mutation for inserting the new user
-        const mutation: string = `mutation ($roomIdentifier: String!, $messageIdentifier: String!, $userIdentifier: String!, $message: String!, $type: Int!) {
+        const mutation: string = `mutation ($roomIdentifier: String!, $messageIdentifier: String!, $userIdentifier: String!, $message: _int4!, $type: Int!) {
           insert_room_messages_one(
             object: {
               room_identifier: $roomIdentifier,
@@ -41,7 +41,7 @@ exports = module.exports = functions.firestore
           roomIdentifier: roomIdentifier,
           messageIdentifier: messageIdentifier,
           userIdentifier: messageData['user_identifier'],
-          message: messageData['message'],
+          message: `{${messageData['message'].join(',')}}`,
           type: messageData['type']
         }))
       } catch (e) {

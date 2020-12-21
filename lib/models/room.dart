@@ -1,3 +1,4 @@
+import 'package:dispatcher/graphql/utils.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/utils/date_utils.dart';
 import 'package:equatable/equatable.dart';
@@ -113,7 +114,7 @@ class RoomUser extends Equatable {
 
 class RoomMessage extends Equatable {
   final String user;
-  final String message;
+  final List<int> message;
   final int type;
   final DateTime createdDate;
 
@@ -126,7 +127,7 @@ class RoomMessage extends Equatable {
 
   RoomMessage copyWith({
     String user,
-    String message,
+    List<int> message,
     int type,
     DateTime createdDate,
   }) =>
@@ -144,7 +145,7 @@ class RoomMessage extends Equatable {
           ? RoomMessage()
           : RoomMessage(
               user: json['user_identifier'],
-              message: json['message'],
+              message: parseIntArray(json['message']),
               type: json['type'],
               createdDate: fromIso8601String(json['created_date']),
             );

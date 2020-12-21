@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dispatcher/models/room.dart';
 import 'package:rxdart/rxdart.dart';
 
-// @see https://medium.com/@danieln.llewellyn/flutter-bloc-and-firebase-1f9baee510cf
 abstract class RoomMessageRepository {
   Stream<List<RoomMessage>> messages();
 
@@ -19,7 +18,7 @@ abstract class RoomMessageRepository {
   void dispose();
 }
 
-class TipRepositoryFirestore extends RoomMessageRepository {
+class RoomMessageRepositoryFirestore extends RoomMessageRepository {
   StreamController<List<RoomMessage>> _messagesController = BehaviorSubject();
   final List<RoomMessage> _cache = List<RoomMessage>();
 

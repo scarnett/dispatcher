@@ -141,6 +141,7 @@ class _HomePageViewState extends State<HomePageView> {
   /// Builds the pageview
   Widget _buildBody() => Expanded(
         child: PageView(
+          physics: const NeverScrollableScrollPhysics(),
           controller: _pageController,
           onPageChanged: _tapPageTab,
           children: _getTabContainers(),

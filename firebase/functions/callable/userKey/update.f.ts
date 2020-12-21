@@ -8,7 +8,6 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
   const sigSignedPublicKey: string = data.sig_signed_public_key
   const sigSignedPreKeySignature: string = data.sig_signed_prekey_signature
   const sigIdentityPublicKey: string = data.sig_identity_public_key
-  const sigIdentityPublicKeyTest: any = data.sig_identity_public_key_test
   const sigPreKeys: any[] = data.sig_prekeys
 
   if (!identifier || !publicKey) {
@@ -16,14 +15,13 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
   }
 
   // GraphQL mutation for updating a user
-  const mutation: string = `mutation($identifier: String!, $publicKey: String!, $sigRegistrationId: Int!, $sigSignedPublicKey: String!, $sigSignedPreKeySignature: String!, $sigIdentityPublicKey: String!, $sigIdentityPublicKeyTest: String!, $sigPreKeys: [user_prekeys_insert_input!]!) {
+  const mutation: string = `mutation($identifier: String!, $publicKey: String!, $sigRegistrationId: Int!, $sigSignedPublicKey: _int4!, $sigSignedPreKeySignature: _int4!, $sigIdentityPublicKey: _int4!, $sigPreKeys: [user_prekeys_insert_input!]!) {
     update_user_keys(where: {user: {_eq: $identifier}}, _set: {
       public_key: $publicKey
       sig_registration_id: $sigRegistrationId
       sig_signed_public_key: $sigSignedPublicKey
       sig_signed_prekey_signature: $sigSignedPreKeySignature
-      sig_identity_public_key: $sigIdentityPublicKey,
-      sig_identity_public_key_test: $sigIdentityPublicKeyTest
+      sig_identity_public_key: $sigIdentityPublicKey
     }) {
       affected_rows
     }
@@ -51,7 +49,6 @@ exports = module.exports = functions.https.onCall(async (data: any, context: fun
         sigSignedPublicKey: sigSignedPublicKey,
         sigSignedPreKeySignature: sigSignedPreKeySignature,
         sigIdentityPublicKey: sigIdentityPublicKey,
-        sigIdentityPublicKeyTest: sigIdentityPublicKeyTest,
         sigPreKeys: sigPreKeys
       })
 

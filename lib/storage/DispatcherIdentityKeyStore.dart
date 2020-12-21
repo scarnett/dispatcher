@@ -42,8 +42,12 @@ class DispatcherIdentityKeyStore extends IdentityKeyStore {
     Direction direction,
   ) {
     List<dynamic> trustedDynList = store.read(address.toString());
+    if (trustedDynList == null) {
+      return true;
+    }
+
     List<int> trustedIntList = trustedDynList.map((s) => s as int).toList();
-    return ((trustedDynList == null) ||
+    return ((trustedIntList == null) ||
         eq.eq(Uint8List.fromList(trustedIntList), identityKey.serialize()));
   }
 
@@ -59,7 +63,7 @@ class DispatcherIdentityKeyStore extends IdentityKeyStore {
     }
 
     List<int> exitingIntList = exitingDynList.map((s) => s as int).toList();
-    if (identityKey.serialize() != Uint8List.fromList(exitingIntList)) {
+    if (!eq.eq(Uint8List.fromList(exitingIntList), identityKey.serialize())) {
       store.write(address.toString(), identityKey.serialize().toList());
       return true;
     }

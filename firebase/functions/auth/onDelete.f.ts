@@ -31,7 +31,7 @@ exports = module.exports = functions.auth.user().onDelete(async (user: functions
       affected_rows
     }
 
-    delete_user_connections(where: {_or: {connect_user: {_eq: $identifier}}, user: {_eq: $identifier}}) {
+    delete_user_connections(where: {_or: {connect_user: {_eq: $identifier}, user: {_eq: $identifier}}}) {
       affected_rows
     }
 

@@ -44,7 +44,8 @@ class AppLocalizations {
   String get messagesLoading =>
       addMessage('Loading your messages. Please wait...');
 
-  String sessionEncryption(
+  String get sessionEncryption => addMessage('Encrypting your session...');
+  String sessionEncryptionName(
     String name,
   ) =>
       addMessage(

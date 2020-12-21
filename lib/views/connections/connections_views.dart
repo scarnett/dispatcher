@@ -11,6 +11,8 @@ import 'package:dispatcher/widgets/view_message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
 
 class ConnectionsView extends StatelessWidget {
   static Route route() =>
@@ -25,7 +27,14 @@ class ConnectionsView extends StatelessWidget {
     BuildContext context,
   ) =>
       BlocProvider<ConnectionsBloc>(
-        create: (BuildContext context) => ConnectionsBloc(),
+        create: (BuildContext context) => ConnectionsBloc()
+          ..add(FetchConnectionData(
+            Provider.of<GraphQLClient>(
+              context,
+              listen: false,
+            ),
+            context.bloc<AuthBloc>().state.user,
+          )),
         child: ConnectionsPageView(),
       );
 }
@@ -84,7 +93,7 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
     ConnectionsState state,
   ) {
     if ((state == null) ||
-        (context.bloc<AuthBloc>().state.user.connections == null)) {
+        (context.bloc<ConnectionsBloc>().state.connections == null)) {
       return ViewMessage(
         message: AppLocalizations.of(context).connectionsLoading,
         centered: false,
@@ -103,51 +112,69 @@ class _ConnectionsPageViewState extends State<ConnectionsPageView>
     ConnectionsState state,
   ) {
     List<UserConnection> connections =
-        context.bloc<AuthBloc>().state.user.connections;
+        context.bloc<ConnectionsBloc>().state.connections;
 
     if ((connections == null) || (connections.length == 0)) {
-      return NoneFound(
-        message: AppLocalizations.of(context).connectionsNone,
+      return RefreshIndicator(
+        onRefresh: _fetchConnectionData,
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: NoneFound(
+            message: AppLocalizations.of(context).connectionsNone,
+          ),
+        ),
       );
     }
 
     return Flexible(
-      child: ListView.builder(
-        controller: _connectionsListViewController,
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        itemCount: connections?.length ?? 0,
-        itemBuilder: (
-          BuildContext context,
-          int index,
-        ) {
-          UserConnection connection = connections?.elementAt(index);
+      child: RefreshIndicator(
+        onRefresh: _fetchConnectionData,
+        child: ListView.builder(
+          controller: _connectionsListViewController,
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          scrollDirection: Axis.vertical,
+          itemCount: connections?.length ?? 0,
+          itemBuilder: (
+            BuildContext context,
+            int index,
+          ) {
+            UserConnection connection = connections?.elementAt(index);
 
-          return InkWell(
-            onTap: () => _tapConnection(connection.connectionUser),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 10.0,
-                horizontal: 20.0,
-              ),
-              child: Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10.0),
-                    child: AvatarDisplay(
-                      user: connection.connectionUser,
-                      avatarRadius: 28.0,
-                      progressStrokeWidth: 2.0,
+            return InkWell(
+              onTap: () => _tapConnection(connection.connectionUser),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10.0,
+                  horizontal: 20.0,
+                ),
+                child: Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: AvatarDisplay(
+                        user: connection.connectionUser,
+                        avatarRadius: 28.0,
+                        progressStrokeWidth: 2.0,
+                      ),
                     ),
-                  ),
-                  _buildConnection(connection),
-                ],
+                    _buildConnection(connection),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
+  }
+
+  Future<void> _fetchConnectionData() async {
+    context.bloc<ConnectionsBloc>().add(FetchConnectionData(
+          Provider.of<GraphQLClient>(context, listen: false),
+          context.bloc<AuthBloc>().state.user,
+        ));
   }
 
   /// Builds a connection widget.

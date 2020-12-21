@@ -1,3 +1,4 @@
+import 'package:dispatcher/graphql/utils.dart';
 import 'package:dispatcher/utils/date_utils.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -99,8 +100,7 @@ class User extends Equatable {
   @override
   String toString() =>
       'User{identifier: $identifier, name: $name, email: $email, ' +
-      'phone: $phone, avatar: $avatar, key: $key, preKeys: ${preKeys?.length}, ' +
-      'fcm: $fcm, connections: ${connections?.length}}';
+      'phone: $phone, avatar: $avatar}';
 }
 
 class UserPhoneNumber extends Equatable {
@@ -304,9 +304,9 @@ class UserPIN extends Equatable {
 class UserKey extends Equatable {
   final String publicKey;
   final int sigRegistrationId;
-  final String sigSignedPublicKey;
-  final String sigSignedPrekeySignature;
-  final String sigIdentityPublicKey;
+  final List<int> sigSignedPublicKey;
+  final List<int> sigSignedPrekeySignature;
+  final List<int> sigIdentityPublicKey;
 
   UserKey({
     this.publicKey,
@@ -319,9 +319,9 @@ class UserKey extends Equatable {
   UserKey copyWith({
     String publicKey,
     int sigRegistrationId,
-    String sigSignedPublicKey,
-    String sigSignedPrekeySignature,
-    String sigIdentityPublicKey,
+    List<int> sigSignedPublicKey,
+    List<int> sigSignedPrekeySignature,
+    List<int> sigIdentityPublicKey,
   }) =>
       UserKey(
         publicKey: publicKey ?? this.publicKey,
@@ -340,9 +340,11 @@ class UserKey extends Equatable {
           : UserKey(
               publicKey: json['public_key'],
               sigRegistrationId: json['sig_registration_id'],
-              sigSignedPublicKey: json['sig_signed_public_key'],
-              sigSignedPrekeySignature: json['sig_signed_prekey_signature'],
-              sigIdentityPublicKey: json['sig_identity_public_key'],
+              sigSignedPublicKey: parseIntArray(json['sig_signed_public_key']),
+              sigSignedPrekeySignature:
+                  parseIntArray(json['sig_signed_prekey_signature']),
+              sigIdentityPublicKey:
+                  parseIntArray(json['sig_identity_public_key']),
             );
 
   dynamic toJson() => {
@@ -364,14 +366,14 @@ class UserKey extends Equatable {
 
   @override
   String toString() =>
-      'UserKey{public_key: $publicKey, sig_registration_id: $sigRegistrationId ' +
-      'sig_signed_public_key: $sigSignedPublicKey, sig_signed_prekey_signature: $sigSignedPrekeySignature ' +
-      'sig_identity_public_key: $sigIdentityPublicKey}';
+      'UserKey{public_key: ${publicKey?.substring(0, 25)}, sig_registration_id: $sigRegistrationId ' +
+      'sig_signed_public_key: ${sigSignedPublicKey?.length}, sig_signed_prekey_signature: ${sigSignedPrekeySignature?.length} ' +
+      'sig_identity_public_key: ${sigIdentityPublicKey?.length}}';
 }
 
 class UserPreKey extends Equatable {
   final int keyId;
-  final String publicKey;
+  final List<int> publicKey;
 
   UserPreKey({
     this.keyId,
@@ -380,7 +382,7 @@ class UserPreKey extends Equatable {
 
   UserPreKey copyWith({
     String keyId,
-    String publicKey,
+    List<int> publicKey,
   }) =>
       UserPreKey(
         keyId: keyId ?? this.keyId,
@@ -394,7 +396,7 @@ class UserPreKey extends Equatable {
           ? UserPreKey()
           : UserPreKey(
               keyId: json['key_id'],
-              publicKey: json['public_key'],
+              publicKey: parseIntArray(json['public_key']),
             );
 
   static List<UserPreKey> fromJsonList(
@@ -425,7 +427,8 @@ class UserPreKey extends Equatable {
       ];
 
   @override
-  String toString() => 'UserPreKey{key_id: $keyId, public_key: $publicKey}';
+  String toString() =>
+      'UserPreKey{key_id: $keyId, public_key: ${publicKey?.length}}';
 }
 
 class UserFCM extends Equatable {

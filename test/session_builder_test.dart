@@ -80,5 +80,26 @@ void main() {
     Uint8List plaintext = bobSessionCipher.decrypt(incomingMessage);
     String result = utf8.decode(plaintext, allowMalformed: true);
     assert(originalMessage == result);
+
+    assert(bobStore.containsSession(aliceAddress));
+    assert(
+        bobStore.loadSession(aliceAddress).sessionState.getSessionVersion() ==
+            3);
+
+    assert(
+        bobStore.loadSession(aliceAddress).sessionState.aliceBaseKey != null);
+
+    assert(originalMessage == utf8.decode(plaintext, allowMalformed: true));
+
+    CiphertextMessage bobOutgoingMessage =
+        bobSessionCipher.encrypt(utf8.encode(originalMessage));
+
+    assert(bobOutgoingMessage.getType() == CiphertextMessage.WHISPER_TYPE);
+
+    Uint8List alicePlaintext = aliceSessionCipher.decryptFromSignal(
+        SignalMessage.fromSerialized(bobOutgoingMessage.serialize()));
+
+    assert(
+        utf8.decode(alicePlaintext, allowMalformed: true) == originalMessage);
   });
 }

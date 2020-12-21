@@ -38,9 +38,11 @@ class DispatcherSessionStore extends SessionStore {
     List<int> deviceIds = <int>[];
 
     for (String key in store.getKeys()) {
-      SignalProtocolAddress address = store.read(key);
-      if ((key == name) && (address.getDeviceId() != 1)) {
-        deviceIds.add(address.getDeviceId());
+      if (key == name) {
+        SignalProtocolAddress address = store.read(key);
+        if (address.getDeviceId() != 1) {
+          deviceIds.add(address.getDeviceId());
+        }
       }
     }
 
@@ -49,11 +51,11 @@ class DispatcherSessionStore extends SessionStore {
 
   @override
   SessionRecord loadSession(
-    SignalProtocolAddress remoteAddress,
+    SignalProtocolAddress address,
   ) {
     try {
-      if (containsSession(remoteAddress)) {
-        List<dynamic> sessionDynList = store.read(remoteAddress.getName());
+      if (containsSession(address)) {
+        List<dynamic> sessionDynList = store.read(address.getName());
         List<int> sessionIntList = sessionDynList.map((s) => s as int).toList();
         return SessionRecord.fromSerialized(Uint8List.fromList(sessionIntList));
       }

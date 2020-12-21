@@ -19,8 +19,6 @@ class DispatcherKeyStore {
   }
 
   String getPublicKey() => store.read('publicKey');
-
   String getPrivateKey() => store.read('privateKey');
-
   bool hasData() => ((getPublicKey() != null) && (getPrivateKey() != null));
 }

@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/env_config.dart';
+import 'package:dispatcher/graphql/utils.dart';
 import 'package:dispatcher/storage/storage.dart';
 import 'package:dispatcher/views/auth/create/bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
@@ -59,9 +63,14 @@ Future<HttpsCallableResult> saveKeys(
     signal.PreKeyRecord preKey = preKeyStore.loadPreKey(int.parse(key));
     preKeys.add({
       'key_id': preKey.id,
-      'public_key': String.fromCharCodes(preKey.serialize()),
+      'public_key': fromArray(preKey.serialize().toList()),
     });
   });
+
+  Uint8List _signedPreKeySignature = signal.Curve.calculateSignature(
+    identityKeyStore.getIdentityKeyPair().getPrivateKey(),
+    signedPreKey.getKeyPair().publicKey.serialize(),
+  );
 
   // Builds the key data map
   Map<String, dynamic> keyData = Map<String, dynamic>.from({
@@ -69,12 +78,13 @@ Future<HttpsCallableResult> saveKeys(
     'public_key': keyStore.getPublicKey(),
     'sig_registration_id': identityKeyStore.getLocalRegistrationId(),
     'sig_signed_public_key':
-        String.fromCharCodes(signedPreKey.getKeyPair().publicKey.serialize()),
-    'sig_signed_prekey_signature': String.fromCharCodes(signedPreKey.signature),
-    'sig_identity_public_key': String.fromCharCodes(
-        identityKeyStore.getIdentityKeyPair().getPublicKey().serialize()),
-    'sig_identity_public_key_test':
-        identityKeyStore.getIdentityKeyPair().getPublicKey().serialize(),
+        fromArray(signedPreKey.getKeyPair().publicKey.serialize().toList()),
+    'sig_signed_prekey_signature': fromArray(_signedPreKeySignature.toList()),
+    'sig_identity_public_key': fromArray(identityKeyStore
+        .getIdentityKeyPair()
+        .getPublicKey()
+        .serialize()
+        .toList()),
     'sig_prekeys': preKeys,
   });
 

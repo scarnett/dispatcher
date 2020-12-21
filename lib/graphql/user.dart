@@ -21,34 +21,39 @@ const String fetchUserQueryStr = r'''
         user_fcm {
           token
         }
-        user_connections {
-          connection_user {
-            identifier
-            name
-            email
-            user_avatar {
-              url
-              thumb_url
-              path
-              thumb_path
-            }
-            user_phone_number {
-              phone_number
-              iso_code
-              dial_code
-            }
-            user_key {
-              sig_identity_public_key
-              sig_registration_id
-              sig_signed_prekey_signature
-              sig_signed_public_key
-              public_key
-            }
-          }
-        }
       }
     }
     ''';
+
+const String fetchUserConnectionsQueryStr = r'''
+  query UserConnectionsQuery($identifier: String!) {
+    user_connections(where: {user: {_eq: $identifier}}) {
+      connection_user {
+        identifier
+        name
+        email
+        user_avatar {
+          url
+          thumb_url
+          path
+          thumb_path
+        }
+        user_phone_number {
+          phone_number
+          iso_code
+          dial_code
+        }
+        user_key {
+          sig_identity_public_key
+          sig_registration_id
+          sig_signed_prekey_signature
+          sig_signed_public_key
+          public_key
+        }
+      }
+    }
+  }
+''';
 
 const String fetchPINQueryStr = r'''
     query UserPINQuery($identifier: String!) {
