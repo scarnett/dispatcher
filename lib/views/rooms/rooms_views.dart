@@ -1,7 +1,7 @@
-import 'dart:typed_data';
 import 'package:dispatcher/graphql/client_provider.dart';
 import 'package:dispatcher/localization.dart';
 import 'package:dispatcher/models/models.dart';
+import 'package:dispatcher/utils/crypt_utils.dart';
 import 'package:dispatcher/views/rooms/repository/rooms_repository.dart';
 import 'package:dispatcher/theme.dart';
 import 'package:dispatcher/views/auth/bloc/bloc.dart';
@@ -15,8 +15,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart' as signal;
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+
+Logger _logger = Logger();
 
 class RoomView extends StatelessWidget {
   final User user;
@@ -42,7 +44,7 @@ class RoomView extends StatelessWidget {
       ClientProvider(
         child: RepositoryProvider<RoomMessageRepository>(
           create: (context) => RoomMessageRepositoryFirestore()
-            ..refreshMessages('-MP0Q5nH0HILAldj30JE'), // TODO!
+            ..refreshMessages('-MP6Ne5IwbP3GvUEq8aw'), // TODO!
           child: BlocProvider<RoomsBloc>(
             create: (BuildContext context) => RoomsBloc(
               roomMessageRepository: RepositoryProvider.of(context),
@@ -82,7 +84,7 @@ class _RoomPageViewState extends State<RoomPageView>
         FetchRoomData(
           Provider.of<GraphQLClient>(context, listen: false),
           context.bloc<AuthBloc>().state.user,
-          widget.user.identifier,
+          widget.user,
         ),
       );
 
@@ -196,7 +198,6 @@ class _RoomPageViewState extends State<RoomPageView>
 
             case ConnectionState.active:
             case ConnectionState.done:
-
               // TODO! Handle
               return Expanded(
                 child: ListView.builder(
@@ -208,38 +209,31 @@ class _RoomPageViewState extends State<RoomPageView>
                     BuildContext context,
                     int index,
                   ) {
-                    RoomMessage message = snapshot.data?.elementAt(index);
-
                     try {
-                      signal.SessionCipher sessionCipher =
-                          context.bloc<RoomsBloc>().state.sessionCipher;
+                      RoomMessage message = snapshot.data?.elementAt(index);
+                      String result = decryptMessage(
+                        context.bloc<RoomsBloc>().state.sessionCipher,
+                        message.message,
+                      );
 
-                      signal.PreKeySignalMessage incomingMessage =
-                          signal.PreKeySignalMessage(
-                              Uint8List.fromList(message.message));
-
-                      print(incomingMessage.getType());
-                      print(incomingMessage.message);
-
-                      Uint8List plainText =
-                          sessionCipher.decrypt(incomingMessage);
-
-                      //String result =
-                      //    utf8.decode(plainText, allowMalformed: true);
-
-                      // print(result);
-                      // print(String.fromCharCodes(msg));
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 20.0,
+                        ),
+                        child: Text(result),
+                      );
                     } catch (e) {
-                      print(e);
-                    }
+                      _logger.e(e);
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10.0,
-                        horizontal: 20.0,
-                      ),
-                      child: Text('message'),
-                    );
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 20.0,
+                        ),
+                        child: Text('message'), // TODO! decrypt error
+                      );
+                    }
                   },
                 ),
               );
@@ -325,13 +319,7 @@ class _RoomPageViewState extends State<RoomPageView>
   void _tapDone(
     String value,
   ) {
-    context.bloc<RoomsBloc>().add(
-          SendMessage(
-            context.bloc<AuthBloc>().state.user.identifier,
-            value,
-          ),
-        );
-
+    context.bloc<RoomsBloc>().add(SendMessage(widget.user, value));
     _messageTextController.clear();
   }
 }

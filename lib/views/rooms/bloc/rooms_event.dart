@@ -9,21 +9,21 @@ abstract class RoomsEvent extends Equatable {
 
 class FetchRoomData extends RoomsEvent {
   final GraphQLClient client;
-  final User user;
-  final String roomUserIdentifer;
+  final User senderUser;
+  final User receiverUser;
 
   const FetchRoomData(
     this.client,
-    this.user,
-    this.roomUserIdentifer,
+    this.senderUser,
+    this.receiverUser,
   );
 
   @override
-  List<Object> get props => [client, user, roomUserIdentifer];
+  List<Object> get props => [client, senderUser, receiverUser];
 }
 
 class SendMessage extends RoomsEvent {
-  final String user;
+  final User user;
   final String message;
 
   const SendMessage(

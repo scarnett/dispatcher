@@ -18,7 +18,7 @@ class DispatcherPreKeyStore extends PreKeyStore {
   ) {
     try {
       if (!store.hasData(preKeyId.toString())) {
-        throw InvalidKeyIdException('No such prekeyrecord!');
+        throw InvalidKeyIdException('No such prekeyrecord; $preKeyId');
       }
 
       List<dynamic> prekeyDynList = store.read(preKeyId.toString());
@@ -29,6 +29,7 @@ class DispatcherPreKeyStore extends PreKeyStore {
     }
   }
 
+  // TODO! also remove from db
   @override
   void removePreKey(
     int preKeyId,

@@ -27,7 +27,6 @@ Future<List<UserConnection>> tryGetUserConnections(
     } else {
       dynamic connections = result.data['user_connections'];
       if ((connections != null) && (connections.length > 0)) {
-        print(connections);
         return UserConnection.fromJsonList(connections);
       }
 

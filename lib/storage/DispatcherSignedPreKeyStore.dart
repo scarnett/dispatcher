@@ -13,7 +13,7 @@ class DispatcherSignedPreKeyStore extends SignedPreKeyStore {
     try {
       if (!store.hasData(signedPreKeyId.toString())) {
         throw InvalidKeyIdException(
-            'No such signedprekeyrecord! $signedPreKeyId');
+            'No such signedprekeyrecord; $signedPreKeyId');
       }
 
       List<dynamic> signedPrekeyDynList = store.read(signedPreKeyId.toString());

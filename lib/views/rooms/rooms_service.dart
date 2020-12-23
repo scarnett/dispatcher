@@ -7,8 +7,8 @@ Future<HttpsCallableResult> fetchRoom(
   // Builds the room user data map
   Map<String, dynamic> roomUserData = Map<String, dynamic>.from({
     'users': [
-      event.user.identifier,
-      event.roomUserIdentifer,
+      event.senderUser.identifier,
+      event.receiverUser.identifier,
     ],
   });
 

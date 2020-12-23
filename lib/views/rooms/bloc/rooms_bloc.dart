@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/models/models.dart';
-import 'package:dispatcher/views/rooms/repository/rooms_repository.dart';
+import 'package:dispatcher/storage/storage.dart';
 import 'package:dispatcher/utils/crypt_utils.dart';
+import 'package:dispatcher/views/rooms/repository/rooms_repository.dart';
 import 'package:dispatcher/views/rooms/rooms_enums.dart';
 import 'package:dispatcher/views/rooms/rooms_service.dart';
 import 'package:equatable/equatable.dart';
@@ -56,23 +56,35 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
     yield state.copyWith(sessionStatus: RoomSessionStatus.CREATING);
 
     try {
-      if ((event.user != null) && (event.roomUserIdentifer != null)) {
+      if ((event.senderUser != null) && (event.receiverUser != null)) {
         HttpsCallableResult roomResult = await fetchRoom(event);
         if (roomResult != null) {
           Room room = Room.fromJson(roomResult.data);
           RoomUser roomUser = room.users.firstWhere((roomUser) =>
-              roomUser.user.identifier == event.roomUserIdentifer);
+              roomUser.user.identifier == event.receiverUser.identifier);
 
-          if (roomUser != null) {
-            // TODO! Check to see if the session cipher has already been created for this user previosuly and load it if already exists
+          if ((roomUser != null) && (state.sessionCipher == null)) {
+            DispatcherIdentityKeyStore identityKeyStore =
+                DispatcherIdentityKeyStore();
+
+            DispatcherSignalProtocolStore _store =
+                DispatcherSignalProtocolStore(
+              identityKeyStore.getIdentityKeyPair(),
+              identityKeyStore.getLocalRegistrationId(),
+            );
+
+            buildSessionCipher(event.receiverUser, _store);
+
+            signal.SignalProtocolAddress _address =
+                signal.SignalProtocolAddress(event.receiverUser.identifier, 1);
 
             yield state.copyWith(
               activeRoom: room,
-              sessionCipher: await buildSessionCipher(roomUser),
               sessionStatus: RoomSessionStatus.CREATED,
+              sessionCipher: signal.SessionCipher.fromStore(_store, _address),
             );
           } else {
-            _logger.e("roomUser '${event.roomUserIdentifer}' not found");
+            _logger.e("receiverUser '${event.receiverUser}' not found");
             yield state.copyWith(sessionStatus: RoomSessionStatus.CANT_CREATE);
           }
         } else {
@@ -81,7 +93,7 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
         }
       } else {
         _logger.e(
-            'Missing data; user: ${event.user}, roomUserIdentifier: ${event.roomUserIdentifer}');
+            'Missing data; senderUser: ${event.senderUser}, receiverUser: ${event.receiverUser}');
         yield state.copyWith(sessionStatus: RoomSessionStatus.CANT_CREATE);
       }
     } catch (e) {
@@ -93,25 +105,20 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
   Stream<RoomsState> _mapSendMessageToStates(
     SendMessage event,
   ) async* {
-    if (state.sessionCipher != null) {
-      signal.CiphertextMessage cipherText =
-          state.sessionCipher.encrypt(utf8.encode(event.message));
+    print('1111');
+    signal.CiphertextMessage cipherText =
+        state.sessionCipher.encrypt(utf8.encode(event.message));
 
-      Uint8List serializedCipherText = cipherText.serialize();
-
-      signal.PreKeySignalMessage msgIn =
-          signal.PreKeySignalMessage(serializedCipherText);
-
-      // Sends a message to the room
-      roomMessageRepository.sendMessage(
-        state.activeRoom.identifier,
-        RoomMessage(
-          user: event.user,
-          message: cipherText.serialize().toList(),
-          type: msgIn.getType(),
-        ),
-      );
-    }
+    print('2222');
+    // Sends a message to the room
+    roomMessageRepository.sendMessage(
+      state.activeRoom.identifier,
+      RoomMessage(
+        user: event.user.identifier,
+        message: cipherText.serialize().toList(),
+        type: cipherText.getType(),
+      ),
+    );
 
     yield state;
   }
@@ -128,9 +135,8 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
 
   RoomsState _mapSetSessionStatusToStates(
     SetSessionStatus event,
-  ) {
-    return state.copyWith(
-      sessionStatus: event.sessionStatus,
-    );
-  }
+  ) =>
+      state.copyWith(
+        sessionStatus: event.sessionStatus,
+      );
 }

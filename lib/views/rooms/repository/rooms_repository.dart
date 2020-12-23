@@ -53,12 +53,15 @@ class RoomMessageRepositoryFirestore extends RoomMessageRepository {
           .snapshots()
           .listen((QuerySnapshot messages) {
         _cache.clear();
-        messages.docs.forEach((QueryDocumentSnapshot messageDoc) {
-          final Map<String, dynamic> messageData = messageDoc.data();
-          _cache.add(RoomMessage.fromJson(messageData));
-        });
 
-        _messagesController.sink.add(_cache);
+        if (!_messagesController.isClosed) {
+          messages.docs.forEach((QueryDocumentSnapshot messageDoc) {
+            final Map<String, dynamic> messageData = messageDoc.data();
+            _cache.add(RoomMessage.fromJson(messageData));
+          });
+
+          _messagesController.sink.add(_cache);
+        }
       });
     }
   }

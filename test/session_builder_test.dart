@@ -1,105 +1,105 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:fixnum/fixnum.dart';
 import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart';
 import 'package:test/test.dart';
 import 'test_in_memory_signal_protocol_store.dart';
 
 void main() {
-  final aliceAddress = SignalProtocolAddress('+14151111111', 1);
-  final bobAddress = SignalProtocolAddress('+14152222222', 1);
+  SignalProtocolAddress aliceAddress = SignalProtocolAddress('+14151111111', 1);
+  TestInMemorySignalProtocolStore aliceStore;
+  SessionBuilder aliceSessionBuilder;
 
-  test('testPreKey', () {
-    TestInMemorySignalProtocolStore aliceStore =
-        TestInMemorySignalProtocolStore();
+  SignalProtocolAddress bobAddress = SignalProtocolAddress('+14152222222', 1);
+  TestInMemorySignalProtocolStore bobStore;
+  SessionBuilder bobSessionBuilder;
+  PreKeyBundle bobPreKey;
 
-    SessionBuilder aliceSessionBuilder =
+  aliceSetup() {
+    aliceStore = TestInMemorySignalProtocolStore();
+    aliceSessionBuilder =
         SessionBuilder.fromSignalStore(aliceStore, bobAddress);
+  }
 
-    TestInMemorySignalProtocolStore bobStore =
-        TestInMemorySignalProtocolStore();
+  bobSetup(
+    int signedPreKeyId,
+    int preKeyId,
+  ) {
+    bobStore = TestInMemorySignalProtocolStore();
+    bobSessionBuilder = SessionBuilder.fromSignalStore(bobStore, aliceAddress);
 
     ECKeyPair bobPreKeyPair = Curve.generateKeyPair();
     ECKeyPair bobSignedPreKeyPair = Curve.generateKeyPair();
-
     Uint8List bobSignedPreKeySignature = Curve.calculateSignature(
       bobStore.getIdentityKeyPair().getPrivateKey(),
       bobSignedPreKeyPair.publicKey.serialize(),
     );
 
-    PreKeyBundle bobPreKey = PreKeyBundle(
+    bobPreKey = PreKeyBundle(
       bobStore.getLocalRegistrationId(),
       1,
-      31337,
+      preKeyId,
       bobPreKeyPair.publicKey,
-      22,
+      signedPreKeyId,
       bobSignedPreKeyPair.publicKey,
       bobSignedPreKeySignature,
       bobStore.getIdentityKeyPair().getPublicKey(),
     );
 
-    aliceSessionBuilder.processPreKeyBundle(bobPreKey);
-
-    assert(aliceStore.containsSession(bobAddress));
-    assert(
-        aliceStore.loadSession(bobAddress).sessionState.getSessionVersion() ==
-            3);
-
-    final String originalMessage = 'Hello World!';
-    SessionCipher aliceSessionCipher =
-        SessionCipher.fromStore(aliceStore, bobAddress);
-
-    CiphertextMessage outgoingMessage =
-        aliceSessionCipher.encrypt(utf8.encode(originalMessage));
-
-    assert(outgoingMessage.getType() == CiphertextMessage.PREKEY_TYPE);
-
-    Uint8List serializedCipherText = outgoingMessage.serialize();
-    String cipherTextStr = String.fromCharCodes(serializedCipherText);
-
-    PreKeySignalMessage incomingMessage =
-        PreKeySignalMessage(Uint8List.fromList(cipherTextStr.codeUnits));
-
     bobStore.storePreKey(
-        31337, PreKeyRecord(bobPreKey.getPreKeyId(), bobPreKeyPair));
+        preKeyId, PreKeyRecord(bobPreKey.getPreKeyId(), bobPreKeyPair));
 
     bobStore.storeSignedPreKey(
-      22,
+      signedPreKeyId,
       SignedPreKeyRecord(
-        22,
+        signedPreKeyId,
         Int64(DateTime.now().millisecondsSinceEpoch),
         bobSignedPreKeyPair,
         bobSignedPreKeySignature,
       ),
     );
+  }
+
+  test('testPreKey', () {
+    aliceSetup();
+    bobSetup(22, 31337);
+
+    aliceSessionBuilder.processPreKeyBundle(bobPreKey);
+    assert(aliceStore.containsSession(bobAddress));
+
+    final String originalMessage = 'Hello World!';
+    SessionCipher aliceSessionCipher =
+        SessionCipher.fromStore(aliceStore, bobAddress);
+
+    CiphertextMessage aliceOutgoingMessage =
+        aliceSessionCipher.encrypt(utf8.encode(originalMessage));
+
+    assert(aliceOutgoingMessage.getType() == CiphertextMessage.PREKEY_TYPE);
+
+    Uint8List serializedCipherText = aliceOutgoingMessage.serialize();
+    PreKeySignalMessage incomingMessage =
+        PreKeySignalMessage(Uint8List.fromList(serializedCipherText.toList()));
 
     SessionCipher bobSessionCipher =
         SessionCipher.fromStore(bobStore, aliceAddress);
 
-    Uint8List plaintext = bobSessionCipher.decrypt(incomingMessage);
-    String result = utf8.decode(plaintext, allowMalformed: true);
-    assert(originalMessage == result);
+    Uint8List plainText = bobSessionCipher.decrypt(incomingMessage);
+    String result = utf8.decode(plainText, allowMalformed: true);
 
+    assert(originalMessage == result);
     assert(bobStore.containsSession(aliceAddress));
     assert(
-        bobStore.loadSession(aliceAddress).sessionState.getSessionVersion() ==
-            3);
-
-    assert(
         bobStore.loadSession(aliceAddress).sessionState.aliceBaseKey != null);
-
-    assert(originalMessage == utf8.decode(plaintext, allowMalformed: true));
 
     CiphertextMessage bobOutgoingMessage =
         bobSessionCipher.encrypt(utf8.encode(originalMessage));
 
     assert(bobOutgoingMessage.getType() == CiphertextMessage.WHISPER_TYPE);
 
-    Uint8List alicePlaintext = aliceSessionCipher.decryptFromSignal(
+    Uint8List alicePlainText = aliceSessionCipher.decryptFromSignal(
         SignalMessage.fromSerialized(bobOutgoingMessage.serialize()));
 
-    assert(
-        utf8.decode(alicePlaintext, allowMalformed: true) == originalMessage);
+    result = utf8.decode(alicePlainText, allowMalformed: true);
+    assert(originalMessage == result);
   });
 }

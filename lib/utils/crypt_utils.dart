@@ -132,34 +132,29 @@ String decode(
 }
 
 /// Builds the signal session cipher
-Future<signal.SessionCipher> buildSessionCipher(
-  RoomUser roomUser,
+void buildSessionCipher(
+  User user,
+  DispatcherSignalProtocolStore store,
 ) async {
-  DispatcherIdentityKeyStore identityKeyStore = DispatcherIdentityKeyStore();
-  DispatcherSignalProtocolStore _store = DispatcherSignalProtocolStore(
-    identityKeyStore.getIdentityKeyPair(),
-    identityKeyStore.getLocalRegistrationId(),
-  );
-
   signal.SignalProtocolAddress _address =
-      signal.SignalProtocolAddress(roomUser.user.identifier, 1);
+      signal.SignalProtocolAddress(user.identifier, 1);
 
   signal.SessionBuilder _sessionBuilder =
-      signal.SessionBuilder.fromSignalStore(_store, _address);
+      signal.SessionBuilder.fromSignalStore(store, _address);
 
-  signal.PreKeyRecord _preKeyRecord = _store.loadPreKey(roomUser.preKey.keyId);
+  signal.PreKeyRecord _preKeyRecord = store.loadPreKey(13); // TODO!
 
   signal.ECPublicKey _signedPreKeyRecord = signal.Curve.decodePoint(
-      Uint8List.fromList(roomUser.user.key.sigSignedPublicKey), 0);
+      Uint8List.fromList(user.key.sigSignedPublicKey), 0);
 
   Uint8List _signedPreKeySignature =
-      Uint8List.fromList(roomUser.user.key.sigSignedPrekeySignature);
+      Uint8List.fromList(user.key.sigSignedPrekeySignature);
 
   signal.IdentityKey _identityKey = signal.IdentityKey.fromBytes(
-      Uint8List.fromList(roomUser.user.key.sigIdentityPublicKey), 0);
+      Uint8List.fromList(user.key.sigIdentityPublicKey), 0);
 
   signal.PreKeyBundle _userPreKey = signal.PreKeyBundle(
-    roomUser.user.key.sigRegistrationId,
+    user.key.sigRegistrationId,
     1, // TODO!
     _preKeyRecord.id,
     _preKeyRecord.getKeyPair().publicKey,
@@ -170,5 +165,15 @@ Future<signal.SessionCipher> buildSessionCipher(
   );
 
   _sessionBuilder.processPreKeyBundle(_userPreKey);
-  return signal.SessionCipher.fromStore(_store, _address);
+}
+
+String decryptMessage(
+  signal.SessionCipher sessionCipher,
+  List<int> message,
+) {
+  signal.PreKeySignalMessage incomingMessage =
+      signal.PreKeySignalMessage(Uint8List.fromList(message));
+
+  Uint8List plainText = sessionCipher.decrypt(incomingMessage);
+  return utf8.decode(plainText, allowMalformed: true);
 }
