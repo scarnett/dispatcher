@@ -23,16 +23,18 @@ class FetchRoomData extends RoomsEvent {
 }
 
 class SendMessage extends RoomsEvent {
-  final User user;
+  final User senderUser;
+  final User receiverUser;
   final String message;
 
   const SendMessage(
-    this.user,
+    this.senderUser,
+    this.receiverUser,
     this.message,
   );
 
   @override
-  List<Object> get props => [user, message];
+  List<Object> get props => [senderUser, receiverUser, message];
 }
 
 class AddMessages extends RoomsEvent {

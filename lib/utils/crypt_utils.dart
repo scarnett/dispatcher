@@ -142,7 +142,7 @@ void buildSessionCipher(
   signal.SessionBuilder _sessionBuilder =
       signal.SessionBuilder.fromSignalStore(store, _address);
 
-  signal.PreKeyRecord _preKeyRecord = store.loadPreKey(13); // TODO!
+  signal.PreKeyRecord _preKeyRecord = store.loadPreKey(18); // TODO!
 
   signal.ECPublicKey _signedPreKeyRecord = signal.Curve.decodePoint(
       Uint8List.fromList(user.key.sigSignedPublicKey), 0);

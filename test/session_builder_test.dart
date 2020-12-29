@@ -12,7 +12,7 @@ void main() {
 
   SignalProtocolAddress bobAddress = SignalProtocolAddress('+14152222222', 1);
   TestInMemorySignalProtocolStore bobStore;
-  SessionBuilder bobSessionBuilder;
+  // SessionBuilder bobSessionBuilder;
   PreKeyBundle bobPreKey;
 
   aliceSetup() {
@@ -26,7 +26,7 @@ void main() {
     int preKeyId,
   ) {
     bobStore = TestInMemorySignalProtocolStore();
-    bobSessionBuilder = SessionBuilder.fromSignalStore(bobStore, aliceAddress);
+    // bobSessionBuilder = SessionBuilder.fromSignalStore(bobStore, aliceAddress);
 
     ECKeyPair bobPreKeyPair = Curve.generateKeyPair();
     ECKeyPair bobSignedPreKeyPair = Curve.generateKeyPair();

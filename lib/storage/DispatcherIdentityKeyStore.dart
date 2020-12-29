@@ -25,6 +25,11 @@ class DispatcherIdentityKeyStore extends IdentityKeyStore {
   @override
   IdentityKeyPair getIdentityKeyPair() {
     List<dynamic> identityKeyPairDynList = store.read('identityKeyPair');
+
+    if (identityKeyPairDynList == null) {
+      throw InvalidKeyIdException('No identityKeyPair found');
+    }
+
     List<int> identityKeyPairIntList =
         identityKeyPairDynList.map((s) => s as int).toList();
 

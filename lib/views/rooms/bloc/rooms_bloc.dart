@@ -5,6 +5,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dispatcher/models/models.dart';
 import 'package:dispatcher/storage/storage.dart';
 import 'package:dispatcher/utils/crypt_utils.dart';
+import 'package:dispatcher/views/rooms/data/rooms_data.dart';
 import 'package:dispatcher/views/rooms/repository/rooms_repository.dart';
 import 'package:dispatcher/views/rooms/rooms_enums.dart';
 import 'package:dispatcher/views/rooms/rooms_service.dart';
@@ -19,11 +20,18 @@ part 'rooms_state.dart';
 
 class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
   final RoomMessageRepository roomMessageRepository;
+  final StreamController<List<RoomMessage>> _messagesController =
+      StreamController<List<RoomMessage>>.broadcast();
+
+  StreamSink<List<RoomMessage>> get _inMessages => _messagesController.sink;
+  Stream<List<RoomMessage>> get messages => _messagesController.stream;
 
   RoomsBloc({
     @required this.roomMessageRepository,
   }) : super(RoomsState.initial()) {
-    roomMessageRepository.messages().listen((data) => add(AddMessages(data)));
+    roomMessageRepository
+        .getMessages()
+        .listen((data) => add(AddMessages(data)));
   }
 
   RoomsState get initialState => RoomsState.initial();
@@ -31,6 +39,7 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
   @override
   Future<void> close() {
     roomMessageRepository.dispose();
+    _messagesController.close();
     return super.close();
   }
 
@@ -45,6 +54,8 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
       yield* _mapSendMessageToStates(event);
     } else if (event is SetSessionStatus) {
       yield _mapSetSessionStatusToStates(event);
+    } else if (event is AddMessages) {
+      yield* _mapAddMessagesToStates(event);
     }
   }
 
@@ -83,6 +94,10 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
               sessionStatus: RoomSessionStatus.CREATED,
               sessionCipher: signal.SessionCipher.fromStore(_store, _address),
             );
+
+            List<RoomMessage> messages =
+                await RoomsDBProvider.db.getRoomMessages(room.identifier);
+            _inMessages.add(messages);
           } else {
             _logger.e("receiverUser '${event.receiverUser}' not found");
             yield state.copyWith(sessionStatus: RoomSessionStatus.CANT_CREATE);
@@ -105,22 +120,19 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
   Stream<RoomsState> _mapSendMessageToStates(
     SendMessage event,
   ) async* {
-    print('1111');
     signal.CiphertextMessage cipherText =
         state.sessionCipher.encrypt(utf8.encode(event.message));
 
-    print('2222');
     // Sends a message to the room
-    roomMessageRepository.sendMessage(
+    roomMessageRepository.saveMessage(
       state.activeRoom.identifier,
+      event.receiverUser.identifier,
       RoomMessage(
-        user: event.user.identifier,
+        userIdentifier: event.senderUser.identifier,
         message: cipherText.serialize().toList(),
         type: cipherText.getType(),
       ),
     );
-
-    yield state;
   }
 
   RoomsState _mapClearRoomDataToStates(
@@ -139,4 +151,30 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
       state.copyWith(
         sessionStatus: event.sessionStatus,
       );
+
+  Stream<RoomsState> _mapAddMessagesToStates(
+    AddMessages event,
+  ) async* {
+    if (event.messages.isNotEmpty) {
+      // Save to local database
+      await RoomsDBProvider.db.addRoomMessages(
+        state.sessionCipher,
+        event.messages,
+      );
+
+      // Fetch the room messages
+      List<RoomMessage> messages =
+          await RoomsDBProvider.db.getRoomMessages(state.activeRoom.identifier);
+      _inMessages.add(messages);
+
+      // Delete from firebase
+      for (RoomMessage message in event.messages) {
+        roomMessageRepository.deleteMessage(
+          message.roomIdentifier,
+          message.userIdentifier,
+          message.messageIdentifier,
+        );
+      }
+    }
+  }
 }

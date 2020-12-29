@@ -56,6 +56,11 @@ class DispatcherSessionStore extends SessionStore {
     try {
       if (containsSession(address)) {
         List<dynamic> sessionDynList = store.read(address.getName());
+
+        if (sessionDynList == null) {
+          throw InvalidKeyIdException('No session found');
+        }
+
         List<int> sessionIntList = sessionDynList.map((s) => s as int).toList();
         return SessionRecord.fromSerialized(Uint8List.fromList(sessionIntList));
       }

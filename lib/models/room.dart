@@ -113,30 +113,52 @@ class RoomUser extends Equatable {
 }
 
 class RoomMessage extends Equatable {
-  final String user;
+  final String messageIdentifier;
+  final String roomIdentifier;
+  final String userIdentifier;
   final List<int> message;
   final int type;
   final DateTime createdDate;
 
   RoomMessage({
-    this.user,
+    this.messageIdentifier,
+    this.roomIdentifier,
+    this.userIdentifier,
     this.message,
     this.type,
     this.createdDate,
   });
 
   RoomMessage copyWith({
-    String user,
+    String messageIdentifier,
+    String roomIdentifier,
+    String userIdentifier,
     List<int> message,
     int type,
     DateTime createdDate,
   }) =>
       RoomMessage(
-        user: user ?? this.user,
+        messageIdentifier: messageIdentifier ?? this.messageIdentifier,
+        roomIdentifier: roomIdentifier ?? this.roomIdentifier,
+        userIdentifier: userIdentifier ?? this.userIdentifier,
         message: message ?? this.message,
         type: type ?? this.type,
         createdDate: createdDate ?? this.createdDate,
       );
+
+  static RoomMessage fromDB(
+    dynamic obj,
+  ) =>
+      (obj == null)
+          ? RoomMessage()
+          : RoomMessage(
+              messageIdentifier: obj['message_identifier'],
+              roomIdentifier: obj['room_identifier'],
+              userIdentifier: obj['user_identifier'],
+              message: parseIntArray(obj['message'].split(',')),
+              type: obj['type'],
+              createdDate: fromIso8601String(obj['created_date']),
+            );
 
   static RoomMessage fromJson(
     dynamic json,
@@ -144,7 +166,9 @@ class RoomMessage extends Equatable {
       (json == null)
           ? RoomMessage()
           : RoomMessage(
-              user: json['user_identifier'],
+              messageIdentifier: json['message_identifier'],
+              roomIdentifier: json['room_identifier'],
+              userIdentifier: json['user_identifier'],
               message: parseIntArray(json['message']),
               type: json['type'],
               createdDate: fromIso8601String(json['created_date']),
@@ -159,8 +183,19 @@ class RoomMessage extends Equatable {
               .map((dynamic userJson) => RoomMessage.fromJson(userJson))
               .toList();
 
+  dynamic toDB() => {
+        'message_identifier': messageIdentifier,
+        'room_identifier': roomIdentifier,
+        'user_identifier': userIdentifier,
+        'message': message.join(','),
+        'type': type,
+        'created_date': toIso8601String(createdDate),
+      };
+
   dynamic toJson() => {
-        'user_identifier': user,
+        'message_identifier': messageIdentifier,
+        'room_identifier': roomIdentifier,
+        'user_identifier': userIdentifier,
         'message': message,
         'type': type,
         'created_date': toIso8601String(createdDate),
@@ -174,10 +209,19 @@ class RoomMessage extends Equatable {
           : users.map((RoomMessage user) => user.toJson()).toList();
 
   @override
-  List<Object> get props => [user, message, type, createdDate];
+  List<Object> get props => [
+        messageIdentifier,
+        roomIdentifier,
+        userIdentifier,
+        message,
+        type,
+        createdDate,
+      ];
 
   @override
   String toString() =>
-      'RoomMessage{user_identifier: $user, message: $message, type: $type, ' +
-      'created_date: $createdDate}';
+      'RoomMessage{message_identifier: $messageIdentifier, ' +
+      'room_identifier: $roomIdentifier, ' +
+      'user_identifier: $userIdentifier, ' +
+      'message: $message, type: $type, created_date: $createdDate}';
 }
